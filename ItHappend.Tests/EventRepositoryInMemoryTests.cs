@@ -5,19 +5,18 @@ using NUnit.Framework;
 using ItHappened.Infrastructure;
 namespace ItHappend.Tests
 {
-    public class EventRepositoryInMemory
+    public class EventRepositoryInMemoryTests
     {
         [Test]
         public void TryCreate_TryGetEventsByTrack()
         {
-            var repository = new EventsRepositoryInMemory();
+            var repository = new EventRepositoryInMemory();
             var eventId = Guid.NewGuid();
             var trackId = Guid.NewGuid();
             var newEvent = 
                 new Event(eventId, DateTime.Now, trackId, new List<Customs>());
             repository.TryCreate(newEvent);
-
-            repository.TryCreate(newEvent);
+            
             var gotEvents = repository.TryGetEventsByTrack(trackId);
             
             Assert.AreEqual(eventId,gotEvents.Value[0].Id);
@@ -28,7 +27,7 @@ namespace ItHappend.Tests
         [Test]
         public void TryUpdate()
         {
-            var repository = new EventsRepositoryInMemory();
+            var repository = new EventRepositoryInMemory();
             var eventId = Guid.NewGuid();
             var trackId = Guid.NewGuid();
             var newEvent = 
@@ -48,7 +47,7 @@ namespace ItHappend.Tests
         [Test]
         public void TryDelete()
         {
-            var repository = new EventsRepositoryInMemory();
+            var repository = new EventRepositoryInMemory();
             var eventId = Guid.NewGuid();
             var trackId = Guid.NewGuid();
             var newEvent = 

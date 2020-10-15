@@ -6,7 +6,7 @@ using ItHappened.Domain.Repositories;
 
 namespace ItHappened.Infrastructure
 {
-    public class EventsRepositoryInMemory : IEventRepository
+    public class EventRepositoryInMemory : IEventRepository
     {
         private Dictionary<Guid, Event> _events = new Dictionary<Guid, Event>();
         
