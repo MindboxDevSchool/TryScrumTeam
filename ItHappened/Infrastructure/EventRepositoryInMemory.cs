@@ -16,12 +16,12 @@ namespace ItHappened.Infrastructure
             return new Result<Event>(@event);
         }
 
-        public Result<List<Event>> TryGetEventsByTrack(Guid trackId)
+        public Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId)
         {
             var result = _events
                 .Where(elem => elem.Value.TrackId == trackId)
-                .Select(elem => elem.Value).ToList();
-            return new Result<List<Event>>(result);
+                .Select(elem => elem.Value);
+            return new Result<IEnumerable<Event>>(result);
         }
 
         public Result<Event> TryUpdate(Event @event)
@@ -30,10 +30,10 @@ namespace ItHappened.Infrastructure
             return new Result<Event>(@event);
         }
 
-        public bool TryDelete(Guid eventId)
+        public Result<bool> TryDelete(Guid eventId)
         {
             _events.Remove(eventId);
-            return true;
+            return new Result<bool>(true);
         }
     }
 }

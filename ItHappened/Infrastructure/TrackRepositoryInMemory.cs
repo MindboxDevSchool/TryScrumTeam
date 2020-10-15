@@ -16,13 +16,12 @@ namespace ItHappened.Infrastructure
             return new Result<Track>(track);
         }
 
-        public Result<List<Track>> TryGetTracksByUser(Guid userId)
+        public Result<IEnumerable<Track>> TryGetTracksByUser(Guid userId)
         {
             var res = _tracks
                 .Where(elem => elem.Value.CreatorId == userId)
-                .Select(elem=> elem.Value)
-                .ToList();
-            return new Result<List<Track>>(res);
+                .Select(elem => elem.Value);
+            return new Result<IEnumerable<Track>>(res);
         }
 
         public Result<Track> TryUpdate(Track track)
@@ -31,10 +30,10 @@ namespace ItHappened.Infrastructure
             return new Result<Track>(track);
         }
 
-        public bool TryDelete(Guid trackId)
+        public Result<bool> TryDelete(Guid trackId)
         {
             _tracks.Remove(trackId);
-            return true;
+            return new Result<bool>(true);
         }
     }
 }

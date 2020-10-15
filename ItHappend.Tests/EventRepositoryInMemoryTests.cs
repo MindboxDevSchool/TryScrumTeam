@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ItHappened.Domain;
 using NUnit.Framework;
 using ItHappened.Infrastructure;
@@ -19,7 +20,7 @@ namespace ItHappend.Tests
             
             var gotEvents = repository.TryGetEventsByTrack(trackId);
             
-            Assert.AreEqual(eventId,gotEvents.Value[0].Id);
+            Assert.AreEqual(eventId,gotEvents.Value.First().Id);
 
 
         }
@@ -41,7 +42,7 @@ namespace ItHappend.Tests
             
             var gotEvents = repository.TryGetEventsByTrack(trackId);
             
-            Assert.AreEqual(eventId,gotEvents.Value[0].Id);
+            Assert.AreEqual(eventId,gotEvents.Value.First().Id);
         }
         
         [Test]
@@ -58,7 +59,7 @@ namespace ItHappend.Tests
             
             var gotEvents = repository.TryGetEventsByTrack(trackId);
             
-            Assert.AreEqual(0,gotEvents.Value.Count);
+            Assert.IsEmpty(gotEvents.Value);
 
 
         }

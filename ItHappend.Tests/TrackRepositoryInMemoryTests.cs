@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ItHappened.Domain;
 using ItHappened.Infrastructure;
 using NUnit.Framework;
@@ -20,7 +21,7 @@ namespace ItHappend.Tests
             
             var gotTracks = repository.TryGetTracksByUser(creatorId);
             
-            Assert.AreEqual(trackId,gotTracks.Value[0].Id);
+            Assert.AreEqual(trackId,gotTracks.Value.First().Id);
 
 
         }
@@ -43,7 +44,7 @@ namespace ItHappend.Tests
             
             var gotTracks = repository.TryGetTracksByUser(creatorId);
             
-            Assert.AreEqual(trackId,gotTracks.Value[0].Id);
+            Assert.AreEqual(trackId,gotTracks.Value.First().Id);
         }
         
         [Test]
@@ -60,7 +61,7 @@ namespace ItHappend.Tests
             
             var gotTracks = repository.TryGetTracksByUser(creatorId);
             
-            Assert.AreEqual(0,gotTracks.Value.Count);
+            Assert.IsEmpty(gotTracks.Value);
 
 
         }
