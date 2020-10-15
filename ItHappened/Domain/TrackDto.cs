@@ -5,13 +5,13 @@ namespace ItHappened.Domain
 {
     public class TrackDto
     {
-        public TrackDto(Guid id, string name, DateTime createdAt, Guid creatorId, List<CustomType> allowedCustoms)
+        public TrackDto(Track track)
         {
-            Id = id;
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            CreatedAt = createdAt;
-            CreatorId = creatorId;
-            AllowedCustoms = allowedCustoms ?? throw new ArgumentNullException(nameof(allowedCustoms));
+            Id = track.Id;
+            Name = track.Name ?? throw new ArgumentNullException(nameof(track.Name));
+            CreatedAt = track.CreatedAt;
+            CreatorId = track.CreatorId;
+            AllowedCustoms = track.AllowedCustoms ?? throw new ArgumentNullException(nameof(track.AllowedCustoms));
         }
 
         public readonly Guid Id;
