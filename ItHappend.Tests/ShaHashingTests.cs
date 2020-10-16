@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using ItHappened.Domain;
 using NUnit.Framework;
 using ItHappened.Infrastructure;
 

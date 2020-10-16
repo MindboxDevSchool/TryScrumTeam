@@ -13,19 +13,25 @@ namespace ItHappened.Infrastructure
         public Result<User> TryCreate(User user)
         {
             _users[user.Id] = user;
+            if (_users.Any(elem => elem.Value.Login == user.Login))
+                return new Result<User>(new Exception());
             return new Result<User>(user);
         }
 
         public Result<User> TryGetByLogin(string login)
         {
-            var user = _users.First(elem => elem.Value.Login == login).Value;
-            return new Result<User>(user);
+            var result = _users.FirstOrDefault(elem => elem.Value.Login == login);
+            if (result.Equals(default(KeyValuePair<Guid,User>)))
+                return new Result<User>(new Exception());
+            return new Result<User>(result.Value);
         }
 
         public Result<User> TryGetByToken(string token)
         {
-            var user = _users.First(elem => elem.Value.Token == token).Value;
-            return new Result<User>(user);
+            var result = _users.FirstOrDefault(elem => elem.Value.Token == token);
+            if (result.Equals(default(KeyValuePair<Guid,User>)))
+                return new Result<User>(new Exception());
+            return new Result<User>(result.Value);
         }
 
         public Result<User> TryGetById(Guid id)
