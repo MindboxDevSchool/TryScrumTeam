@@ -30,17 +30,5 @@ namespace ItHappend.Tests
             
             Assert.AreEqual(result.Value,user);
         }
-
-        [Test]
-        public void TryGetByToken()
-        {
-            var repository = new UserRepositoryInMemory();
-            var id = Guid.NewGuid();
-            var user = new User(id,"1","1", "token");
-            repository.TryCreate(user);
-            var result = repository.TryGetByToken("token");
-            
-            Assert.AreEqual(result.Value,user);
-        }
     }
 }
