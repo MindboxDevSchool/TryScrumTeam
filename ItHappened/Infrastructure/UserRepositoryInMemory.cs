@@ -1,25 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ItHappened.Domain;
 using ItHappened.Domain.Repositories;
 
 namespace ItHappened.Infrastructure
 {
-    public class UserRepositoryInMemory:IUserRepository
+    public class UserRepositoryInMemory : IUserRepository
     {
-        private Dictionary<KeyValuePair<string, string>, User> _users =
-            new Dictionary<KeyValuePair<string, string>, User>();
-        
+        private Dictionary<Guid, User> _users = new Dictionary<Guid, User>();
+
         public Result<User> TryCreate(User user)
         {
-            var key = new KeyValuePair<string, string>(user.Login,user.HashedPassword);
-            _users[key] = user;
+            _users[user.Id] = user;
+            if (_users.Any(elem => elem.Value.Login == user.Login))
+                return new Result<User>(new Exception());
             return new Result<User>(user);
         }
 
-        public Result<User> TryGet(string login, string hashedPassword)
+        public Result<User> TryGetByLogin(string login)
         {
-            var key = new KeyValuePair<string, string>(login, hashedPassword);
-            var user = _users[key];
+            var result = _users.FirstOrDefault(elem => elem.Value.Login == login);
+            if (result.Equals(default(KeyValuePair<Guid, User>)))
+                return new Result<User>(new Exception());
+            return new Result<User>(result.Value);
+        }
+        
+        public Result<User> TryGetById(Guid id)
+        {
+            var user = _users[id];
             return new Result<User>(user);
         }
     }
