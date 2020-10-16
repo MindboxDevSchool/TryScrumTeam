@@ -11,6 +11,9 @@ namespace ItHappened.Domain
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         }
 
+        private readonly IUserRepository _userRepository;
+        private readonly IHashingPassword _hashingPassword = new ShaHashing();
+
         public Result<AuthData> CreateUser(string login, string password)
         {
             var hashedPassword = _hashingPassword.HashPassword(password);
@@ -27,21 +30,18 @@ namespace ItHappened.Domain
         {
             var result = _userRepository.TryGetByLogin(login);
             if (!result.IsSuccessful())
-                return new Result<AuthData>(new UnauthorizedException("incorrect login or password"));
+                return new Result<AuthData>(new UnauthorizedException("incorrect login"));
 
             var user = result.Value;
             if (_hashingPassword.Verify(password, user.HashedPassword))
                 return new Result<AuthData>(new AuthData(user.Id, user.Token));
 
-            return new Result<AuthData>(new UnauthorizedException("incorrect login or password"));
+            return new Result<AuthData>(new UnauthorizedException("incorrect password"));
         }
 
         private string GenerateToken()
         {
             return new Guid().ToString();
         }
-
-        private readonly IUserRepository _userRepository;
-        private readonly IHashingPassword _hashingPassword = new ShaHashing();
     }
 }
