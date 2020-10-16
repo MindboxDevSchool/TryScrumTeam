@@ -44,5 +44,4 @@ namespace ItHappened.Domain
         private readonly IUserRepository _userRepository;
         private readonly IHashingPassword _hashingPassword = new ShaHashing();
     }
-    
 }

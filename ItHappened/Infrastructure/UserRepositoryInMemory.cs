@@ -6,10 +6,10 @@ using ItHappened.Domain.Repositories;
 
 namespace ItHappened.Infrastructure
 {
-    public class UserRepositoryInMemory:IUserRepository
+    public class UserRepositoryInMemory : IUserRepository
     {
         private Dictionary<Guid, User> _users = new Dictionary<Guid, User>();
-        
+
         public Result<User> TryCreate(User user)
         {
             _users[user.Id] = user;
@@ -21,7 +21,7 @@ namespace ItHappened.Infrastructure
         public Result<User> TryGetByLogin(string login)
         {
             var result = _users.FirstOrDefault(elem => elem.Value.Login == login);
-            if (result.Equals(default(KeyValuePair<Guid,User>)))
+            if (result.Equals(default(KeyValuePair<Guid, User>)))
                 return new Result<User>(new Exception());
             return new Result<User>(result.Value);
         }
@@ -29,7 +29,7 @@ namespace ItHappened.Infrastructure
         public Result<User> TryGetByToken(string token)
         {
             var result = _users.FirstOrDefault(elem => elem.Value.Token == token);
-            if (result.Equals(default(KeyValuePair<Guid,User>)))
+            if (result.Equals(default(KeyValuePair<Guid, User>)))
                 return new Result<User>(new Exception());
             return new Result<User>(result.Value);
         }

@@ -32,6 +32,7 @@ namespace ItHappened.Infrastructure
             {
                 result.Append(hash[i].ToString("X2"));
             }
+
             return result.ToString();
         }
     }
