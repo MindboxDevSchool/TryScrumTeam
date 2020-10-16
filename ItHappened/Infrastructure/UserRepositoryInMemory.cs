@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ItHappened.Domain;
 using ItHappened.Domain.Repositories;
 
@@ -6,20 +8,29 @@ namespace ItHappened.Infrastructure
 {
     public class UserRepositoryInMemory:IUserRepository
     {
-        private Dictionary<KeyValuePair<string, string>, User> _users =
-            new Dictionary<KeyValuePair<string, string>, User>();
+        private Dictionary<Guid, User> _users = new Dictionary<Guid, User>();
         
         public Result<User> TryCreate(User user)
         {
-            var key = new KeyValuePair<string, string>(user.Login,user.HashedPassword);
-            _users[key] = user;
+            _users[user.Id] = user;
             return new Result<User>(user);
         }
 
-        public Result<User> TryGet(string login, string hashedPassword)
+        public Result<User> TryGetByLogin(string login)
         {
-            var key = new KeyValuePair<string, string>(login, hashedPassword);
-            var user = _users[key];
+            var user = _users.First(elem => elem.Value.Login == login).Value;
+            return new Result<User>(user);
+        }
+
+        public Result<User> TryGetByToken(string token)
+        {
+            var user = _users.First(elem => elem.Value.Token == token).Value;
+            return new Result<User>(user);
+        }
+
+        public Result<User> TryGetById(Guid id)
+        {
+            var user = _users[id];
             return new Result<User>(user);
         }
     }
