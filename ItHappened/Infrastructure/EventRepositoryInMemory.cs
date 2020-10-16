@@ -35,5 +35,15 @@ namespace ItHappened.Infrastructure
             _events.Remove(eventId);
             return new Result<bool>(true);
         }
+
+        public Result<bool> TryDeleteByTrack(Guid trackId)
+        {
+            var eventsToDelete = _events.Where(elem => elem.Value.TrackId == trackId);
+            foreach (var element in eventsToDelete)
+            {
+                _events.Remove(element.Key);
+            }
+            return new Result<bool>(true);
+        }
     }
 }

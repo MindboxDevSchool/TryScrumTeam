@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using ItHappened.Domain;
+using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 
 namespace ItHappened.Application
 {
     public class TracksService: ITracksService
     {
-        public TracksService(ITrackRepository trackRepository)
+        public TracksService(ITrackRepository trackRepository, IEventRepository eventRepository)
         {
             _trackRepository = trackRepository;
+            _eventRepository = eventRepository;
         }
 
         public Result<IEnumerable<TrackDto>> GetTracks(AuthData authData)
@@ -36,14 +38,31 @@ namespace ItHappened.Application
 
         public Result<TrackDto> EditTrack(AuthData authData, TrackDto trackDto)
         {
-            throw new NotImplementedException();
+            if (authData.Id != trackDto.CreatorId)
+            {
+                return new Result<TrackDto>(new TrackAccessDeniedException(authData.Id, trackDto.Id));
+            }
+
+            var track = new Track(trackDto.Id, trackDto.Name, trackDto.CreatedAt, authData.Id, trackDto.AllowedCustoms);
+            var trackWithResult = _trackRepository.TryUpdate(track);
+            
+            if (!trackWithResult.IsSuccessful())
+                return new Result<TrackDto>(trackWithResult.Exception);
+            
+            return new Result<TrackDto>(new TrackDto(trackWithResult.Value));
         }
 
         public Result<bool> DeleteTrack(AuthData authData, Guid trackId)
         {
-            throw new NotImplementedException();
+            var eventsDeletingResult = _eventRepository.TryDeleteByTrack(trackId);
+
+            if (!eventsDeletingResult.IsSuccessful())
+                return eventsDeletingResult;
+            
+            return _trackRepository.TryDelete(trackId);
         }
 
         private readonly ITrackRepository _trackRepository;
+        private readonly IEventRepository _eventRepository;
     }
 }

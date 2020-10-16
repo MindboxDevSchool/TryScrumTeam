@@ -14,13 +14,14 @@ namespace ItHappend.Tests
         public void Setup()
         {
             _trackRepository = new MockTrackRepository();
+            _eventRepository = new MockEventRepository();
         }
 
         [Test]
-        public void GetTracks()
+        public void GetTracks_SuccessfulTracksReceiving()
         {
             // arrange
-            var tracksService = new TracksService(_trackRepository);
+            var tracksService = new TracksService(_trackRepository, _eventRepository);
             
             // act
             var result = tracksService.GetTracks(new AuthData(new Guid(), "01"));
@@ -31,10 +32,10 @@ namespace ItHappend.Tests
         }
 
         [Test]
-        public void CreateTrack()
+        public void CreateTrack_SuccessfulTrackCreation()
         {
             // arrange
-            var tracksService = new TracksService(_trackRepository);
+            var tracksService = new TracksService(_trackRepository, _eventRepository);
             var authData = new AuthData(new Guid(), "01");
             
             // act
@@ -46,7 +47,37 @@ namespace ItHappend.Tests
             Assert.AreEqual("NewTrack", result.Value.Name);
         }
 
+        [Test]
+        public void EditTrack_UnsuccessfulTrackEditing()
+        {
+            // arrange
+            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var authData = new AuthData(new Guid(), "01");
+            var trackDto = new TrackDto(new Track(new Guid(), "Track", DateTime.Now, new Guid(), new List<CustomType>()));
+            
+            // act
+            var result = tracksService.EditTrack(authData, trackDto);
+
+            // assert
+            Assert.IsFalse(result.IsSuccessful());
+        }
+
+        [Test]
+        public void DeleteTrack_SuccessfulTrackAndEventsDeletion()
+        {
+            // arrange
+            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var authData = new AuthData(new Guid(), "01");
+            
+            // act
+            var result = tracksService.DeleteTrack(authData, new Guid());
+
+            // assert
+            Assert.IsTrue(result.Value);
+        }
+
         private ITrackRepository _trackRepository;
+        private IEventRepository _eventRepository;
 
         private class MockTrackRepository : ITrackRepository
         {
@@ -68,12 +99,40 @@ namespace ItHappend.Tests
 
             public Result<Track> TryUpdate(Track track)
             {
-                throw new NotImplementedException();
+                return new Result<Track>(new Exception());
             }
 
             public Result<bool> TryDelete(Guid trackId)
             {
-                throw new NotImplementedException();
+                return new Result<bool>(true);
+            }
+        }
+
+        private class MockEventRepository : IEventRepository
+        {
+            public Result<bool> TryDeleteByTrack(Guid trackId)
+            {
+                return new Result<bool>(true);
+            }
+
+            public Result<Event> TryCreate(Event @event)
+            {
+                return new Result<Event>(new Exception());
+            }
+
+            public Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId)
+            {
+                return new Result<IEnumerable<Event>>(new Exception());
+            }
+
+            public Result<Event> TryUpdate(Event @event)
+            {
+                return new Result<Event>(new Exception());
+            }
+
+            public Result<bool> TryDelete(Guid eventId)
+            {
+                return new Result<bool>(new Exception());
             }
         }
     }
