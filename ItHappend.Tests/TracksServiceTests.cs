@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ItHappened.Application;
 using ItHappened.Domain;
+using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 using NUnit.Framework;
 
@@ -15,7 +16,12 @@ namespace ItHappend.Tests
         {
             _trackRepository = new MockTrackRepository();
             _eventRepository = new MockEventRepository();
+            _authData = new AuthData(Guid.Parse("00000000000000000000000000000002"), "01");
         }
+        
+        private ITrackRepository _trackRepository;
+        private IEventRepository _eventRepository;
+        private AuthData _authData;
 
         [Test]
         public void GetTracks_SuccessfulTracksReceiving()
@@ -24,7 +30,7 @@ namespace ItHappend.Tests
             var tracksService = new TracksService(_trackRepository, _eventRepository);
             
             // act
-            var result = tracksService.GetTracks(new AuthData(new Guid(), "01"));
+            var result = tracksService.GetTracks(_authData);
 
             // assert
             Assert.AreEqual(2, result.Value.Count());
@@ -36,11 +42,10 @@ namespace ItHappend.Tests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository);
-            var authData = new AuthData(new Guid(), "01");
-            
+
             // act
             var result =
-                tracksService.CreateTrack(authData, "NewTrack", DateTime.Now, new List<CustomType>());
+                tracksService.CreateTrack(_authData, "NewTrack", DateTime.Now, new List<CustomType>());
 
             // assert
             Assert.IsTrue(result.IsSuccessful());
@@ -48,18 +53,33 @@ namespace ItHappend.Tests
         }
 
         [Test]
-        public void EditTrack_UnsuccessfulTrackEditing()
+        public void EditTrack_SuccessfulTrackEditing()
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository);
-            var authData = new AuthData(new Guid(), "01");
-            var trackDto = new TrackDto(new Track(new Guid(), "Track", DateTime.Now, new Guid(), new List<CustomType>()));
+            var trackDto = new TrackDto(new Track(new Guid(), "Track", DateTime.Parse("2020-10-16 0:0:0Z"), _authData.Id, new List<CustomType>()));
             
             // act
-            var result = tracksService.EditTrack(authData, trackDto);
+            var result = tracksService.EditTrack(_authData, trackDto);
+
+            // assert
+            Assert.IsTrue(result.IsSuccessful());
+            Assert.AreEqual("Track", result.Value.Name);
+        }
+        
+        [Test]
+        public void EditTrack_UnsuccessfulTrackEditing_TryingToUpdateCreationDate()
+        {
+            // arrange
+            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var trackDto = new TrackDto(new Track(new Guid(), "Track", DateTime.Parse("2020-10-17 0:0:0Z"), _authData.Id, new List<CustomType>()));
+            
+            // act
+            var result = tracksService.EditTrack(_authData, trackDto);
 
             // assert
             Assert.IsFalse(result.IsSuccessful());
+            Assert.IsTrue(result.Exception is EditingImmutableDataException);
         }
 
         [Test]
@@ -67,17 +87,13 @@ namespace ItHappend.Tests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository);
-            var authData = new AuthData(new Guid(), "01");
-            
+
             // act
-            var result = tracksService.DeleteTrack(authData, new Guid());
+            var result = tracksService.DeleteTrack(_authData, new Guid());
 
             // assert
             Assert.IsTrue(result.Value);
         }
-
-        private ITrackRepository _trackRepository;
-        private IEventRepository _eventRepository;
 
         private class MockTrackRepository : ITrackRepository
         {
@@ -97,9 +113,16 @@ namespace ItHappend.Tests
                 );
             }
 
+            public Result<Track> TryGetTrackById(Guid trackId)
+            {
+                return new Result<Track>(
+                    new Track(new Guid(), "Track1", DateTime.Parse("2020-10-16 0:0:0Z"), new Guid(), new List<CustomType>())
+                );
+            }
+
             public Result<Track> TryUpdate(Track track)
             {
-                return new Result<Track>(new Exception());
+                return new Result<Track>(track);
             }
 
             public Result<bool> TryDelete(Guid trackId)

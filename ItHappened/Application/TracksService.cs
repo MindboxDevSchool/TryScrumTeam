@@ -43,6 +43,14 @@ namespace ItHappened.Application
                 return new Result<TrackDto>(new TrackAccessDeniedException(authData.Id, trackDto.Id));
             }
 
+            var trackToEdit = _trackRepository.TryGetTrackById(trackDto.Id);
+            
+            if (!trackToEdit.IsSuccessful())
+                return new Result<TrackDto>(trackToEdit.Exception);
+            
+            if (trackToEdit.Value.CreatedAt != trackDto.CreatedAt)
+                return new Result<TrackDto>(new EditingImmutableDataException(nameof(trackDto.CreatedAt)));
+
             var track = new Track(trackDto.Id, trackDto.Name, trackDto.CreatedAt, authData.Id, trackDto.AllowedCustoms);
             var trackWithResult = _trackRepository.TryUpdate(track);
             
