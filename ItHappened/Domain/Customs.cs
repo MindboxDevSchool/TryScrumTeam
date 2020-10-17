@@ -13,6 +13,11 @@ namespace ItHappened.Domain
             Geotag = geotag;
         }
 
+        public Customs()
+        {
+            
+        }
+
         public CommentCustom Comment { get; }
 
         public RatingCustom Rating { get; }
