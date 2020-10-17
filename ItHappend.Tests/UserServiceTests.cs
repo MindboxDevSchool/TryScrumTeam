@@ -1,4 +1,5 @@
 using System;
+using ItHappened.Application;
 using ItHappened.Domain;
 using ItHappened.Domain.Repositories;
 using NUnit.Framework;
