@@ -37,6 +37,11 @@ namespace ItHappend.Tests
             {
                 throw new NotImplementedException();
             }
+
+            public bool IsUserAuthDataValid(AuthData data)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [Test]

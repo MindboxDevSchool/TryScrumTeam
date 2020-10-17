@@ -9,17 +9,24 @@ namespace ItHappened.Application
 {
     public class TracksService: ITracksService
     {
-        public TracksService(ITrackRepository trackRepository, IEventRepository eventRepository)
+        public TracksService(ITrackRepository trackRepository, 
+            IEventRepository eventRepository, 
+            IUserRepository userRepository)
         {
             _trackRepository = trackRepository;
             _eventRepository = eventRepository;
+            _userRepository = userRepository;
         }
 
         private readonly ITrackRepository _trackRepository;
         private readonly IEventRepository _eventRepository;
+        private readonly IUserRepository _userRepository;
 
         public Result<IEnumerable<TrackDto>> GetTracks(AuthData authData)
         {
+            if (!_userRepository.IsUserAuthDataValid(authData))
+                return new Result<IEnumerable<TrackDto>>(new InvalidAuthDataException(authData));
+
             var userTracksWithResult = _trackRepository.TryGetTracksByUser(authData.Id);
 
             if (!userTracksWithResult.IsSuccessful())
@@ -30,6 +37,9 @@ namespace ItHappened.Application
 
         public Result<TrackDto> CreateTrack(AuthData authData, string name, DateTime createdAt, IEnumerable<CustomType> allowedCustoms)
         {
+            if (!_userRepository.IsUserAuthDataValid(authData))
+                return new Result<TrackDto>(new InvalidAuthDataException(authData));
+
             var track = new Track(new Guid(), name, createdAt, authData.Id, allowedCustoms);
             var trackWithResult = _trackRepository.TryCreate(track);
             
@@ -41,10 +51,11 @@ namespace ItHappened.Application
 
         public Result<TrackDto> EditTrack(AuthData authData, TrackDto trackDto)
         {
+            if (!_userRepository.IsUserAuthDataValid(authData))
+                return new Result<TrackDto>(new InvalidAuthDataException(authData));
+
             if (authData.Id != trackDto.CreatorId)
-            {
                 return new Result<TrackDto>(new TrackAccessDeniedException(authData.Id, trackDto.Id));
-            }
 
             var trackToEdit = _trackRepository.TryGetTrackById(trackDto.Id);
             
@@ -65,6 +76,9 @@ namespace ItHappened.Application
 
         public Result<bool> DeleteTrack(AuthData authData, Guid trackId)
         {
+            if (!_userRepository.IsUserAuthDataValid(authData))
+                return new Result<bool>(new InvalidAuthDataException(authData));
+
             var eventsDeletingResult = _eventRepository.TryDeleteByTrack(trackId);
 
             if (!eventsDeletingResult.IsSuccessful())

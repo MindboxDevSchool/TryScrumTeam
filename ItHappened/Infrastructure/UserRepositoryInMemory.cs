@@ -25,11 +25,26 @@ namespace ItHappened.Infrastructure
                 return new Result<User>(new Exception());
             return new Result<User>(result.Value);
         }
-        
+
         public Result<User> TryGetById(Guid id)
         {
-            var user = _users[id];
-            return new Result<User>(user);
+            if (_users.ContainsKey(id))
+            {
+                var user = _users[id];
+                return new Result<User>(user);
+            }
+
+            return new Result<User>(new Exception());
+        }
+
+        public bool IsUserAuthDataValid(AuthData data)
+        {
+            if (_users.ContainsKey(data.Id))
+            {
+                return _users[data.Id].Token == data.Token;
+            }
+
+            return false;
         }
     }
 }
