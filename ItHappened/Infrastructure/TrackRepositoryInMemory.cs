@@ -24,6 +24,11 @@ namespace ItHappened.Infrastructure
             return new Result<IEnumerable<Track>>(res);
         }
 
+        public Result<Track> TryGetTrackById(Guid trackId)
+        {
+            return new Result<Track>(_tracks[trackId]);
+        }
+
         public Result<Track> TryUpdate(Track track)
         {
             _tracks[track.Id] = track;

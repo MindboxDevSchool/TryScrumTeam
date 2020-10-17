@@ -18,6 +18,6 @@ namespace ItHappened.Domain
         public readonly string Name;
         public readonly DateTime CreatedAt;
         public readonly Guid CreatorId;
-        public readonly List<CustomType> AllowedCustoms;
+        public readonly IEnumerable<CustomType> AllowedCustoms;
     }
 }
