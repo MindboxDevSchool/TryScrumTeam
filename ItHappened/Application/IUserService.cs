@@ -1,6 +1,7 @@
+using ItHappened.Domain;
 using ItHappened.Domain.Repositories;
 
-namespace ItHappened.Domain
+namespace ItHappened.Application
 {
     public interface IUserService
     {

@@ -1,8 +1,9 @@
 using System;
+using ItHappened.Domain;
 using ItHappened.Domain.Repositories;
 using ItHappened.Infrastructure;
 
-namespace ItHappened.Domain
+namespace ItHappened.Application
 {
     public class UserService : IUserService
     {
