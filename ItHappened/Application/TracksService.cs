@@ -15,6 +15,9 @@ namespace ItHappened.Application
             _eventRepository = eventRepository;
         }
 
+        private readonly ITrackRepository _trackRepository;
+        private readonly IEventRepository _eventRepository;
+
         public Result<IEnumerable<TrackDto>> GetTracks(AuthData authData)
         {
             var userTracksWithResult = _trackRepository.TryGetTracksByUser(authData.Id);
@@ -69,8 +72,5 @@ namespace ItHappened.Application
             
             return _trackRepository.TryDelete(trackId);
         }
-
-        private readonly ITrackRepository _trackRepository;
-        private readonly IEventRepository _eventRepository;
     }
 }

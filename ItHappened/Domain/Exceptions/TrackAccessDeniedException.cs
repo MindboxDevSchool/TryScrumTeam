@@ -9,10 +9,5 @@ namespace ItHappened.Domain.Exceptions
         {
             
         }
-
-        public TrackAccessDeniedException(string message): base(message)
-        {
-            
-        }
     }
 }
