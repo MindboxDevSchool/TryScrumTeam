@@ -24,6 +24,11 @@ namespace ItHappened.Infrastructure
             return new Result<IEnumerable<Event>>(result);
         }
 
+        public Result<Event> TryGetById(Guid id)
+        {
+            return new Result<Event>(_events[id]);
+        }
+
         public Result<Event> TryUpdate(Event @event)
         {
             _events[@event.Id] = @event;

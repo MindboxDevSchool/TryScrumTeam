@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace ItHappend.Tests
 {
-    public class TracksServiceTests
+    public class EventServiceTest
     {
         [SetUp]
         public void Setup()
@@ -17,24 +17,32 @@ namespace ItHappend.Tests
             _trackRepository = new MockTrackRepository();
             _eventRepository = new MockEventRepository();
             _authData = new AuthData(Guid.Parse("00000000000000000000000000000002"), "01");
+            _track = new Track(
+                Guid.Parse("00000000000000000000000000000003"),
+                "00",
+                DateTime.Now,
+                Guid.Parse("00000000000000000000000000000004"),
+                new List<CustomType>());
+            _track.AllowedCustoms.Append()
         }
         
         private ITrackRepository _trackRepository;
         private IEventRepository _eventRepository;
         private AuthData _authData;
+        private Track _track;
 
         [Test]
-        public void GetTracks_SuccessfulTracksReceiving()
+        public void GetEvents_SuccessfulTracksReceiving()
         {
             // arrange
-            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var result = tracksService.GetTracks(_authData);
+            var result = eventService.GetEvents(_authData,_track.Id);
 
             // assert
             Assert.AreEqual(2, result.Value.Count());
-            Assert.AreEqual("Track1", result.Value.First().Name);
+            Assert.AreEqual("Track1", result.Value.First().);
         }
 
         [Test]
@@ -146,6 +154,11 @@ namespace ItHappend.Tests
             public Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId)
             {
                 return new Result<IEnumerable<Event>>(new Exception());
+            }
+
+            public Result<Event> TryGetById(Guid id)
+            {
+                throw new NotImplementedException();
             }
 
             public Result<Event> TryUpdate(Event @event)
