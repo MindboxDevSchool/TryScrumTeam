@@ -5,7 +5,7 @@ namespace ItHappened.Domain
 {
     public class Event
     {
-        public Event(Guid id, DateTime createdAt, Guid trackId, IEnumerable<Customs> customisation)
+        public Event(Guid id, DateTime createdAt, Guid trackId, Customs customisation)
         {
             Id = id;
             CreatedAt = createdAt;
@@ -16,6 +16,6 @@ namespace ItHappened.Domain
         public Guid Id { get; }
         public DateTime CreatedAt { get; }
         public Guid TrackId { get; }
-        public IEnumerable<Customs> Customization { get; }
+        public Customs Customization { get; }
     }
 }

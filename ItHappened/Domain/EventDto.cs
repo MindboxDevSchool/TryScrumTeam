@@ -15,7 +15,7 @@ namespace ItHappened.Domain
         public readonly Guid Id;
         public readonly DateTime CreatedAt;
         public readonly Guid TrackId;
-        public readonly IEnumerable<Customs> Customization;
+        public readonly Customs Customization;
 
     }
 }

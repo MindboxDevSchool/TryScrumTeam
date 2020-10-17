@@ -28,7 +28,7 @@ namespace ItHappend.Tests
             _event = new Event(Guid.Parse("00000000000000000000000000000003"),
                 DateTime.Now, 
                 _track.Id,
-                new List<Customs>());
+                new Customs());
             _trackRepository.TryCreate(_track);
             _eventRepository.TryCreate(_event);
 
@@ -77,7 +77,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_authDataWrong, _track.Id, DateTime.Now, new List<Customs>());
+                eventService.CreateEvent(_authDataWrong, _track.Id, DateTime.Now, new Customs());
             
             // assert
             Assert.True(result.Exception is TrackAccessDeniedException);
@@ -91,7 +91,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_authData, _track.Id, DateTime.Now, new List<Customs>());
+                eventService.CreateEvent(_authData, _track.Id, DateTime.Now, new Customs());
             var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Value.Id).Value);
             
             // assert
@@ -107,8 +107,8 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var customs = new List<Customs>();
-            customs.Append(new Customs());
+            var customs = new Customs();
+            
             var newEvent = new Event(Guid.Parse("00000000000000000000000000000003"),
                 _event.CreatedAt, 
                 _track.Id,
@@ -119,7 +119,7 @@ namespace ItHappend.Tests
             Assert.IsTrue(result.IsSuccessful());
             Assert.AreEqual(result.Value.Id,eventFromRepository.Id);
             Assert.AreEqual(result.Value.CreatedAt,eventFromRepository.CreatedAt);
-            Assert.AreEqual(result.Value.Customization.Count(),eventFromRepository.Customization.Count());
+            Assert.AreEqual(result.Value.Customization,eventFromRepository.Customization);
 
         }
         
@@ -130,8 +130,8 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var customs = new List<Customs>();
-            customs.Append(new Customs());
+            var customs = new Customs();
+            
             var newEvent = new Event(Guid.Parse("00000000000000000000000000000003"),
                 DateTime.Now, 
                 _track.Id,

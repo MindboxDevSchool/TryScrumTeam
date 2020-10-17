@@ -41,7 +41,7 @@ namespace ItHappened.Application
             return new Result<IEnumerable<EventDto>>(events.Value.Select(elem => new EventDto(elem)));
         }
 
-        public Result<EventDto> CreateEvent(AuthData authData, Guid trackId, DateTime createdAt, IEnumerable<Customs> customs)
+        public Result<EventDto> CreateEvent(AuthData authData, Guid trackId, DateTime createdAt, Customs customs)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
             
