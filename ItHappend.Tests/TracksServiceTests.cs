@@ -16,18 +16,20 @@ namespace ItHappend.Tests
         {
             _trackRepository = new MockTrackRepository();
             _eventRepository = new MockEventRepository();
+            _userRepository = new MockUserRepository();
             _authData = new AuthData(Guid.Parse("00000000000000000000000000000002"), "01");
         }
         
         private ITrackRepository _trackRepository;
         private IEventRepository _eventRepository;
+        private IUserRepository _userRepository;
         private AuthData _authData;
 
         [Test]
         public void GetTracks_SuccessfulTracksReceiving()
         {
             // arrange
-            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
             
             // act
             var result = tracksService.GetTracks(_authData);
@@ -41,7 +43,7 @@ namespace ItHappend.Tests
         public void CreateTrack_SuccessfulTrackCreation()
         {
             // arrange
-            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
 
             // act
             var result =
@@ -56,7 +58,7 @@ namespace ItHappend.Tests
         public void EditTrack_SuccessfulTrackEditing()
         {
             // arrange
-            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
             var trackDto = new TrackDto(new Track(new Guid(), "Track", DateTime.Parse("2020-10-16 0:0:0Z"), _authData.Id, new List<CustomType>()));
             
             // act
@@ -71,7 +73,7 @@ namespace ItHappend.Tests
         public void EditTrack_UnsuccessfulTrackEditing_TryingToUpdateCreationDate()
         {
             // arrange
-            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
             var trackDto = new TrackDto(new Track(new Guid(), "Track", DateTime.Parse("2020-10-17 0:0:0Z"), _authData.Id, new List<CustomType>()));
             
             // act
@@ -86,7 +88,7 @@ namespace ItHappend.Tests
         public void DeleteTrack_SuccessfulTrackAndEventsDeletion()
         {
             // arrange
-            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
 
             // act
             var result = tracksService.DeleteTrack(_authData, new Guid());
@@ -156,6 +158,29 @@ namespace ItHappend.Tests
             public Result<bool> TryDelete(Guid eventId)
             {
                 return new Result<bool>(new Exception());
+            }
+        }
+
+        private class MockUserRepository : IUserRepository
+        {
+            public Result<User> TryCreate(User user)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Result<User> TryGetByLogin(string login)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Result<User> TryGetById(Guid id)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Result<bool> IsUserAuthDataValid(AuthData data)
+            {
+                return new Result<bool>(true);
             }
         }
     }
