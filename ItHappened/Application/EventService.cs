@@ -21,6 +21,18 @@ namespace ItHappened.Application
         
         public Result<IEnumerable<EventDto>> GetEvents(AuthData authData, Guid trackId)
         {
+            var track = _trackRepository.TryGetTrackById(trackId);
+            
+            if (!track.IsSuccessful())
+            {
+                return new Result<IEnumerable<EventDto>>(track.Exception);
+            }
+            
+            if (track.Value.CreatorId != authData.Id)
+            {
+                return new Result<IEnumerable<EventDto>>(new TrackAccessDeniedException(authData.Id, trackId));
+            }
+            
             var events = _eventRepository.TryGetEventsByTrack(trackId);
             if (!events.IsSuccessful())
             {
@@ -31,6 +43,18 @@ namespace ItHappened.Application
 
         public Result<EventDto> CreateEvent(AuthData authData, Guid trackId, DateTime createdAt, IEnumerable<Customs> customs)
         {
+            var track = _trackRepository.TryGetTrackById(trackId);
+            
+            if (!track.IsSuccessful())
+            {
+                return new Result<EventDto>(track.Exception);
+            }
+            
+            if (track.Value.CreatorId != authData.Id)
+            {
+                return new Result<EventDto>(new TrackAccessDeniedException(authData.Id, trackId));
+            }
+            
             var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customs);
             var result = _eventRepository.TryCreate(newEvent);
             if (!result.IsSuccessful())
@@ -76,6 +100,24 @@ namespace ItHappened.Application
 
         public Result<bool> DeleteEvent(AuthData authData, Guid eventId)
         {
+            var @event = _eventRepository.TryGetById(eventId);
+            if (!@event.IsSuccessful())
+            {
+                return new Result<bool>(@event.Exception);
+            }
+            
+            var track = _trackRepository.TryGetTrackById(@event.Value.TrackId);
+            
+            if (!track.IsSuccessful())
+            {
+                return new Result<bool>(track.Exception);
+            }
+            
+            if (track.Value.CreatorId != authData.Id)
+            {
+                return new Result<bool>(new EventAccessDeniedException(authData.Id, @event.Value.Id));
+            }
+            
             var deleteResult = _eventRepository.TryDelete(eventId);
             if (!deleteResult.IsSuccessful())
             {
