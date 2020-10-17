@@ -178,9 +178,9 @@ namespace ItHappend.Tests
                 throw new NotImplementedException();
             }
 
-            public bool IsUserAuthDataValid(AuthData data)
+            public Result<bool> IsUserAuthDataValid(AuthData data)
             {
-                return true;
+                return new Result<bool>(true);
             }
         }
     }

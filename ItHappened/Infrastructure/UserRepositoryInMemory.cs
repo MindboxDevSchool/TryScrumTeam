@@ -37,14 +37,14 @@ namespace ItHappened.Infrastructure
             return new Result<User>(new Exception());
         }
 
-        public bool IsUserAuthDataValid(AuthData data)
+        public Result<bool> IsUserAuthDataValid(AuthData data)
         {
             if (_users.ContainsKey(data.Id))
             {
-                return _users[data.Id].Token == data.Token;
+                return new Result<bool>(_users[data.Id].Token == data.Token);
             }
 
-            return false;
+            return new Result<bool>(new Exception());
         }
     }
 }

@@ -24,7 +24,10 @@ namespace ItHappened.Application
 
         public Result<IEnumerable<TrackDto>> GetTracks(AuthData authData)
         {
-            if (!_userRepository.IsUserAuthDataValid(authData))
+            var isAuthValid = _userRepository.IsUserAuthDataValid(authData);
+            if (!isAuthValid.IsSuccessful())
+                return new Result<IEnumerable<TrackDto>>(new UserNotFoundException(authData.Id));
+            if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
                 return new Result<IEnumerable<TrackDto>>(new InvalidAuthDataException(authData));
 
             var userTracksWithResult = _trackRepository.TryGetTracksByUser(authData.Id);
@@ -37,7 +40,10 @@ namespace ItHappened.Application
 
         public Result<TrackDto> CreateTrack(AuthData authData, string name, DateTime createdAt, IEnumerable<CustomType> allowedCustoms)
         {
-            if (!_userRepository.IsUserAuthDataValid(authData))
+            var isAuthValid = _userRepository.IsUserAuthDataValid(authData);
+            if (!isAuthValid.IsSuccessful())
+                return new Result<TrackDto>(new UserNotFoundException(authData.Id));
+            if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
                 return new Result<TrackDto>(new InvalidAuthDataException(authData));
 
             var track = new Track(new Guid(), name, createdAt, authData.Id, allowedCustoms);
@@ -51,7 +57,10 @@ namespace ItHappened.Application
 
         public Result<TrackDto> EditTrack(AuthData authData, TrackDto trackDto)
         {
-            if (!_userRepository.IsUserAuthDataValid(authData))
+            var isAuthValid = _userRepository.IsUserAuthDataValid(authData);
+            if (!isAuthValid.IsSuccessful())
+                return new Result<TrackDto>(new UserNotFoundException(authData.Id));
+            if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
                 return new Result<TrackDto>(new InvalidAuthDataException(authData));
 
             if (authData.Id != trackDto.CreatorId)
@@ -76,7 +85,10 @@ namespace ItHappened.Application
 
         public Result<bool> DeleteTrack(AuthData authData, Guid trackId)
         {
-            if (!_userRepository.IsUserAuthDataValid(authData))
+            var isAuthValid = _userRepository.IsUserAuthDataValid(authData);
+            if (!isAuthValid.IsSuccessful())
+                return new Result<bool>(new UserNotFoundException(authData.Id));
+            if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
                 return new Result<bool>(new InvalidAuthDataException(authData));
 
             var eventsDeletingResult = _eventRepository.TryDeleteByTrack(trackId);

@@ -43,7 +43,8 @@ namespace ItHappend.Tests
             
             var result = repository.IsUserAuthDataValid(authData);
             
-            Assert.True(result);
+            Assert.True(result.IsSuccessful());
+            Assert.True(result.Value);
         }
 
         [Test]
@@ -58,7 +59,8 @@ namespace ItHappend.Tests
             
             var result = repository.IsUserAuthDataValid(authData);
             
-            Assert.False(result);
+            Assert.True(result.IsSuccessful());
+            Assert.False(result.Value);
         }
         
         [Test]
@@ -73,7 +75,7 @@ namespace ItHappend.Tests
             
             var result = repository.IsUserAuthDataValid(authData);
             
-            Assert.False(result);
+            Assert.False(result.IsSuccessful());
         }
     }
 }

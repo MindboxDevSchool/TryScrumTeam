@@ -7,6 +7,6 @@ namespace ItHappened.Domain.Repositories
         Result<User> TryCreate(User user);
         Result<User> TryGetByLogin(string login);
         Result<User> TryGetById(Guid id);
-        public bool IsUserAuthDataValid(AuthData data);
+        Result<bool> IsUserAuthDataValid(AuthData data);
     }
 }
