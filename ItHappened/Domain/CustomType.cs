@@ -2,6 +2,10 @@
 {
     public enum CustomType
     {
-        
+        Photo,
+        Rating,
+        Scale,
+        Geotag,
+        Comment
     }
 }
