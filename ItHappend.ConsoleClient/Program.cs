@@ -7,6 +7,8 @@ namespace ItHappend.ConsoleClient
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            var client = new ConsoleClient();
+            client.Start();
         }
     }
 }
