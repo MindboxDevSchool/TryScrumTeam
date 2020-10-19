@@ -15,8 +15,8 @@ namespace ItHappend.Tests
         [SetUp]
         public void Setup()
         {
-            _trackRepository = new TrackRepositoryInMemory();
-            _eventRepository = new EventRepositoryInMemory();
+            _trackRepository = new TrackRepositoryMock();
+            _eventRepository = new EventRepositoryMock();
             _authData = new AuthData(Guid.Parse("00000000000000000000000000000002"), "01");
             _authDataWrong = new AuthData(Guid.Parse("00000000000000000000000000000010"), "05");
             _track = new Track(
@@ -173,4 +173,87 @@ namespace ItHappend.Tests
             Assert.True(result.Exception is EventAccessDeniedException);
         }
     }
+    
+    public class EventRepositoryMock :IEventRepository
+    {
+        private Dictionary<Guid, Event> _events = new Dictionary<Guid, Event>();
+        
+        public Result<Event> TryCreate(Event @event)
+        {
+            _events[@event.Id] = @event;
+            return new Result<Event>(@event);
+        }
+
+        public Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId)
+        {
+            var result = _events
+                .Where(elem => elem.Value.TrackId == trackId)
+                .Select(elem => elem.Value);
+            return new Result<IEnumerable<Event>>(result);
+        }
+
+        public Result<Event> TryGetById(Guid id)
+        {
+            return new Result<Event>(_events[id]);
+        }
+
+        public Result<Event> TryUpdate(Event @event)
+        {
+            _events[@event.Id] = @event;
+            return new Result<Event>(@event);
+        }
+
+        public Result<bool> TryDelete(Guid eventId)
+        {
+            _events.Remove(eventId);
+            return new Result<bool>(true);
+        }
+
+        public Result<bool> TryDeleteByTrack(Guid trackId)
+        {
+            var eventsToDelete = _events.Where(elem => elem.Value.TrackId == trackId);
+            foreach (var element in eventsToDelete)
+            {
+                _events.Remove(element.Key);
+            }
+            return new Result<bool>(true);
+        }
+    }
+    
+    public class TrackRepositoryMock:ITrackRepository
+    {
+        private Dictionary<Guid, Track> _tracks = new Dictionary<Guid, Track>();
+        
+        public Result<Track> TryCreate(Track track)
+        {
+            _tracks[track.Id] = track;
+            return new Result<Track>(track);
+        }
+
+        public Result<IEnumerable<Track>> TryGetTracksByUser(Guid userId)
+        {
+            var res = _tracks
+                .Where(elem => elem.Value.CreatorId == userId)
+                .Select(elem => elem.Value);
+            return new Result<IEnumerable<Track>>(res);
+        }
+
+        public Result<Track> TryGetTrackById(Guid trackId)
+        {
+            return new Result<Track>(_tracks[trackId]);
+        }
+
+        public Result<Track> TryUpdate(Track track)
+        {
+            _tracks[track.Id] = track;
+            return new Result<Track>(track);
+        }
+
+        public Result<bool> TryDelete(Guid trackId)
+        {
+            _tracks.Remove(trackId);
+            return new Result<bool>(true);
+        }
+    }
+
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using ItHappened.Domain;
 using ItHappened.Domain.Repositories;
@@ -12,6 +13,7 @@ namespace ItHappened.Infrastructure
         
         public Result<Event> TryCreate(Event @event)
         {
+            
             _events[@event.Id] = @event;
             return new Result<Event>(@event);
         }
@@ -26,11 +28,19 @@ namespace ItHappened.Infrastructure
 
         public Result<Event> TryGetById(Guid id)
         {
+            if (!_events.ContainsKey(id))
+            {
+                return new Result<Event>(new DataException());
+            }
             return new Result<Event>(_events[id]);
         }
 
         public Result<Event> TryUpdate(Event @event)
         {
+            if (!_events.ContainsKey(@event.Id))
+            {
+                return new Result<Event>(new DataException());
+            }
             _events[@event.Id] = @event;
             return new Result<Event>(@event);
         }
