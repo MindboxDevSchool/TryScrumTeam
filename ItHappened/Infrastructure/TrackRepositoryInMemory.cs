@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using ItHappened.Domain;
 using ItHappened.Domain.Repositories;
@@ -26,11 +27,20 @@ namespace ItHappened.Infrastructure
 
         public Result<Track> TryGetTrackById(Guid trackId)
         {
+            if (!_tracks.ContainsKey(trackId))
+            {
+                return new Result<Track>(new DataException());
+            }
             return new Result<Track>(_tracks[trackId]);
         }
 
         public Result<Track> TryUpdate(Track track)
         {
+            if (!_tracks.ContainsKey(track.Id))
+            {
+                return new Result<Track>(new DataException());
+            }
+
             _tracks[track.Id] = track;
             return new Result<Track>(track);
         }

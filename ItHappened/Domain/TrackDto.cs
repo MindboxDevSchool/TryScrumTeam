@@ -13,6 +13,14 @@ namespace ItHappened.Domain
             CreatorId = track.CreatorId;
             AllowedCustoms = track.AllowedCustoms ?? throw new ArgumentNullException(nameof(track.AllowedCustoms));
         }
+        public TrackDto(Guid id, string name, DateTime createdAt, Guid creatorId, IEnumerable<CustomType> allowedCustoms)
+        {
+            Id = id;
+            Name = name;
+            CreatedAt = createdAt;
+            CreatorId = creatorId;
+            AllowedCustoms = allowedCustoms;
+        }
 
         public readonly Guid Id;
         public readonly string Name;
