@@ -121,8 +121,12 @@ namespace ItHappend.ConsoleClient
                             num = Convert.ToInt32(Console.ReadLine());
                             trackTuple = ReadTrackDto();
                             var trackDto = tracks[num];
-                            // problem 
-                            var editResult = _tracksService.EditTrack(authData, trackDto);
+                            var editedTrackDto = new TrackDto(trackDto.Id, 
+                                trackTuple.Item1, 
+                                trackDto.CreatedAt, 
+                                trackDto.CreatorId,
+                                trackTuple.Item3);
+                            var editResult = _tracksService.EditTrack(authData, editedTrackDto);
                             if (!editResult.IsSuccessful())
                                 Console.WriteLine(editResult.Exception.Message);
                             break;
