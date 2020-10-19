@@ -18,12 +18,14 @@ namespace ItHappend.Tests
             _eventRepository = new MockEventRepository();
             _userRepository = new MockUserRepository();
             _authData = new AuthData(Guid.Parse("00000000000000000000000000000002"), "01");
+            _authDataWrong = new AuthData(Guid.Parse("00000000000000000000000000000010"), "03");
         }
         
         private ITrackRepository _trackRepository;
         private IEventRepository _eventRepository;
         private IUserRepository _userRepository;
         private AuthData _authData;
+        private AuthData _authDataWrong;
 
         [Test]
         public void GetTracks_SuccessfulTracksReceiving()
@@ -38,7 +40,8 @@ namespace ItHappend.Tests
             Assert.AreEqual(2, result.Value.Count());
             Assert.AreEqual("Track1", result.Value.First().Name);
         }
-
+        
+        
         [Test]
         public void CreateTrack_SuccessfulTrackCreation()
         {
@@ -148,6 +151,11 @@ namespace ItHappend.Tests
             public Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId)
             {
                 return new Result<IEnumerable<Event>>(new Exception());
+            }
+
+            public Result<Event> TryGetById(Guid id)
+            {
+                throw new NotImplementedException();
             }
 
             public Result<Event> TryUpdate(Event @event)

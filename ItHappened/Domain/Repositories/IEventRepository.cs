@@ -7,6 +7,8 @@ namespace ItHappened.Domain.Repositories
     {
         Result<Event> TryCreate(Event @event);
         Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId);
+
+        Result<Event> TryGetById(Guid id);
         Result<Event> TryUpdate(Event @event);
         Result<bool> TryDelete(Guid eventId);
         Result<bool> TryDeleteByTrack(Guid trackId);
