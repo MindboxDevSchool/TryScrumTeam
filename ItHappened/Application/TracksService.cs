@@ -46,7 +46,7 @@ namespace ItHappened.Application
             if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
                 return new Result<TrackDto>(new InvalidAuthDataException(authData));
 
-            var track = new Track(new Guid(), name, createdAt, authData.Id, allowedCustoms);
+            var track = new Track(Guid.NewGuid(), name, createdAt, authData.Id, allowedCustoms);
             var trackWithResult = _trackRepository.TryCreate(track);
             
             if (!trackWithResult.IsSuccessful())
