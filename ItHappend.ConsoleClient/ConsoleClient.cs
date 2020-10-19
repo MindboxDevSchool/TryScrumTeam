@@ -12,6 +12,7 @@ namespace ItHappend.ConsoleClient
     {
         private IUserService _userService;
         private ITracksService _tracksService;
+        private IEventService _eventService;
 
         public ConsoleClient()
         {
@@ -20,6 +21,7 @@ namespace ItHappend.ConsoleClient
             var eventRepository = new EventRepositoryInMemory();
             _userService = new UserService(userRepository);
             _tracksService = new TracksService(trackRepository, eventRepository, userRepository);
+            _eventService = new EventService(eventRepository, trackRepository);
         }
 
         private Tuple<string, string> ReadLoginAndPassword()
@@ -72,10 +74,86 @@ namespace ItHappend.ConsoleClient
             return tracks;
         }
 
+        private Dictionary<int, EventDto> PrintEventList(AuthData authData, TrackDto trackDto)
+        {
+            var result = _eventService.GetEvents(authData, trackDto.Id); 
+            var events = new Dictionary<int, EventDto>();
+            if (result.IsSuccessful())
+                if (!result.Value.Any())
+                    Console.WriteLine("Список событий пока пуст");
+                else
+                {
+                    Console.WriteLine("{0,-3} {1,-30} {2,-10}", "№", "CreatedAt", "Customs");
+                    int i = 0;
+                    foreach (var @event in result.Value)
+                    {
+                        i++;
+                        events[i] = @event;
+                        Console.Write("{0,-3} {1,-20}",
+                            i,
+                            @event.CreatedAt.ToString("g", CultureInfo.CreateSpecificCulture("de-DE")));
+                        var customs = @event.Customization;
+                        // print customs
+                        Console.WriteLine();
+                    }
+                }
+            else
+                Console.WriteLine(result.Exception.Message);
+
+            return events;
+        }
+
         private void WorkWithEvents(AuthData authData, TrackDto track)
         {
             Console.WriteLine("Welcome to Event Menu");
-            
+            bool IsRunning = true;
+            while (IsRunning)
+            {
+                Console.WriteLine("---------------------------------------------");
+                Console.WriteLine("Текущие события:");
+                var events = PrintEventList(authData, track);
+                Console.WriteLine("---------------------------------------------");
+                Console.WriteLine("Выберите действие из списка:");
+ 
+                Console.WriteLine("1 - посмотреть список событий");
+                Console.WriteLine("2 - создать событие");
+                //Console.WriteLine("3 - редактировать событие №");
+                Console.WriteLine("4 - удалить событие №");
+                Console.WriteLine("5 - выйти из меню событий");
+
+                try
+                {
+                    var userCase = Convert.ToInt32(Console.ReadLine());
+                    switch (userCase)
+                    {
+                        case 1:
+                            events = PrintEventList(authData, track);
+                            break;
+                        case 2:
+                            var result = _eventService.CreateEvent(authData, track.Id, DateTime.Now, new Customs());
+                            if (!result.IsSuccessful())
+                                Console.WriteLine(result.Exception.Message);
+                            break;
+                        case 4:
+                            Console.Write("Введите номер событие:");
+                            var num = Convert.ToInt32(Console.ReadLine());
+                            var deleteResult = _eventService.DeleteEvent(authData, events[num].Id);
+                            if (!deleteResult.IsSuccessful())
+                                Console.WriteLine(deleteResult.Exception.Message);
+                            break;
+                        case 5:
+                            IsRunning = false;
+                            break;
+                        default:
+                            Console.WriteLine("Введено несуществующее действие!");
+                            break;
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Упс, что-то пошло не так");
+                }
+            }
         }
 
         private void WorkWithTracks(AuthData authData)
