@@ -37,8 +37,6 @@ namespace ItHappend.ConsoleClient
         {
             Console.Write("Введите название трека:");
             var name = Console.ReadLine();
-            // Console.Write("Выберите кастомки:");
-            // var customs = new Dictionary<int, CustomType>() { {1, CustomType.Comment} };
             return new Tuple<string, DateTime, IEnumerable<CustomType>>(name, DateTime.Now, new List<CustomType>());
         }
 
@@ -92,8 +90,6 @@ namespace ItHappend.ConsoleClient
                         Console.Write("{0,-3} {1,-20}",
                             i,
                             @event.CreatedAt.ToString("g", CultureInfo.CreateSpecificCulture("de-DE")));
-                        var customs = @event.Customization;
-                        // print customs
                         Console.WriteLine();
                     }
                 }
