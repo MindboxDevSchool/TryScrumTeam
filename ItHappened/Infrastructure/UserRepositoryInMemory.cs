@@ -12,9 +12,9 @@ namespace ItHappened.Infrastructure
 
         public Result<User> TryCreate(User user)
         {
-            _users[user.Id] = user;
             if (_users.Any(elem => elem.Value.Login == user.Login))
                 return new Result<User>(new Exception());
+            _users[user.Id] = user;
             return new Result<User>(user);
         }
 

@@ -19,7 +19,7 @@ namespace ItHappened.Application
         {
             var hashedPassword = _hashingPassword.HashPassword(password);
             var token = GenerateToken();
-            var userId = new Guid();
+            var userId = Guid.NewGuid();
             var user = new User(userId, login, hashedPassword, token);
             var result = _userRepository.TryCreate(user);
             if (result.IsSuccessful())
@@ -42,7 +42,7 @@ namespace ItHappened.Application
 
         private string GenerateToken()
         {
-            return new Guid().ToString();
+            return Guid.NewGuid().ToString();
         }
     }
 }
