@@ -62,7 +62,7 @@ namespace ItHappend.Tests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
-            var trackDto = new TrackDto(new Track(new Guid(), "Track", DateTime.Parse("2020-10-16 0:0:0Z"), _authData.Id, new List<CustomType>()));
+            var trackDto = new TrackDto(new Track(Guid.NewGuid(), "Track", DateTime.Parse("2020-10-16 0:0:0Z"), _authData.Id, new List<CustomType>()));
             
             // act
             var result = tracksService.EditTrack(_authData, trackDto);
@@ -77,7 +77,7 @@ namespace ItHappend.Tests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
-            var trackDto = new TrackDto(new Track(new Guid(), "Track", DateTime.Parse("2020-10-17 0:0:0Z"), _authData.Id, new List<CustomType>()));
+            var trackDto = new TrackDto(new Track(Guid.NewGuid(), "Track", DateTime.Parse("2020-10-17 0:0:0Z"), _authData.Id, new List<CustomType>()));
             
             // act
             var result = tracksService.EditTrack(_authData, trackDto);
@@ -94,7 +94,7 @@ namespace ItHappend.Tests
             var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
 
             // act
-            var result = tracksService.DeleteTrack(_authData, new Guid());
+            var result = tracksService.DeleteTrack(_authData,  Guid.NewGuid());
 
             // assert
             Assert.IsTrue(result.Value);
@@ -112,8 +112,8 @@ namespace ItHappend.Tests
                 return new Result<IEnumerable<Track>>(
                     new List<Track>()
                     {
-                        new Track(new Guid(), "Track1", DateTime.Now, new Guid(), new List<CustomType>()),
-                        new Track(new Guid(), "Track2", DateTime.Now, new Guid(), new List<CustomType>()),
+                        new Track(Guid.NewGuid(), "Track1", DateTime.Now, Guid.NewGuid(), new List<CustomType>()),
+                        new Track(Guid.NewGuid(), "Track2", DateTime.Now, Guid.NewGuid(), new List<CustomType>()),
                     }
                 );
             }
@@ -121,7 +121,7 @@ namespace ItHappend.Tests
             public Result<Track> TryGetTrackById(Guid trackId)
             {
                 return new Result<Track>(
-                    new Track(new Guid(), "Track1", DateTime.Parse("2020-10-16 0:0:0Z"), new Guid(), new List<CustomType>())
+                    new Track( Guid.NewGuid(), "Track1", DateTime.Parse("2020-10-16 0:0:0Z"), Guid.NewGuid(), new List<CustomType>())
                 );
             }
 
