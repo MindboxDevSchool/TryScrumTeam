@@ -2,7 +2,7 @@
 {
     public enum DomainExceptionType
     {
-        EventAccessDeniedException,
-        TrackAccessDeniedException
+        EventAccessDenied,
+        TrackAccessDenied
     }
 }
