@@ -5,7 +5,6 @@ using ItHappened.Application;
 using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
-using ItHappened.Infrastructure;
 using NUnit.Framework;
 
 namespace ItHappend.Tests
@@ -107,19 +106,19 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var Customizations = new Customizations();
+            var customizations = new Customizations();
             
             var newEvent = new Event(Guid.Parse("00000000000000000000000000000003"),
                 _event.CreatedAt, 
                 _track.Id,
-                Customizations);
+                customizations);
             var result = eventService.EditEvent(_authData, new EventDto(newEvent));
             var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Value.Id).Value);
             // assert
             Assert.IsTrue(result.IsSuccessful());
             Assert.AreEqual(result.Value.Id,eventFromRepository.Id);
             Assert.AreEqual(result.Value.CreatedAt,eventFromRepository.CreatedAt);
-            Assert.AreEqual(result.Value.Customizationization,eventFromRepository.Customizationization);
+            Assert.AreEqual(result.Value.Customization,eventFromRepository.Customization);
 
         }
         
@@ -130,12 +129,12 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var Customizations = new Customizations();
+            var customizations = new Customizations();
             
             var newEvent = new Event(Guid.Parse("00000000000000000000000000000003"),
                 DateTime.Now, 
                 _track.Id,
-                Customizations);
+                customizations);
             var result = eventService.EditEvent(_authData, new EventDto(newEvent));
             // assert
             Assert.IsFalse(result.IsSuccessful());

@@ -1,4 +1,4 @@
-﻿using ItHappened.Domain.Customizationizations;
+﻿using ItHappened.Domain.CustomizationTypes;
 
 namespace ItHappened.Domain
 {

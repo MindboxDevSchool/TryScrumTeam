@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ItHappened.Domain.Customizationizations
+namespace ItHappened.Domain.CustomizationTypes
 {
     public class PhotoCustomization
     {
