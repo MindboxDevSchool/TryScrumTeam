@@ -5,17 +5,17 @@ namespace ItHappened.Domain
 {
     public class Event
     {
-        public Event(Guid id, DateTime createdAt, Guid trackId, Customs customisation)
+        public Event(Guid id, DateTime createdAt, Guid trackId, Customizations Customization)
         {
             Id = id;
             CreatedAt = createdAt;
             TrackId = trackId;
-            Customization = customisation ?? throw new ArgumentNullException(nameof(customisation));
+            Customizationization = Customization ?? throw new ArgumentNullException(nameof(Customization));
         }
 
         public Guid Id { get; }
         public DateTime CreatedAt { get; }
         public Guid TrackId { get; }
-        public Customs Customization { get; }
+        public Customizations Customizationization { get; }
     }
 }

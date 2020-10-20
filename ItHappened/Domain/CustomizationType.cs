@@ -1,6 +1,6 @@
 ﻿namespace ItHappened.Domain
 {
-    public enum CustomType
+    public enum CustomizationType
     {
         Photo,
         Rating,

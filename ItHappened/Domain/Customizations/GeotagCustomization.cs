@@ -1,8 +1,8 @@
-﻿namespace ItHappened.Domain.Customizations
+﻿namespace ItHappened.Domain.Customizationizations
 {
-    public class GeotagCustom
+    public class GeotagCustomization
     {
-        public GeotagCustom(double latitude, double longitude)
+        public GeotagCustomization(double latitude, double longitude)
         {
             Latitude = latitude;
             Longitude = longitude;

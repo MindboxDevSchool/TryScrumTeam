@@ -38,7 +38,7 @@ namespace ItHappened.Application
             return new Result<IEnumerable<TrackDto>>(userTracksWithResult.Value.Select(track => new TrackDto(track)));
         }
 
-        public Result<TrackDto> CreateTrack(AuthData authData, string name, DateTime createdAt, IEnumerable<CustomType> allowedCustoms)
+        public Result<TrackDto> CreateTrack(AuthData authData, string name, DateTime createdAt, IEnumerable<CustomizationType> allowedCustomizations)
         {
             var isAuthValid = _userRepository.IsUserAuthDataValid(authData);
             if (!isAuthValid.IsSuccessful())
@@ -46,7 +46,7 @@ namespace ItHappened.Application
             if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
                 return new Result<TrackDto>(new InvalidAuthDataException(authData));
 
-            var track = new Track(Guid.NewGuid(), name, createdAt, authData.Id, allowedCustoms);
+            var track = new Track(Guid.NewGuid(), name, createdAt, authData.Id, allowedCustomizations);
             var trackWithResult = _trackRepository.TryCreate(track);
             
             if (!trackWithResult.IsSuccessful())
@@ -74,7 +74,7 @@ namespace ItHappened.Application
             if (trackToEdit.Value.CreatedAt != trackDto.CreatedAt)
                 return new Result<TrackDto>(new EditingImmutableDataException(nameof(trackDto.CreatedAt)));
 
-            var track = new Track(trackDto.Id, trackDto.Name, trackDto.CreatedAt, authData.Id, trackDto.AllowedCustoms);
+            var track = new Track(trackDto.Id, trackDto.Name, trackDto.CreatedAt, authData.Id, trackDto.AllowedCustomizations);
             var trackWithResult = _trackRepository.TryUpdate(track);
             
             if (!trackWithResult.IsSuccessful())

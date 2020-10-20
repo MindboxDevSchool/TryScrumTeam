@@ -41,7 +41,7 @@ namespace ItHappened.Application
             return new Result<IEnumerable<EventDto>>(events.Value.Select(elem => new EventDto(elem)));
         }
 
-        public Result<EventDto> CreateEvent(AuthData authData, Guid trackId, DateTime createdAt, Customs customs)
+        public Result<EventDto> CreateEvent(AuthData authData, Guid trackId, DateTime createdAt, Customizations Customizations)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
             
@@ -55,7 +55,7 @@ namespace ItHappened.Application
                 return new Result<EventDto>(new TrackAccessDeniedException(authData.Id, trackId));
             }
             
-            var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customs);
+            var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, Customizations);
             var result = _eventRepository.TryCreate(newEvent);
             if (!result.IsSuccessful())
             {
@@ -89,7 +89,7 @@ namespace ItHappened.Application
                 return new Result<EventDto>(new EditingImmutableDataException(nameof(eventDto.TrackId)));
             }
 
-            var editedEvent = new Event(eventDto.Id, eventDto.CreatedAt, eventDto.TrackId, eventDto.Customization);
+            var editedEvent = new Event(eventDto.Id, eventDto.CreatedAt, eventDto.TrackId, eventDto.Customizationization);
             var editResult = _eventRepository.TryUpdate(editedEvent);
             if (!editResult.IsSuccessful())
             {

@@ -16,7 +16,7 @@ namespace ItHappend.Tests
             var creatorId = Guid.NewGuid();
             var trackId = Guid.NewGuid();
             var newTrack = 
-                new Track(trackId,"1",DateTime.Now, creatorId,new List<CustomType>());
+                new Track(trackId,"1",DateTime.Now, creatorId,new List<CustomizationType>());
             repository.TryCreate(newTrack);
             
             var gotTracks = repository.TryGetTracksByUser(creatorId);
@@ -33,13 +33,13 @@ namespace ItHappend.Tests
             var creatorId = Guid.NewGuid();
             var trackId = Guid.NewGuid();
             var newTrack = 
-                new Track(trackId,"1",DateTime.Now, creatorId,new List<CustomType>());
+                new Track(trackId,"1",DateTime.Now, creatorId,new List<CustomizationType>());
             repository.TryCreate(newTrack);
             
             creatorId = Guid.NewGuid();
             
             newTrack = 
-                new Track(trackId,"1",DateTime.Now, creatorId,new List<CustomType>());
+                new Track(trackId,"1",DateTime.Now, creatorId,new List<CustomizationType>());
             repository.TryCreate(newTrack);
             
             var gotTracks = repository.TryGetTracksByUser(creatorId);
@@ -54,7 +54,7 @@ namespace ItHappend.Tests
             var creatorId = Guid.NewGuid();
             var trackId = Guid.NewGuid();
             var newTrack = 
-                new Track(trackId,"1",DateTime.Now, creatorId,new List<CustomType>());
+                new Track(trackId,"1",DateTime.Now, creatorId,new List<CustomizationType>());
             repository.TryCreate(newTrack);
 
             repository.TryDelete(trackId);

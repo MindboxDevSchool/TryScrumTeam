@@ -33,11 +33,11 @@ namespace ItHappend.ConsoleClient
             return new Tuple<string, string>(login, password);
         }
 
-        private Tuple<string, DateTime, IEnumerable<CustomType>> ReadTrackDto()
+        private Tuple<string, DateTime, IEnumerable<CustomizationType>> ReadTrackDto()
         {
             Console.Write("Введите название трека:");
             var name = Console.ReadLine();
-            return new Tuple<string, DateTime, IEnumerable<CustomType>>(name, DateTime.Now, new List<CustomType>());
+            return new Tuple<string, DateTime, IEnumerable<CustomizationType>>(name, DateTime.Now, new List<CustomizationType>());
         }
 
         private Dictionary<int, TrackDto> PrintTrackList(AuthData authData)
@@ -49,7 +49,7 @@ namespace ItHappend.ConsoleClient
                     Console.WriteLine("Список треков пока пуст");
                 else
                 {
-                    Console.WriteLine("{0,-3} {1,-20} {2,-30} {3,-10}", "№", "Name", "CreatedAt", "Customs");
+                    Console.WriteLine("{0,-3} {1,-20} {2,-30} {3,-10}", "№", "Name", "CreatedAt", "Customizations");
                     int i = 0;
                     foreach (var track in result.Value)
                     {
@@ -59,9 +59,9 @@ namespace ItHappend.ConsoleClient
                             i,
                             track.Name, 
                             track.CreatedAt.ToString("g", CultureInfo.CreateSpecificCulture("de-DE")));
-                        foreach (var customType in track.AllowedCustoms)
+                        foreach (var CustomizationType in track.AllowedCustomizations)
                         {
-                            Console.Write(customType.ToString("G"), ", ");
+                            Console.Write(CustomizationType.ToString("G"), ", ");
                         }
                         Console.WriteLine();
                     }
@@ -81,7 +81,7 @@ namespace ItHappend.ConsoleClient
                     Console.WriteLine("Список событий пока пуст");
                 else
                 {
-                    Console.WriteLine("{0,-3} {1,-30} {2,-10}", "№", "CreatedAt", "Customs");
+                    Console.WriteLine("{0,-3} {1,-30} {2,-10}", "№", "CreatedAt", "Customizations");
                     int i = 0;
                     foreach (var @event in result.Value)
                     {
@@ -126,7 +126,7 @@ namespace ItHappend.ConsoleClient
                             events = PrintEventList(authData, track);
                             break;
                         case 2:
-                            var result = _eventService.CreateEvent(authData, track.Id, DateTime.Now, new Customs());
+                            var result = _eventService.CreateEvent(authData, track.Id, DateTime.Now, new Customizations());
                             if (!result.IsSuccessful())
                                 Console.WriteLine(result.Exception.Message);
                             break;
