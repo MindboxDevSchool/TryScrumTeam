@@ -16,9 +16,4 @@
       <ProjectReference Include="..\ItHappened\ItHappened.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="RepositoryTests" />
-      <Folder Include="ServiceTests" />
-    </ItemGroup>
-
 </Project>
