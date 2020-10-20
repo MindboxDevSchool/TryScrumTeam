@@ -9,7 +9,7 @@ namespace ItHappened.Domain
             Id = id;
             CreatedAt = createdAt;
             TrackId = trackId;
-            customization = customization ?? throw new ArgumentNullException(nameof(customization));
+            Customization = customization ?? throw new ArgumentNullException(nameof(customization));
         }
 
         public Guid Id { get; }
