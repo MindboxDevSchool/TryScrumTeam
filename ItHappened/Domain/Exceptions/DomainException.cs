@@ -4,7 +4,7 @@ namespace ItHappened.Domain.Exceptions
 {
     public class DomainException:Exception
     {
-        private DomainExceptionType Type { get; }
+        public DomainExceptionType Type { get; }
         private static string GetMessage(DomainExceptionType type, Guid userId, Guid entityId)
         {
             switch (type)

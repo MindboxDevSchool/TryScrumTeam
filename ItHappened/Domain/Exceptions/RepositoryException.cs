@@ -4,7 +4,7 @@ namespace ItHappened.Domain.Exceptions
 {
     public class RepositoryException:Exception
     {
-        private RepositoryExceptionType Type { get; }
+        public RepositoryExceptionType Type { get; }
 
         private static string GetMessage(RepositoryExceptionType type, Guid entityId)
         {
