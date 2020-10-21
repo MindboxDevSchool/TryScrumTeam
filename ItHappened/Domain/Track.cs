@@ -5,19 +5,19 @@ namespace ItHappened.Domain
 {
     public class Track
     {
-        public Track(Guid id, string name, DateTime createdAt, Guid creatorId, IEnumerable<CustomType> allowedCustoms)
+        public Track(Guid id, string name, DateTime createdAt, Guid creatorId, IEnumerable<CustomizationType> allowedCustomizations)
         {
             Id = id;
             Name = name ?? throw new ArgumentNullException(nameof(name));
             CreatedAt = createdAt;
             CreatorId = creatorId;
-            AllowedCustoms = allowedCustoms ?? throw new ArgumentNullException(nameof(allowedCustoms));
+            AllowedCustomizations = allowedCustomizations ?? throw new ArgumentNullException(nameof(allowedCustomizations));
         }
 
         public Guid Id { get; }
         public string Name { get; }
         public DateTime CreatedAt { get; }
         public Guid CreatorId { get; }
-        public IEnumerable<CustomType> AllowedCustoms { get; }
+        public IEnumerable<CustomizationType> AllowedCustomizations { get; }
     }
 }

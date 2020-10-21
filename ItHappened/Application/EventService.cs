@@ -4,7 +4,6 @@ using System.Linq;
 using ItHappened.Domain;
 using ItHappened.Domain.Repositories;
 using ItHappened.Domain.Exceptions;
-using ItHappened.Infrastructure;
 
 namespace ItHappened.Application
 {
@@ -41,7 +40,7 @@ namespace ItHappened.Application
             return new Result<IEnumerable<EventDto>>(events.Value.Select(elem => new EventDto(elem)));
         }
 
-        public Result<EventDto> CreateEvent(AuthData authData, Guid trackId, DateTime createdAt, Customs customs)
+        public Result<EventDto> CreateEvent(AuthData authData, Guid trackId, DateTime createdAt, Customizations customizations)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
             
@@ -55,7 +54,7 @@ namespace ItHappened.Application
                 return new Result<EventDto>(new TrackAccessDeniedException(authData.Id, trackId));
             }
             
-            var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customs);
+            var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customizations);
             var result = _eventRepository.TryCreate(newEvent);
             if (!result.IsSuccessful())
             {

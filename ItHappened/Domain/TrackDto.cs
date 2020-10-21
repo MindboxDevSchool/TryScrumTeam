@@ -11,21 +11,21 @@ namespace ItHappened.Domain
             Name = track.Name ?? throw new ArgumentNullException(nameof(track.Name));
             CreatedAt = track.CreatedAt;
             CreatorId = track.CreatorId;
-            AllowedCustoms = track.AllowedCustoms ?? throw new ArgumentNullException(nameof(track.AllowedCustoms));
+            AllowedCustomizations = track.AllowedCustomizations ?? throw new ArgumentNullException(nameof(track.AllowedCustomizations));
         }
-        public TrackDto(Guid id, string name, DateTime createdAt, Guid creatorId, IEnumerable<CustomType> allowedCustoms)
+        public TrackDto(Guid id, string name, DateTime createdAt, Guid creatorId, IEnumerable<CustomizationType> allowedCustomizations)
         {
             Id = id;
             Name = name;
             CreatedAt = createdAt;
             CreatorId = creatorId;
-            AllowedCustoms = allowedCustoms;
+            AllowedCustomizations = allowedCustomizations;
         }
 
         public readonly Guid Id;
         public readonly string Name;
         public readonly DateTime CreatedAt;
         public readonly Guid CreatorId;
-        public readonly IEnumerable<CustomType> AllowedCustoms;
+        public readonly IEnumerable<CustomizationType> AllowedCustomizations;
     }
 }

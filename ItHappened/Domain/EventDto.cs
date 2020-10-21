@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ItHappened.Domain
 {
@@ -13,17 +12,17 @@ namespace ItHappened.Domain
             Customization = @event.Customization;
         }
         
-        public EventDto(Guid id, DateTime createdAt, Guid trackId, Customs customisation)
+        public EventDto(Guid id, DateTime createdAt, Guid trackId, Customizations customization)
         {
             Id = id;
             CreatedAt = createdAt;
             TrackId = trackId;
-            Customization = customisation;
+            Customization = customization;
         }
         public readonly Guid Id;
         public readonly DateTime CreatedAt;
         public readonly Guid TrackId;
-        public readonly Customs Customization;
+        public readonly Customizations Customization;
 
     }
 }

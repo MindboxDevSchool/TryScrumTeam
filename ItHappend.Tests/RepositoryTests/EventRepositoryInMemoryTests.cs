@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using ItHappened.Domain;
 using NUnit.Framework;
@@ -15,7 +14,7 @@ namespace ItHappend.Tests
             var eventId = Guid.NewGuid();
             var trackId = Guid.NewGuid();
             var newEvent = 
-                new Event(eventId, DateTime.Now, trackId, new Customs());
+                new Event(eventId, DateTime.Now, trackId, new Customizations());
             repository.TryCreate(newEvent);
             
             var gotEvents = repository.TryGetEventsByTrack(trackId);
@@ -32,12 +31,12 @@ namespace ItHappend.Tests
             var eventId = Guid.NewGuid();
             var trackId = Guid.NewGuid();
             var newEvent = 
-                new Event(eventId, DateTime.Now, trackId, new Customs());
+                new Event(eventId, DateTime.Now, trackId, new Customizations());
             repository.TryCreate(newEvent);
             
             trackId = Guid.NewGuid();
             newEvent = 
-                new Event(eventId, DateTime.Now, trackId, new Customs());
+                new Event(eventId, DateTime.Now, trackId, new Customizations());
             repository.TryUpdate(newEvent);
             
             var gotEvents = repository.TryGetEventsByTrack(trackId);
@@ -52,7 +51,7 @@ namespace ItHappend.Tests
             var eventId = Guid.NewGuid();
             var trackId = Guid.NewGuid();
             var newEvent = 
-                new Event(eventId, DateTime.Now, trackId, new Customs());
+                new Event(eventId, DateTime.Now, trackId, new Customizations());
             repository.TryCreate(newEvent);
 
             repository.TryDelete(eventId);

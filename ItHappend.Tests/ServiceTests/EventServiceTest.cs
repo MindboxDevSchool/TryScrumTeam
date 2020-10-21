@@ -5,7 +5,6 @@ using ItHappened.Application;
 using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
-using ItHappened.Infrastructure;
 using NUnit.Framework;
 
 namespace ItHappend.Tests
@@ -24,11 +23,11 @@ namespace ItHappend.Tests
                 "00",
                 DateTime.Now,
                 Guid.Parse("00000000000000000000000000000002"),
-                new List<CustomType>());
+                new List<CustomizationType>());
             _event = new Event(Guid.Parse("00000000000000000000000000000003"),
                 DateTime.Now, 
                 _track.Id,
-                new Customs());
+                new Customizations());
             _trackRepository.TryCreate(_track);
             _eventRepository.TryCreate(_event);
 
@@ -77,7 +76,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_authDataWrong, _track.Id, DateTime.Now, new Customs());
+                eventService.CreateEvent(_authDataWrong, _track.Id, DateTime.Now, new Customizations());
             
             // assert
             Assert.True(result.Exception is TrackAccessDeniedException);
@@ -91,7 +90,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_authData, _track.Id, DateTime.Now, new Customs());
+                eventService.CreateEvent(_authData, _track.Id, DateTime.Now, new Customizations());
             var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Value.Id).Value);
             
             // assert
@@ -107,12 +106,12 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var customs = new Customs();
+            var customizations = new Customizations();
             
             var newEvent = new Event(Guid.Parse("00000000000000000000000000000003"),
                 _event.CreatedAt, 
                 _track.Id,
-                customs);
+                customizations);
             var result = eventService.EditEvent(_authData, new EventDto(newEvent));
             var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Value.Id).Value);
             // assert
@@ -130,12 +129,12 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var customs = new Customs();
+            var customizations = new Customizations();
             
             var newEvent = new Event(Guid.Parse("00000000000000000000000000000003"),
                 DateTime.Now, 
                 _track.Id,
-                customs);
+                customizations);
             var result = eventService.EditEvent(_authData, new EventDto(newEvent));
             // assert
             Assert.IsFalse(result.IsSuccessful());

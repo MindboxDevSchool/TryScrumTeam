@@ -33,11 +33,11 @@ namespace ItHappend.ConsoleClient
             return new Tuple<string, string>(login, password);
         }
 
-        private Tuple<string, DateTime, IEnumerable<CustomType>> ReadTrackDto()
+        private Tuple<string, DateTime, IEnumerable<CustomizationType>> ReadTrackDto()
         {
             Console.Write("Введите название трека:");
             var name = Console.ReadLine();
-            return new Tuple<string, DateTime, IEnumerable<CustomType>>(name, DateTime.Now, new List<CustomType>());
+            return new Tuple<string, DateTime, IEnumerable<CustomizationType>>(name, DateTime.Now, new List<CustomizationType>());
         }
 
         private Dictionary<int, TrackDto> PrintTrackList(AuthData authData)
@@ -49,7 +49,7 @@ namespace ItHappend.ConsoleClient
                     Console.WriteLine("Список треков пока пуст");
                 else
                 {
-                    Console.WriteLine("{0,-3} {1,-20} {2,-30} {3,-10}", "№", "Name", "CreatedAt", "Customs");
+                    Console.WriteLine("{0,-3} {1,-20} {2,-30} {3,-10}", "№", "Name", "CreatedAt", "Customizations");
                     int i = 0;
                     foreach (var track in result.Value)
                     {
@@ -59,9 +59,9 @@ namespace ItHappend.ConsoleClient
                             i,
                             track.Name, 
                             track.CreatedAt.ToString("g", CultureInfo.CreateSpecificCulture("de-DE")));
-                        foreach (var customType in track.AllowedCustoms)
+                        foreach (var customizationType in track.AllowedCustomizations)
                         {
-                            Console.Write(customType.ToString("G"), ", ");
+                            Console.Write(customizationType.ToString("G"), ", ");
                         }
                         Console.WriteLine();
                     }
@@ -81,7 +81,7 @@ namespace ItHappend.ConsoleClient
                     Console.WriteLine("Список событий пока пуст");
                 else
                 {
-                    Console.WriteLine("{0,-3} {1,-30} {2,-10}", "№", "CreatedAt", "Customs");
+                    Console.WriteLine("{0,-3} {1,-30} {2,-10}", "№", "CreatedAt", "Customizations");
                     int i = 0;
                     foreach (var @event in result.Value)
                     {
@@ -102,8 +102,8 @@ namespace ItHappend.ConsoleClient
         private void WorkWithEvents(AuthData authData, TrackDto track)
         {
             Console.WriteLine("Welcome to Event Menu");
-            bool IsRunning = true;
-            while (IsRunning)
+            bool isRunning = true;
+            while (isRunning)
             {
                 Console.WriteLine("---------------------------------------------");
                 Console.WriteLine("Текущие события:");
@@ -126,7 +126,7 @@ namespace ItHappend.ConsoleClient
                             events = PrintEventList(authData, track);
                             break;
                         case 2:
-                            var result = _eventService.CreateEvent(authData, track.Id, DateTime.Now, new Customs());
+                            var result = _eventService.CreateEvent(authData, track.Id, DateTime.Now, new Customizations());
                             if (!result.IsSuccessful())
                                 Console.WriteLine(result.Exception.Message);
                             break;
@@ -138,7 +138,7 @@ namespace ItHappend.ConsoleClient
                                 Console.WriteLine(deleteResult.Exception.Message);
                             break;
                         case 5:
-                            IsRunning = false;
+                            isRunning = false;
                             break;
                         default:
                             Console.WriteLine("Введено несуществующее действие!");
@@ -155,8 +155,8 @@ namespace ItHappend.ConsoleClient
         private void WorkWithTracks(AuthData authData)
         {
             Console.WriteLine("Welcome to Track Menu");
-            bool IsRunning = true;
-            while (IsRunning)
+            bool isRunning = true;
+            while (isRunning)
             {
                 Console.WriteLine("---------------------------------------------");
                 Console.WriteLine("Текущие треки:");
@@ -212,7 +212,7 @@ namespace ItHappend.ConsoleClient
                                 Console.WriteLine(deleteResult.Exception.Message);
                             break;
                         case 6:
-                            IsRunning = false;
+                            isRunning = false;
                             break;
                         default:
                             Console.WriteLine("Введено несуществующее действие!");
@@ -229,8 +229,8 @@ namespace ItHappend.ConsoleClient
         private void WorkWithUser(AuthData authData)
         {
             Console.WriteLine("Welcome to User");
-            bool IsRunning = true;
-            while (IsRunning)
+            bool isRunning = true;
+            while (isRunning)
             {
                 Console.WriteLine("Выберите действие из списка:");
                 Console.WriteLine("1 - открыть меню работы с треками");
@@ -245,7 +245,7 @@ namespace ItHappend.ConsoleClient
                             WorkWithTracks(authData);
                             break;
                         case 2:
-                            IsRunning = false;
+                            isRunning = false;
                             break;
                         default:
                             Console.WriteLine("Введено несуществующее действие!");
@@ -262,8 +262,8 @@ namespace ItHappend.ConsoleClient
         public void Start()
         {
             Console.WriteLine("Welcome to ItHappend");
-            bool IsRunning = true;
-            while (IsRunning)
+            bool isRunning = true;
+            while (isRunning)
             {
                 Console.WriteLine("Выберите действие из списка:");
                 Console.WriteLine("1 - зарегистироваться");
@@ -292,7 +292,7 @@ namespace ItHappend.ConsoleClient
                                 Console.WriteLine(result.Exception.Message);
                             break;
                         case 3:
-                            IsRunning = false;
+                            isRunning = false;
                             break;
                         default:
                             Console.WriteLine("Введено несуществующее действие!");
