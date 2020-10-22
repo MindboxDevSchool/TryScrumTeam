@@ -4,6 +4,8 @@
     {
         TrackNotFound,
         EventNotFound,
-        UserNotFound
+        UserNotFound,
+        LoginAlreadyExists,
+        UserNotFoundByLogin
     }
 }

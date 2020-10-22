@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ItHappened.Domain;
+using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 
 namespace ItHappened.Infrastructure
@@ -10,31 +11,33 @@ namespace ItHappened.Infrastructure
     {
         private Dictionary<Guid, User> _users = new Dictionary<Guid, User>();
 
-        public Result<User> TryCreate(User user)
+        public User TryCreate(User user)
         {
             if (_users.Any(elem => elem.Value.Login == user.Login))
-                return new Result<User>(new Exception());
+                throw new RepositoryException(RepositoryExceptionType.LoginAlreadyExists, user.Login);
             _users[user.Id] = user;
-            return new Result<User>(user);
+            return user;
         }
 
-        public Result<User> TryGetByLogin(string login)
+        public User TryGetByLogin(string login)
         {
             var result = _users.FirstOrDefault(elem => elem.Value.Login == login);
+            
             if (result.Equals(default(KeyValuePair<Guid, User>)))
-                return new Result<User>(new Exception());
-            return new Result<User>(result.Value);
+                throw new RepositoryException(RepositoryExceptionType.UserNotFound, login);
+            
+            return result.Value;
         }
 
-        public Result<User> TryGetById(Guid id)
+        public User TryGetById(Guid id)
         {
             if (_users.ContainsKey(id))
             {
                 var user = _users[id];
-                return new Result<User>(user);
+                return user;
             }
 
-            return new Result<User>(new Exception());
+            throw new RepositoryException(RepositoryExceptionType.UserNotFound, id);
         }
     }
 }

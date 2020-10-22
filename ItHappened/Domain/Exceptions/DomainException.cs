@@ -18,8 +18,25 @@ namespace ItHappened.Domain.Exceptions
             }
         }
 
+        private static string GetMessage(DomainExceptionType type, string login)
+        {
+            switch (type)
+            {
+                case DomainExceptionType.IncorrectPassword:
+                    return $"Incorrect password for user with login [{login}]";
+                default:
+                    return "Unspecified exception occured, follow the link for additional info https://goo.su/2mvQ ";
+            }
+        }
+
         public DomainException(DomainExceptionType type, Guid authorId, Guid entityId)
             : base(GetMessage(type,authorId,entityId))
+        {
+            Type = type;
+        }
+
+        public DomainException(DomainExceptionType type, string login)
+            : base(GetMessage(type, login))
         {
             Type = type;
         }
