@@ -7,9 +7,9 @@ namespace ItHappened.Application
 {
     public interface IEventService
     {
-        Result<IEnumerable<EventDto>> GetEvents(UserDto userDto, Guid trackId);
-        Result<EventDto> CreateEvent(UserDto userDto, Guid trackId, DateTime createdAt, Customizations customizations);
-        Result<EventDto> EditEvent(UserDto userDto, EventDto eventDto);
-        Result<bool> DeleteEvent(UserDto userDto, Guid eventId);
+        Result<IEnumerable<EventDto>> GetEvents(Guid userId, Guid trackId);
+        Result<EventDto> CreateEvent(Guid userId, Guid trackId, DateTime createdAt, Customizations customizations);
+        Result<EventDto> EditEvent(Guid userId, EventDto eventDto);
+        Result<bool> DeleteEvent(Guid userId, Guid eventId);
     }
 }

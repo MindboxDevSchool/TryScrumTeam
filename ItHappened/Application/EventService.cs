@@ -18,7 +18,7 @@ namespace ItHappened.Application
         private IEventRepository _eventRepository;
         private ITrackRepository _trackRepository;
         
-        public Result<IEnumerable<EventDto>> GetEvents(UserDto userDto, Guid trackId)
+        public Result<IEnumerable<EventDto>> GetEvents(Guid userId, Guid trackId)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
             
@@ -27,9 +27,9 @@ namespace ItHappened.Application
                 return new Result<IEnumerable<EventDto>>(track.Exception);
             }
             
-            if (track.Value.CreatorId != userDto.Id)
+            if (track.Value.CreatorId != userId)
             {
-                return new Result<IEnumerable<EventDto>>(new TrackAccessDeniedException(userDto.Id, trackId));
+                return new Result<IEnumerable<EventDto>>(new TrackAccessDeniedException(userId, trackId));
             }
             
             var events = _eventRepository.TryGetEventsByTrack(trackId);
@@ -40,7 +40,7 @@ namespace ItHappened.Application
             return new Result<IEnumerable<EventDto>>(events.Value.Select(elem => new EventDto(elem)));
         }
 
-        public Result<EventDto> CreateEvent(UserDto userDto, Guid trackId, DateTime createdAt, Customizations customizations)
+        public Result<EventDto> CreateEvent(Guid userId, Guid trackId, DateTime createdAt, Customizations customizations)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
             
@@ -49,9 +49,9 @@ namespace ItHappened.Application
                 return new Result<EventDto>(track.Exception);
             }
             
-            if (track.Value.CreatorId != userDto.Id)
+            if (track.Value.CreatorId != userId)
             {
-                return new Result<EventDto>(new TrackAccessDeniedException(userDto.Id, trackId));
+                return new Result<EventDto>(new TrackAccessDeniedException(userId, trackId));
             }
             
             var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customizations);
@@ -64,7 +64,7 @@ namespace ItHappened.Application
             return new Result<EventDto>(eventDto);
         }
 
-        public Result<EventDto> EditEvent(UserDto userDto, EventDto eventDto)
+        public Result<EventDto> EditEvent(Guid userId, EventDto eventDto)
         {
             var track = _trackRepository.TryGetTrackById(eventDto.TrackId);
             
@@ -73,9 +73,9 @@ namespace ItHappened.Application
              return new Result<EventDto>(track.Exception);
             }
             
-            if (track.Value.CreatorId != userDto.Id)
+            if (track.Value.CreatorId != userId)
             {
-                return new Result<EventDto>(new EventAccessDeniedException(userDto.Id, eventDto.Id));
+                return new Result<EventDto>(new EventAccessDeniedException(userId, eventDto.Id));
             }
 
             var oldEvent = _eventRepository.TryGetById(eventDto.Id);
@@ -97,7 +97,7 @@ namespace ItHappened.Application
             return new Result<EventDto>(new EventDto(editResult.Value));
         }
 
-        public Result<bool> DeleteEvent(UserDto userDto, Guid eventId)
+        public Result<bool> DeleteEvent(Guid userId, Guid eventId)
         {
             var @event = _eventRepository.TryGetById(eventId);
             if (!@event.IsSuccessful())
@@ -112,9 +112,9 @@ namespace ItHappened.Application
                 return new Result<bool>(track.Exception);
             }
             
-            if (track.Value.CreatorId != userDto.Id)
+            if (track.Value.CreatorId != userId)
             {
-                return new Result<bool>(new EventAccessDeniedException(userDto.Id, @event.Value.Id));
+                return new Result<bool>(new EventAccessDeniedException(userId, @event.Value.Id));
             }
             
             var deleteResult = _eventRepository.TryDelete(eventId);

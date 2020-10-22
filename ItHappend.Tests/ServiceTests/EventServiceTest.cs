@@ -16,8 +16,8 @@ namespace ItHappend.Tests
         {
             _trackRepository = new TrackRepositoryMock();
             _eventRepository = new EventRepositoryMock();
-            _userDto = new UserDto(Guid.Parse("00000000000000000000000000000002"), "01");
-            _userDtoWrong = new UserDto(Guid.Parse("00000000000000000000000000000010"), "05");
+            _userId = Guid.Parse("00000000000000000000000000000002");
+            _userInvalidId = Guid.Parse("00000000000000000000000000000010");
             _track = new Track(
                 Guid.Parse("00000000000000000000000000000003"),
                 "00",
@@ -35,8 +35,8 @@ namespace ItHappend.Tests
         
         private ITrackRepository _trackRepository;
         private IEventRepository _eventRepository;
-        private UserDto _userDto;
-        private UserDto _userDtoWrong;
+        private Guid _userId;
+        private Guid _userInvalidId;
         private Track _track;
         private Event _event;
 
@@ -47,7 +47,7 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var result = eventService.GetEvents(_userDto,_track.Id);
+            var result = eventService.GetEvents(_userId,_track.Id);
 
             // assert
             Assert.AreEqual(1, result.Value.Count());
@@ -61,7 +61,7 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var result = eventService.GetEvents(_userDtoWrong,_track.Id);
+            var result = eventService.GetEvents(_userInvalidId,_track.Id);
 
             // assert
             Assert.True(result.Exception is TrackAccessDeniedException);
@@ -76,7 +76,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_userDtoWrong, _track.Id, DateTime.Now, new Customizations());
+                eventService.CreateEvent(_userInvalidId, _track.Id, DateTime.Now, new Customizations());
             
             // assert
             Assert.True(result.Exception is TrackAccessDeniedException);
@@ -90,7 +90,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_userDto, _track.Id, DateTime.Now, new Customizations());
+                eventService.CreateEvent(_userId, _track.Id, DateTime.Now, new Customizations());
             var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Value.Id).Value);
             
             // assert
@@ -112,7 +112,7 @@ namespace ItHappend.Tests
                 _event.CreatedAt, 
                 _track.Id,
                 customizations);
-            var result = eventService.EditEvent(_userDto, new EventDto(newEvent));
+            var result = eventService.EditEvent(_userId, new EventDto(newEvent));
             var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Value.Id).Value);
             // assert
             Assert.IsTrue(result.IsSuccessful());
@@ -135,7 +135,7 @@ namespace ItHappend.Tests
                 DateTime.Now, 
                 _track.Id,
                 customizations);
-            var result = eventService.EditEvent(_userDto, new EventDto(newEvent));
+            var result = eventService.EditEvent(_userId, new EventDto(newEvent));
             // assert
             Assert.IsFalse(result.IsSuccessful());
             Assert.IsTrue(result.Exception is EditingImmutableDataException);
@@ -149,7 +149,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.DeleteEvent(_userDto,_event.Id);
+                eventService.DeleteEvent(_userId,_event.Id);
             var events = _eventRepository.TryGetEventsByTrack(_track.Id);
             
             // assert
@@ -165,7 +165,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.DeleteEvent(_userDtoWrong,_event.Id);
+                eventService.DeleteEvent(_userInvalidId,_event.Id);
             var events = _eventRepository.TryGetEventsByTrack(_track.Id);
             
             // assert
