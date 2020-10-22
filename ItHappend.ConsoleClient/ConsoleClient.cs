@@ -74,7 +74,7 @@ namespace ItHappend.ConsoleClient
 
         private Dictionary<int, EventDto> PrintEventList(UserDto userDto, TrackDto trackDto)
         {
-            var result = _eventService.GetEvents(userDto, trackDto.Id); 
+            var result = _eventService.GetEvents(userDto.Id, trackDto.Id); 
             var events = new Dictionary<int, EventDto>();
             if (result.IsSuccessful())
                 if (!result.Value.Any())
@@ -126,14 +126,14 @@ namespace ItHappend.ConsoleClient
                             events = PrintEventList(userDto, track);
                             break;
                         case 2:
-                            var result = _eventService.CreateEvent(userDto, track.Id, DateTime.Now, new Customizations());
+                            var result = _eventService.CreateEvent(userDto.Id, track.Id, DateTime.Now, new Customizations());
                             if (!result.IsSuccessful())
                                 Console.WriteLine(result.Exception.Message);
                             break;
                         case 4:
                             Console.Write("Введите номер событие:");
                             var num = Convert.ToInt32(Console.ReadLine());
-                            var deleteResult = _eventService.DeleteEvent(userDto, events[num].Id);
+                            var deleteResult = _eventService.DeleteEvent(userDto.Id, events[num].Id);
                             if (!deleteResult.IsSuccessful())
                                 Console.WriteLine(deleteResult.Exception.Message);
                             break;
