@@ -16,8 +16,8 @@ namespace ItHappend.Tests
         {
             _trackRepository = new TrackRepositoryMock();
             _eventRepository = new EventRepositoryMock();
-            _authData = new AuthData(Guid.Parse("00000000000000000000000000000002"), "01");
-            _authDataWrong = new AuthData(Guid.Parse("00000000000000000000000000000010"), "05");
+            _userDto = new UserDto(Guid.Parse("00000000000000000000000000000002"), "01");
+            _authDataWrong = new UserDto(Guid.Parse("00000000000000000000000000000010"), "05");
             _track = new Track(
                 Guid.Parse("00000000000000000000000000000003"),
                 "00",
@@ -35,8 +35,8 @@ namespace ItHappend.Tests
         
         private ITrackRepository _trackRepository;
         private IEventRepository _eventRepository;
-        private AuthData _authData;
-        private AuthData _authDataWrong;
+        private UserDto _userDto;
+        private UserDto _authDataWrong;
         private Track _track;
         private Event _event;
 
@@ -47,7 +47,7 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var result = eventService.GetEvents(_authData,_track.Id);
+            var result = eventService.GetEvents(_userDto,_track.Id);
 
             // assert
             Assert.AreEqual(1, result.Value.Count());
@@ -90,7 +90,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_authData, _track.Id, DateTime.Now, new Customizations());
+                eventService.CreateEvent(_userDto, _track.Id, DateTime.Now, new Customizations());
             var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Value.Id).Value);
             
             // assert
@@ -112,7 +112,7 @@ namespace ItHappend.Tests
                 _event.CreatedAt, 
                 _track.Id,
                 customizations);
-            var result = eventService.EditEvent(_authData, new EventDto(newEvent));
+            var result = eventService.EditEvent(_userDto, new EventDto(newEvent));
             var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Value.Id).Value);
             // assert
             Assert.IsTrue(result.IsSuccessful());
@@ -135,7 +135,7 @@ namespace ItHappend.Tests
                 DateTime.Now, 
                 _track.Id,
                 customizations);
-            var result = eventService.EditEvent(_authData, new EventDto(newEvent));
+            var result = eventService.EditEvent(_userDto, new EventDto(newEvent));
             // assert
             Assert.IsFalse(result.IsSuccessful());
             Assert.IsTrue(result.Exception is EditingImmutableDataException);
@@ -149,7 +149,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.DeleteEvent(_authData,_event.Id);
+                eventService.DeleteEvent(_userDto,_event.Id);
             var events = _eventRepository.TryGetEventsByTrack(_track.Id);
             
             // assert

@@ -20,7 +20,7 @@ namespace ItHappend.ConsoleClient
             var trackRepository = new TrackRepositoryInMemory();
             var eventRepository = new EventRepositoryInMemory();
             _userService = new UserService(userRepository);
-            _tracksService = new TracksService(trackRepository, eventRepository, userRepository);
+            _tracksService = new TracksService(trackRepository, eventRepository);
             _eventService = new EventService(eventRepository, trackRepository);
         }
 
@@ -40,9 +40,9 @@ namespace ItHappend.ConsoleClient
             return new Tuple<string, DateTime, IEnumerable<CustomizationType>>(name, DateTime.Now, new List<CustomizationType>());
         }
 
-        private Dictionary<int, TrackDto> PrintTrackList(AuthData authData)
+        private Dictionary<int, TrackDto> PrintTrackList(UserDto userDto)
         {
-            var result = _tracksService.GetTracks(authData);
+            var result = _tracksService.GetTracks(userDto.Id);
             var tracks = new Dictionary<int, TrackDto>();
             if (result.IsSuccessful())
                 if (!result.Value.Any())
@@ -72,9 +72,9 @@ namespace ItHappend.ConsoleClient
             return tracks;
         }
 
-        private Dictionary<int, EventDto> PrintEventList(AuthData authData, TrackDto trackDto)
+        private Dictionary<int, EventDto> PrintEventList(UserDto userDto, TrackDto trackDto)
         {
-            var result = _eventService.GetEvents(authData, trackDto.Id); 
+            var result = _eventService.GetEvents(userDto, trackDto.Id); 
             var events = new Dictionary<int, EventDto>();
             if (result.IsSuccessful())
                 if (!result.Value.Any())
@@ -99,7 +99,7 @@ namespace ItHappend.ConsoleClient
             return events;
         }
 
-        private void WorkWithEvents(AuthData authData, TrackDto track)
+        private void WorkWithEvents(UserDto userDto, TrackDto track)
         {
             Console.WriteLine("Welcome to Event Menu");
             bool isRunning = true;
@@ -107,7 +107,7 @@ namespace ItHappend.ConsoleClient
             {
                 Console.WriteLine("---------------------------------------------");
                 Console.WriteLine("Текущие события:");
-                var events = PrintEventList(authData, track);
+                var events = PrintEventList(userDto, track);
                 Console.WriteLine("---------------------------------------------");
                 Console.WriteLine("Выберите действие из списка:");
  
@@ -123,17 +123,17 @@ namespace ItHappend.ConsoleClient
                     switch (userCase)
                     {
                         case 1:
-                            events = PrintEventList(authData, track);
+                            events = PrintEventList(userDto, track);
                             break;
                         case 2:
-                            var result = _eventService.CreateEvent(authData, track.Id, DateTime.Now, new Customizations());
+                            var result = _eventService.CreateEvent(userDto, track.Id, DateTime.Now, new Customizations());
                             if (!result.IsSuccessful())
                                 Console.WriteLine(result.Exception.Message);
                             break;
                         case 4:
                             Console.Write("Введите номер событие:");
                             var num = Convert.ToInt32(Console.ReadLine());
-                            var deleteResult = _eventService.DeleteEvent(authData, events[num].Id);
+                            var deleteResult = _eventService.DeleteEvent(userDto, events[num].Id);
                             if (!deleteResult.IsSuccessful())
                                 Console.WriteLine(deleteResult.Exception.Message);
                             break;
@@ -152,7 +152,7 @@ namespace ItHappend.ConsoleClient
             }
         }
 
-        private void WorkWithTracks(AuthData authData)
+        private void WorkWithTracks(UserDto userDto)
         {
             Console.WriteLine("Welcome to Track Menu");
             bool isRunning = true;
@@ -160,7 +160,7 @@ namespace ItHappend.ConsoleClient
             {
                 Console.WriteLine("---------------------------------------------");
                 Console.WriteLine("Текущие треки:");
-                var tracks = PrintTrackList(authData);
+                var tracks = PrintTrackList(userDto);
                 Console.WriteLine("---------------------------------------------");
                 Console.WriteLine("Выберите действие из списка:");
  
@@ -177,18 +177,18 @@ namespace ItHappend.ConsoleClient
                     switch (userCase)
                     {
                         case 1:
-                            tracks = PrintTrackList(authData);
+                            tracks = PrintTrackList(userDto);
                             break;
                         case 2:
                             var trackTuple = ReadTrackDto();
-                            var result = _tracksService.CreateTrack(authData, trackTuple.Item1, trackTuple.Item2, trackTuple.Item3);
+                            var result = _tracksService.CreateTrack(userDto.Id, trackTuple.Item1, trackTuple.Item2, trackTuple.Item3);
                             if (!result.IsSuccessful())
                                 Console.WriteLine(result.Exception.Message);
                             break;
                         case 3:
                             Console.Write("Введите номер трека:");
                             var num = Convert.ToInt32(Console.ReadLine());
-                            WorkWithEvents(authData, tracks[num]);
+                            WorkWithEvents(userDto, tracks[num]);
                             break;
                         case 4:
                             Console.Write("Введите номер трека:");
@@ -200,14 +200,14 @@ namespace ItHappend.ConsoleClient
                                 trackDto.CreatedAt, 
                                 trackDto.CreatorId,
                                 trackTuple.Item3);
-                            var editResult = _tracksService.EditTrack(authData, editedTrackDto);
+                            var editResult = _tracksService.EditTrack(userDto.Id, editedTrackDto);
                             if (!editResult.IsSuccessful())
                                 Console.WriteLine(editResult.Exception.Message);
                             break;
                         case 5:
                             Console.Write("Введите номер трека:");
                             num = Convert.ToInt32(Console.ReadLine());
-                            var deleteResult = _tracksService.DeleteTrack(authData, tracks[num].Id);
+                            var deleteResult = _tracksService.DeleteTrack(userDto.Id, tracks[num].Id);
                             if (!deleteResult.IsSuccessful())
                                 Console.WriteLine(deleteResult.Exception.Message);
                             break;
@@ -226,7 +226,7 @@ namespace ItHappend.ConsoleClient
             }
         }
         
-        private void WorkWithUser(AuthData authData)
+        private void WorkWithUser(UserDto userDto)
         {
             Console.WriteLine("Welcome to User");
             bool isRunning = true;
@@ -242,7 +242,7 @@ namespace ItHappend.ConsoleClient
                     switch (userCase)
                     {
                         case 1:
-                            WorkWithTracks(authData);
+                            WorkWithTracks(userDto);
                             break;
                         case 2:
                             isRunning = false;

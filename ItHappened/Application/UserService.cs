@@ -15,29 +15,29 @@ namespace ItHappened.Application
         private readonly IUserRepository _userRepository;
         private readonly IHashingPassword _hashingPassword = new ShaHashing();
 
-        public Result<AuthData> CreateUser(string login, string password)
+        public Result<UserDto> CreateUser(string login, string password)
         {
             var hashedPassword = _hashingPassword.HashPassword(password);
             var token = GenerateToken();
             var userId = Guid.NewGuid();
-            var user = new User(userId, login, hashedPassword, token);
+            var user = new User(userId, login, hashedPassword);
             var result = _userRepository.TryCreate(user);
             if (result.IsSuccessful())
-                return new Result<AuthData>(new AuthData(userId, token));
-            return new Result<AuthData>(new BadDataException("not unique login"));
+                return new Result<UserDto>(new UserDto(userId, login));
+            return new Result<UserDto>(new BadDataException("not unique login"));
         }
 
-        public Result<AuthData> LoginUser(string login, string password)
+        public Result<UserDto> LoginUser(string login, string password)
         {
             var result = _userRepository.TryGetByLogin(login);
             if (!result.IsSuccessful())
-                return new Result<AuthData>(new UnauthorizedException("incorrect login"));
+                return new Result<UserDto>(new UnauthorizedException("incorrect login"));
 
             var user = result.Value;
             if (_hashingPassword.Verify(password, user.HashedPassword))
-                return new Result<AuthData>(new AuthData(user.Id, user.Token));
+                return new Result<UserDto>(new UserDto(user.Id, user.Login));
 
-            return new Result<AuthData>(new UnauthorizedException("incorrect password"));
+            return new Result<UserDto>(new UnauthorizedException("incorrect password"));
         }
 
         private string GenerateToken()

@@ -29,24 +29,14 @@ namespace ItHappend.Tests
                 return ReturnedResult;
             }
 
-            public Result<User> TryGetByToken(string token)
-            {
-                throw new NotImplementedException();
-            }
-
             public Result<User> TryGetById(Guid id)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Result<bool> IsUserAuthDataValid(AuthData data)
             {
                 throw new NotImplementedException();
             }
         }
 
         [Test]
-        public void CreateUser_ForUniqueLogin_ReturnAuthData()
+        public void CreateUser_ForUniqueLogin_ReturnUserDto()
         {
             var login = "login";
             var password = "password";
@@ -56,10 +46,8 @@ namespace ItHappend.Tests
             var result = userService.CreateUser(login, password);
 
             Assert.True(result.IsSuccessful());
-            Assert.AreEqual(repository.SavedUser.Login, login);
-            Assert.AreEqual(result.Value.Token, repository.SavedUser.Token);
+            Assert.AreEqual(result.Value.Login, login);
             Assert.AreEqual(result.Value.Id, repository.SavedUser.Id);
-            Assert.False(String.IsNullOrEmpty(result.Value.Token));
             Assert.NotNull(result.Value.Id);
         }
 
@@ -110,7 +98,7 @@ namespace ItHappend.Tests
         }
 
         [Test]
-        public void LoginUser_ForCorrectLoginAndPassword_ReturnAuthData()
+        public void LoginUser_ForCorrectLoginAndPassword_ReturnUserDto()
         {
             var login = "login";
             var password = "password";
@@ -122,7 +110,7 @@ namespace ItHappend.Tests
             var result = userService.LoginUser(login, password);
 
             Assert.True(result.IsSuccessful());
-            Assert.AreEqual(result.Value.Token, repository.SavedUser.Token);
+            Assert.AreEqual(result.Value.Login, login);
             Assert.AreEqual(result.Value.Id, repository.SavedUser.Id);
         }
     }
