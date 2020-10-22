@@ -17,7 +17,7 @@ namespace ItHappend.Tests
             _trackRepository = new TrackRepositoryMock();
             _eventRepository = new EventRepositoryMock();
             _userDto = new UserDto(Guid.Parse("00000000000000000000000000000002"), "01");
-            _authDataWrong = new UserDto(Guid.Parse("00000000000000000000000000000010"), "05");
+            _userDtoWrong = new UserDto(Guid.Parse("00000000000000000000000000000010"), "05");
             _track = new Track(
                 Guid.Parse("00000000000000000000000000000003"),
                 "00",
@@ -36,7 +36,7 @@ namespace ItHappend.Tests
         private ITrackRepository _trackRepository;
         private IEventRepository _eventRepository;
         private UserDto _userDto;
-        private UserDto _authDataWrong;
+        private UserDto _userDtoWrong;
         private Track _track;
         private Event _event;
 
@@ -61,7 +61,7 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository,_trackRepository);
             
             // act
-            var result = eventService.GetEvents(_authDataWrong,_track.Id);
+            var result = eventService.GetEvents(_userDtoWrong,_track.Id);
 
             // assert
             Assert.True(result.Exception is TrackAccessDeniedException);
@@ -76,7 +76,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_authDataWrong, _track.Id, DateTime.Now, new Customizations());
+                eventService.CreateEvent(_userDtoWrong, _track.Id, DateTime.Now, new Customizations());
             
             // assert
             Assert.True(result.Exception is TrackAccessDeniedException);
@@ -165,7 +165,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.DeleteEvent(_authDataWrong,_event.Id);
+                eventService.DeleteEvent(_userDtoWrong,_event.Id);
             var events = _eventRepository.TryGetEventsByTrack(_track.Id);
             
             // assert
