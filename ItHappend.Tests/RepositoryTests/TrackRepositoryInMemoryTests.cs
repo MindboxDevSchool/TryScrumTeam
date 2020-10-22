@@ -21,7 +21,7 @@ namespace ItHappend.Tests
             
             var gotTracks = repository.TryGetTracksByUser(creatorId);
             
-            Assert.AreEqual(trackId,gotTracks.Value.First().Id);
+            Assert.AreEqual(trackId,gotTracks.First().Id);
 
 
         }
@@ -44,7 +44,7 @@ namespace ItHappend.Tests
             
             var gotTracks = repository.TryGetTracksByUser(creatorId);
             
-            Assert.AreEqual(trackId,gotTracks.Value.First().Id);
+            Assert.AreEqual(trackId,gotTracks.First().Id);
         }
         
         [Test]
@@ -61,7 +61,7 @@ namespace ItHappend.Tests
             
             var gotTracks = repository.TryGetTracksByUser(creatorId);
             
-            Assert.IsEmpty(gotTracks.Value);
+            Assert.IsEmpty(gotTracks);
 
 
         }

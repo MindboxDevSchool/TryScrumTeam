@@ -7,9 +7,9 @@ namespace ItHappened.Application
 {
     public interface ITracksService
     {
-        Result<IEnumerable<TrackDto>> GetTracks(AuthData authData);
-        Result<TrackDto> CreateTrack(AuthData authData, string name, DateTime createdAt, IEnumerable<CustomizationType> allowedCustomizations);
-        Result<TrackDto> EditTrack(AuthData authData, TrackDto trackDto);
-        Result<bool> DeleteTrack(AuthData authData, Guid trackId);
+        IEnumerable<TrackDto> GetTracks(AuthData authData);
+        TrackDto CreateTrack(AuthData authData, string name, DateTime createdAt, IEnumerable<CustomizationType> allowedCustomizations);
+        TrackDto EditTrack(AuthData authData, TrackDto trackDto);
+        Guid DeleteTrack(AuthData authData, Guid trackId);
     }
 }

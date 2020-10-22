@@ -12,18 +12,18 @@ namespace ItHappened.Infrastructure
     {
         private Dictionary<Guid, Track> _tracks = new Dictionary<Guid, Track>();
         
-        public Result<Track> TryCreate(Track track)
+        public Track TryCreate(Track track)
         {
             _tracks[track.Id] = track;
-            return new Result<Track>(track);
+            return track;
         }
 
-        public Result<IEnumerable<Track>> TryGetTracksByUser(Guid userId)
+        public IEnumerable<Track> TryGetTracksByUser(Guid userId)
         {
             var res = _tracks
                 .Where(elem => elem.Value.CreatorId == userId)
                 .Select(elem => elem.Value);
-            return new Result<IEnumerable<Track>>(res);
+            return res;
         }
 
         public Track TryGetTrackById(Guid trackId)
@@ -35,21 +35,26 @@ namespace ItHappened.Infrastructure
             return _tracks[trackId];
         }
 
-        public Result<Track> TryUpdate(Track track)
+        public Track TryUpdate(Track track)
         {
             if (!_tracks.ContainsKey(track.Id))
             {
-                return new Result<Track>(new DataException());
+                throw new RepositoryException(RepositoryExceptionType.TrackNotFound, track.Id);
             }
 
             _tracks[track.Id] = track;
-            return new Result<Track>(track);
+            return track;
         }
 
-        public Result<bool> TryDelete(Guid trackId)
+        public Guid TryDelete(Guid trackId)
         {
+            if (!_tracks.ContainsKey(trackId))
+            {
+                throw new RepositoryException(RepositoryExceptionType.TrackNotFound, trackId);
+            }
+            
             _tracks.Remove(trackId);
-            return new Result<bool>(true);
+            return trackId;
         }
     }
 }

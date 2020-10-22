@@ -37,8 +37,8 @@ namespace ItHappend.Tests
             var result = tracksService.GetTracks(_authData);
 
             // assert
-            Assert.AreEqual(2, result.Value.Count());
-            Assert.AreEqual("Track1", result.Value.First().Name);
+            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual("Track1", result.First().Name);
         }
         
         
@@ -53,8 +53,7 @@ namespace ItHappend.Tests
                 tracksService.CreateTrack(_authData, "NewTrack", DateTime.Now, new List<CustomizationType>());
 
             // assert
-            Assert.IsTrue(result.IsSuccessful());
-            Assert.AreEqual("NewTrack", result.Value.Name);
+            Assert.AreEqual("NewTrack", result.Name);
         }
 
         [Test]
@@ -63,13 +62,20 @@ namespace ItHappend.Tests
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
             var trackDto = new TrackDto(new Track(Guid.NewGuid(), "Track", DateTime.Parse("2020-10-16 0:0:0Z"), _authData.Id, new List<CustomizationType>()));
+            DomainException exception = null;
             
             // act
-            var result = tracksService.EditTrack(_authData, trackDto);
+            try
+            {
+                var result = tracksService.EditTrack(_authData, trackDto);
+            }
+            catch (DomainException e)
+            {
+                exception = e;
+            }
 
             // assert
-            Assert.IsTrue(result.IsSuccessful());
-            Assert.AreEqual("Track", result.Value.Name);
+            Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
         }
         
         [Test]
@@ -78,13 +84,20 @@ namespace ItHappend.Tests
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
             var trackDto = new TrackDto(new Track(Guid.NewGuid(), "Track", DateTime.Parse("2020-10-17 0:0:0Z"), _authData.Id, new List<CustomizationType>()));
+            DomainException exception = null;
             
             // act
-            var result = tracksService.EditTrack(_authData, trackDto);
+            try
+            {
+                var result = tracksService.EditTrack(_authData, trackDto);
+            }
+            catch (DomainException e)
+            {
+                exception = e;
+            }
 
             // assert
-            Assert.IsFalse(result.IsSuccessful());
-            Assert.IsTrue(result.Exception is EditingImmutableDataException);
+            Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
         }
 
         [Test]
@@ -92,24 +105,33 @@ namespace ItHappend.Tests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository, _userRepository);
+            DomainException exception = null;
 
             // act
-            var result = tracksService.DeleteTrack(_authData,  Guid.NewGuid());
+            try
+            {
+                var result = tracksService.DeleteTrack(_authData, Guid.NewGuid());
+            }
+            catch (DomainException e)
+            {
+                exception = e;
+            }
+
 
             // assert
-            Assert.IsTrue(result.Value);
+            Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
         }
 
         private class MockTrackRepository : ITrackRepository
         {
-            public Result<Track> TryCreate(Track track)
+            public Track TryCreate(Track track)
             {
-                return new Result<Track>(track);
+                return track;
             }
 
-            public Result<IEnumerable<Track>> TryGetTracksByUser(Guid userId)
+            public IEnumerable<Track> TryGetTracksByUser(Guid userId)
             {
-                return new Result<IEnumerable<Track>>(
+                return new List<Track>(
                     new List<Track>()
                     {
                         new Track(Guid.NewGuid(), "Track1", DateTime.Now, Guid.NewGuid(), new List<CustomizationType>()),
@@ -128,14 +150,14 @@ namespace ItHappend.Tests
                     new List<CustomizationType>());
             }
 
-            public Result<Track> TryUpdate(Track track)
+            public Track TryUpdate(Track track)
             {
-                return new Result<Track>(track);
+                return track;
             }
 
-            public Result<bool> TryDelete(Guid trackId)
+            public Guid TryDelete(Guid trackId)
             {
-                return new Result<bool>(true);
+                return trackId;
             }
         }
 

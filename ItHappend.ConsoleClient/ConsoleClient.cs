@@ -44,14 +44,14 @@ namespace ItHappend.ConsoleClient
         {
             var result = _tracksService.GetTracks(authData);
             var tracks = new Dictionary<int, TrackDto>();
-            if (result.IsSuccessful())
-                if (!result.Value.Any())
+            if (true)
+                if (!result.Any())
                     Console.WriteLine("Список треков пока пуст");
                 else
                 {
                     Console.WriteLine("{0,-3} {1,-20} {2,-30} {3,-10}", "№", "Name", "CreatedAt", "Customizations");
                     int i = 0;
-                    foreach (var track in result.Value)
+                    foreach (var track in result)
                     {
                         i++;
                         tracks[i] = track;
@@ -66,8 +66,6 @@ namespace ItHappend.ConsoleClient
                         Console.WriteLine();
                     }
                 }
-            else
-                Console.WriteLine(result.Exception.Message);
 
             return tracks;
         }
@@ -176,8 +174,6 @@ namespace ItHappend.ConsoleClient
                         case 2:
                             var trackTuple = ReadTrackDto();
                             var result = _tracksService.CreateTrack(authData, trackTuple.Item1, trackTuple.Item2, trackTuple.Item3);
-                            if (!result.IsSuccessful())
-                                Console.WriteLine(result.Exception.Message);
                             break;
                         case 3:
                             Console.Write("Введите номер трека:");
@@ -195,15 +191,11 @@ namespace ItHappend.ConsoleClient
                                 trackDto.CreatorId,
                                 trackTuple.Item3);
                             var editResult = _tracksService.EditTrack(authData, editedTrackDto);
-                            if (!editResult.IsSuccessful())
-                                Console.WriteLine(editResult.Exception.Message);
                             break;
                         case 5:
                             Console.Write("Введите номер трека:");
                             num = Convert.ToInt32(Console.ReadLine());
                             var deleteResult = _tracksService.DeleteTrack(authData, tracks[num].Id);
-                            if (!deleteResult.IsSuccessful())
-                                Console.WriteLine(deleteResult.Exception.Message);
                             break;
                         case 6:
                             isRunning = false;
