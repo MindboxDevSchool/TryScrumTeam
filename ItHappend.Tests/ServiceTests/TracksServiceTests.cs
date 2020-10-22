@@ -108,30 +108,6 @@ namespace ItHappend.Tests
                 // assert
             Assert.AreEqual(_testTrackId, result.Id);
         }
-        
-        [Test]
-        public void EditTrack_UnsuccessfulTrackEditing_TryingToUpdateCreationDate()
-        {
-            // arrange
-            var tracksService = new TracksService(_trackRepository, _eventRepository);
-            var trackDto = new TrackDto(_testTrack);
-            DomainException exception = null;
-            
-            // act
-            try
-            {
-                var result = tracksService.EditTrack(_testInvalidUserId, trackDto);
-            }
-            catch (DomainException e)
-            {
-                exception = e;
-            }
-            
-            // TODO
-            
-            // assert
-            Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
-        }
 
         [Test]
         public void DeleteTrack_SuccessfulTrackAndEventsDeletion()
@@ -144,6 +120,49 @@ namespace ItHappend.Tests
 
             // assert
             Assert.AreEqual(_testTrackId, result);
+        }
+        
+        [Test]
+        public void DeleteTrack_AccessDeny()
+        {
+            // arrange
+            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            DomainException exception = null;
+
+            // act
+            try
+            {
+                var result = tracksService.DeleteTrack(_testInvalidUserId, _testTrackId);
+            }
+            catch (DomainException e)
+            {
+                exception = e;
+            }
+
+            // assert
+            Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
+        }
+        
+        [Test]
+        public void EditTrack_AccessDeny()
+        {
+            // arrange
+            var tracksService = new TracksService(_trackRepository, _eventRepository);
+            var trackDto = new TrackDto(_testTrack);
+            DomainException exception = null;
+
+            // act
+            try
+            {
+                var result = tracksService.EditTrack(_testInvalidUserId, trackDto);
+            }
+            catch (DomainException e)
+            {
+                exception = e;
+            }
+
+            // assert
+            Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
         }
     }
 }

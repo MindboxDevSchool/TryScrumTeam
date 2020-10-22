@@ -20,12 +20,7 @@ namespace ItHappened.Application
 
         public IEnumerable<EventDto> GetEvents(Guid userId, Guid trackId)
         {
-            var track = _trackRepository.TryGetTrackById(trackId);
-
-            if (track.CreatorId != userId)
-            {
-                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
-            }
+            var track = TryGetAccessToTrack(userId, trackId);
 
             var events = _eventRepository.TryGetEventsByTrack(trackId);
             return new List<EventDto>(events.Select(elem => new EventDto(elem)));
@@ -33,12 +28,7 @@ namespace ItHappened.Application
 
         public EventDto CreateEvent(Guid userId, Guid trackId, DateTime createdAt, CustomizationsDto customizationsDto)
         {
-            var track = _trackRepository.TryGetTrackById(trackId);
-
-            if (track.CreatorId != userId)
-            {
-                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
-            }
+            var track = TryGetAccessToTrack(userId, trackId);
 
             var customizations = new Customizations(customizationsDto, track.AllowedCustomizations);
             var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customizations);
@@ -48,12 +38,7 @@ namespace ItHappened.Application
 
         public EventDto EditEvent(Guid userId, EventDto eventDto)
         {
-            var track = _trackRepository.TryGetTrackById(eventDto.TrackId);
-
-            if (track.CreatorId != userId)
-            {
-                throw new DomainException(DomainExceptionType.EventAccessDenied, userId, eventDto.Id);
-            }
+            var track = TryGetAccessToTrack(userId, eventDto.TrackId);
 
             var customizations = new Customizations(eventDto.CustomizationDto, track.AllowedCustomizations);
             var oldEvent = _eventRepository.TryGetById(eventDto.Id);
@@ -66,15 +51,22 @@ namespace ItHappened.Application
         {
             var @event = _eventRepository.TryGetById(eventId);
 
-            var track = _trackRepository.TryGetTrackById(@event.TrackId);
-
-            if (track.CreatorId != userId)
-            {
-                throw new DomainException(DomainExceptionType.EventAccessDenied, userId, @event.Id);
-            }
+            var track = TryGetAccessToTrack(userId, @event.TrackId);
 
             var deletedEventId = _eventRepository.TryDelete(eventId);
             return deletedEventId;
+        }
+
+        private Track TryGetAccessToTrack(Guid userId, Guid trackId)
+        {
+            var track = _trackRepository.TryGetTrackById(trackId);
+
+            if (track.CreatorId != userId)
+            {
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
+            }
+
+            return track;
         }
     }
 }
