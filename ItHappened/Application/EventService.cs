@@ -7,9 +7,9 @@ using ItHappened.Domain.Exceptions;
 
 namespace ItHappened.Application
 {
-    public class EventService:IEventService
+    public class EventService : IEventService
     {
-        public EventService(IEventRepository eventRepository,ITrackRepository trackRepository)
+        public EventService(IEventRepository eventRepository, ITrackRepository trackRepository)
         {
             _eventRepository = eventRepository;
             _trackRepository = trackRepository;
@@ -17,112 +17,62 @@ namespace ItHappened.Application
 
         private IEventRepository _eventRepository;
         private ITrackRepository _trackRepository;
-        
-        public Result<IEnumerable<EventDto>> GetEvents(Guid userId, Guid trackId)
+
+        public IEnumerable<EventDto> GetEvents(Guid userId, Guid trackId)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
-            
-            if (!track.IsSuccessful())
+
+            if (track.CreatorId != userId)
             {
-                return new Result<IEnumerable<EventDto>>(track.Exception);
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
             }
-            
-            if (track.Value.CreatorId != userId)
-            {
-                return new Result<IEnumerable<EventDto>>(new TrackAccessDeniedException(userId, trackId));
-            }
-            
+
             var events = _eventRepository.TryGetEventsByTrack(trackId);
-            if (!events.IsSuccessful())
-            {
-                return new Result<IEnumerable<EventDto>>(events.Exception);
-            }
-            return new Result<IEnumerable<EventDto>>(events.Value.Select(elem => new EventDto(elem)));
+            return new List<EventDto>(events.Select(elem => new EventDto(elem)));
         }
 
-        public Result<EventDto> CreateEvent(Guid userId, Guid trackId, DateTime createdAt, Customizations customizations)
+        public EventDto CreateEvent(Guid userId, Guid trackId, DateTime createdAt, Customizations customizations)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
-            
-            if (!track.IsSuccessful())
+
+            if (track.CreatorId != userId)
             {
-                return new Result<EventDto>(track.Exception);
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
             }
-            
-            if (track.Value.CreatorId != userId)
-            {
-                return new Result<EventDto>(new TrackAccessDeniedException(userId, trackId));
-            }
-            
+
             var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customizations);
-            var result = _eventRepository.TryCreate(newEvent);
-            if (!result.IsSuccessful())
-            {
-                return new Result<EventDto>(result.Exception);
-            }
-            var eventDto = new EventDto(newEvent);
-            return new Result<EventDto>(eventDto);
+            var createdEvent = _eventRepository.TryCreate(newEvent);
+            return new EventDto(createdEvent);
         }
 
-        public Result<EventDto> EditEvent(Guid userId, EventDto eventDto)
+        public EventDto EditEvent(Guid userId, EventDto eventDto)
         {
             var track = _trackRepository.TryGetTrackById(eventDto.TrackId);
-            
-            if (!track.IsSuccessful())
+
+            if (track.CreatorId != userId)
             {
-             return new Result<EventDto>(track.Exception);
-            }
-            
-            if (track.Value.CreatorId != userId)
-            {
-                return new Result<EventDto>(new EventAccessDeniedException(userId, eventDto.Id));
+                throw new DomainException(DomainExceptionType.EventAccessDenied, userId, eventDto.Id);
             }
 
             var oldEvent = _eventRepository.TryGetById(eventDto.Id);
-            if (oldEvent.Value.CreatedAt != eventDto.CreatedAt)
-            {
-                return new Result<EventDto>(new EditingImmutableDataException(nameof(eventDto.CreatedAt)));
-            }
-            if (oldEvent.Value.TrackId != eventDto.TrackId)
-            {
-                return new Result<EventDto>(new EditingImmutableDataException(nameof(eventDto.TrackId)));
-            }
-
-            var editedEvent = new Event(eventDto.Id, eventDto.CreatedAt, eventDto.TrackId, eventDto.Customization);
+            var editedEvent = new Event(eventDto.Id, oldEvent.CreatedAt, eventDto.TrackId, eventDto.Customization);
             var editResult = _eventRepository.TryUpdate(editedEvent);
-            if (!editResult.IsSuccessful())
-            {
-                return new Result<EventDto>(editResult.Exception);
-            }
-            return new Result<EventDto>(new EventDto(editResult.Value));
+            return new EventDto(editResult);
         }
 
-        public Result<bool> DeleteEvent(Guid userId, Guid eventId)
+        public Guid DeleteEvent(Guid userId, Guid eventId)
         {
             var @event = _eventRepository.TryGetById(eventId);
-            if (!@event.IsSuccessful())
+
+            var track = _trackRepository.TryGetTrackById(@event.TrackId);
+
+            if (track.CreatorId != userId)
             {
-                return new Result<bool>(@event.Exception);
+                throw new DomainException(DomainExceptionType.EventAccessDenied, userId, @event.Id);
             }
-            
-            var track = _trackRepository.TryGetTrackById(@event.Value.TrackId);
-            
-            if (!track.IsSuccessful())
-            {
-                return new Result<bool>(track.Exception);
-            }
-            
-            if (track.Value.CreatorId != userId)
-            {
-                return new Result<bool>(new EventAccessDeniedException(userId, @event.Value.Id));
-            }
-            
-            var deleteResult = _eventRepository.TryDelete(eventId);
-            if (!deleteResult.IsSuccessful())
-            {
-                return new Result<bool>(deleteResult.Exception);
-            }
-            return new Result<bool>(deleteResult.Value);
+
+            var deletedEventId = _eventRepository.TryDelete(eventId);
+            return deletedEventId;
         }
     }
 }

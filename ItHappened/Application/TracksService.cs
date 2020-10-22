@@ -18,57 +18,46 @@ namespace ItHappened.Application
         private readonly ITrackRepository _trackRepository;
         private readonly IEventRepository _eventRepository;
 
-        public Result<IEnumerable<TrackDto>> GetTracks(Guid userId)
+        public IEnumerable<TrackDto> GetTracks(Guid userId)
         {
             var userTracksWithResult = _trackRepository.TryGetTracksByUser(userId);
 
-            if (!userTracksWithResult.IsSuccessful())
-                return new Result<IEnumerable<TrackDto>>(userTracksWithResult.Exception);
-
-            return new Result<IEnumerable<TrackDto>>(userTracksWithResult.Value.Select(track => new TrackDto(track)));
+            return userTracksWithResult.Select(track => new TrackDto(track));
         }
 
-        public Result<TrackDto> CreateTrack(Guid userId, string name, DateTime createdAt, IEnumerable<CustomizationType> allowedCustomizations)
+        public TrackDto CreateTrack(Guid userId, string name, DateTime createdAt, IEnumerable<CustomizationType> allowedCustomizations)
         {
             var track = new Track(Guid.NewGuid(), name, createdAt, userId, allowedCustomizations);
-            var trackWithResult = _trackRepository.TryCreate(track);
-            
-            if (!trackWithResult.IsSuccessful())
-                return new Result<TrackDto>(trackWithResult.Exception);
-            
-            return new Result<TrackDto>(new TrackDto(trackWithResult.Value));
+            var createdTrack = _trackRepository.TryCreate(track);
+
+            return new TrackDto(createdTrack);
         }
 
-        public Result<TrackDto> EditTrack(Guid userId, TrackDto trackDto)
+        public TrackDto EditTrack(Guid userId, TrackDto trackDto)
         {
-            if (userId != trackDto.CreatorId)
-                return new Result<TrackDto>(new TrackAccessDeniedException(userId, trackDto.Id));
-
             var trackToEdit = _trackRepository.TryGetTrackById(trackDto.Id);
             
-            if (!trackToEdit.IsSuccessful())
-                return new Result<TrackDto>(trackToEdit.Exception);
+            if (userId != trackToEdit.CreatorId)
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackDto.Id);
             
-            if (trackToEdit.Value.CreatedAt != trackDto.CreatedAt)
-                return new Result<TrackDto>(new EditingImmutableDataException(nameof(trackDto.CreatedAt)));
-
             var track = new Track(trackDto.Id, trackDto.Name, trackDto.CreatedAt, userId, trackDto.AllowedCustomizations);
             var trackWithResult = _trackRepository.TryUpdate(track);
-            
-            if (!trackWithResult.IsSuccessful())
-                return new Result<TrackDto>(trackWithResult.Exception);
-            
-            return new Result<TrackDto>(new TrackDto(trackWithResult.Value));
+
+            return new TrackDto(trackWithResult);
         }
 
-        public Result<bool> DeleteTrack(Guid userId, Guid trackId)
+        public Guid DeleteTrack(Guid userId, Guid trackId)
         {
-            var eventsDeletingResult = _eventRepository.TryDeleteByTrack(trackId);
-
-            if (!eventsDeletingResult.IsSuccessful())
-                return eventsDeletingResult;
+            var trackToEdit = _trackRepository.TryGetTrackById(trackId);
             
-            return _trackRepository.TryDelete(trackId);
+            if (userId != trackToEdit.CreatorId)
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
+            
+            _eventRepository.TryDeleteByTrack(trackId);
+
+            var deletedTrackId = _trackRepository.TryDelete(trackId);
+
+            return deletedTrackId;
         }
     }
 }

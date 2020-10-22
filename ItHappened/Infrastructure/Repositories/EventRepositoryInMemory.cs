@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using ItHappened.Domain;
+using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 
 namespace ItHappened.Infrastructure
@@ -11,54 +12,53 @@ namespace ItHappened.Infrastructure
     {
         private Dictionary<Guid, Event> _events = new Dictionary<Guid, Event>();
         
-        public Result<Event> TryCreate(Event @event)
+        public Event TryCreate(Event @event)
         {
-            
             _events[@event.Id] = @event;
-            return new Result<Event>(@event);
+            return @event;
         }
 
-        public Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId)
+        public IEnumerable<Event> TryGetEventsByTrack(Guid trackId)
         {
             var result = _events
                 .Where(elem => elem.Value.TrackId == trackId)
                 .Select(elem => elem.Value);
-            return new Result<IEnumerable<Event>>(result);
+            return result;
         }
 
-        public Result<Event> TryGetById(Guid id)
+        public Event TryGetById(Guid eventId)
         {
-            if (!_events.ContainsKey(id))
+            if (!_events.ContainsKey(eventId))
             {
-                return new Result<Event>(new DataException());
+                throw new RepositoryException(RepositoryExceptionType.EventNotFound, eventId);
             }
-            return new Result<Event>(_events[id]);
+            return _events[eventId];
         }
 
-        public Result<Event> TryUpdate(Event @event)
+        public Event TryUpdate(Event @event)
         {
             if (!_events.ContainsKey(@event.Id))
             {
-                return new Result<Event>(new DataException());
+                throw new RepositoryException(RepositoryExceptionType.EventNotFound, @event.Id);
             }
             _events[@event.Id] = @event;
-            return new Result<Event>(@event);
+            return @event;
         }
 
-        public Result<bool> TryDelete(Guid eventId)
+        public Guid TryDelete(Guid eventId)
         {
             _events.Remove(eventId);
-            return new Result<bool>(true);
+            return eventId;
         }
 
-        public Result<bool> TryDeleteByTrack(Guid trackId)
+        public Guid TryDeleteByTrack(Guid trackId)
         {
             var eventsToDelete = _events.Where(elem => elem.Value.TrackId == trackId);
             foreach (var element in eventsToDelete)
             {
                 _events.Remove(element.Key);
             }
-            return new Result<bool>(true);
+            return trackId;
         }
     }
 }

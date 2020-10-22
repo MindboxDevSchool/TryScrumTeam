@@ -6,22 +6,65 @@ using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 using NUnit.Framework;
+using Moq;
 
 namespace ItHappend.Tests
 {
     public class TracksServiceTests
     {
+        private void SetupEntities()
+        {
+            _testTrackId = Guid.NewGuid();
+            _testUserId = Guid.NewGuid();
+            _testInvalidUserId = Guid.NewGuid();
+            _testTrack = new Track(
+                _testTrackId,
+                "Test track",
+                DateTime.Now,
+                _testUserId,
+                new List<CustomizationType>());
+        }
+
+        private void SetupMoqEventRepository()
+        {
+            var mock = new Mock<IEventRepository>();
+            mock.Setup(method => method.TryDeleteByTrack(It.IsAny<Guid>()))
+                .Returns(_testTrackId);
+
+            _eventRepository = mock.Object;
+        }
+
+        private void SetupMoqTrackRepository()
+        {
+            var mock = new Mock<ITrackRepository>();
+            mock.Setup(method => method.TryGetTrackById(It.IsAny<Guid>()))
+                .Returns(_testTrack);
+            mock.Setup(method => method.TryGetTracksByUser(It.IsAny<Guid>()))
+                .Returns(new List<Track>() {_testTrack});
+            mock.Setup(method => method.TryCreate(It.IsAny<Track>()))
+                .Returns(_testTrack);
+            mock.Setup(method => method.TryUpdate(It.IsAny<Track>()))
+                .Returns(_testTrack);
+            mock.Setup(method => method.TryDelete(It.IsAny<Guid>()))
+                .Returns(_testTrackId);
+
+            _trackRepository = mock.Object;
+        }
+
+        private Guid _testUserId;
+        private Guid _testInvalidUserId;
+        private Guid _testTrackId;
+        private Track _testTrack;
+        private IEventRepository _eventRepository;
+        private ITrackRepository _trackRepository;
+
         [SetUp]
         public void Setup()
         {
-            _trackRepository = new MockTrackRepository();
-            _eventRepository = new MockEventRepository();
-            _userId = Guid.Parse("00000000000000000000000000000002");
+            SetupEntities();
+            SetupMoqEventRepository();
+            SetupMoqTrackRepository();
         }
-        
-        private ITrackRepository _trackRepository;
-        private IEventRepository _eventRepository;
-        private Guid _userId;
 
         [Test]
         public void GetTracks_SuccessfulTracksReceiving()
@@ -30,11 +73,11 @@ namespace ItHappend.Tests
             var tracksService = new TracksService(_trackRepository, _eventRepository);
             
             // act
-            var result = tracksService.GetTracks(_userId);
+            var result = tracksService.GetTracks(_testUserId);
 
             // assert
-            Assert.AreEqual(2, result.Value.Count());
-            Assert.AreEqual("Track1", result.Value.First().Name);
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual("Test track", result.First().Name);
         }
         
         
@@ -46,11 +89,10 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                tracksService.CreateTrack(_userId, "NewTrack", DateTime.Now, new List<CustomizationType>());
+                tracksService.CreateTrack(_testUserId, "NewTrack", DateTime.Now, new List<CustomizationType>());
 
             // assert
-            Assert.IsTrue(result.IsSuccessful());
-            Assert.AreEqual("NewTrack", result.Value.Name);
+            Assert.AreEqual("Test track", result.Name);
         }
 
         [Test]
@@ -58,14 +100,13 @@ namespace ItHappend.Tests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository);
-            var trackDto = new TrackDto(new Track(Guid.NewGuid(), "Track", DateTime.Parse("2020-10-16 0:0:0Z"), _userId, new List<CustomizationType>()));
-            
-            // act
-            var result = tracksService.EditTrack(_userId, trackDto);
+            var trackDto = new TrackDto(_testTrack);
 
-            // assert
-            Assert.IsTrue(result.IsSuccessful());
-            Assert.AreEqual("Track", result.Value.Name);
+            // act
+            var result = tracksService.EditTrack(_testUserId, trackDto);
+
+                // assert
+            Assert.AreEqual(_testTrackId, result.Id);
         }
         
         [Test]
@@ -73,14 +114,23 @@ namespace ItHappend.Tests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository);
-            var trackDto = new TrackDto(new Track(Guid.NewGuid(), "Track", DateTime.Parse("2020-10-17 0:0:0Z"), _userId, new List<CustomizationType>()));
+            var trackDto = new TrackDto(_testTrack);
+            DomainException exception = null;
             
             // act
-            var result = tracksService.EditTrack(_userId, trackDto);
-
+            try
+            {
+                var result = tracksService.EditTrack(_testInvalidUserId, trackDto);
+            }
+            catch (DomainException e)
+            {
+                exception = e;
+            }
+            
+            // TODO
+            
             // assert
-            Assert.IsFalse(result.IsSuccessful());
-            Assert.IsTrue(result.Exception is EditingImmutableDataException);
+            Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
         }
 
         [Test]
@@ -90,79 +140,10 @@ namespace ItHappend.Tests
             var tracksService = new TracksService(_trackRepository, _eventRepository);
 
             // act
-            var result = tracksService.DeleteTrack(_userId,  Guid.NewGuid());
+            var result = tracksService.DeleteTrack(_testUserId, Guid.NewGuid());
 
             // assert
-            Assert.IsTrue(result.Value);
-        }
-
-        private class MockTrackRepository : ITrackRepository
-        {
-            public Result<Track> TryCreate(Track track)
-            {
-                return new Result<Track>(track);
-            }
-
-            public Result<IEnumerable<Track>> TryGetTracksByUser(Guid userId)
-            {
-                return new Result<IEnumerable<Track>>(
-                    new List<Track>()
-                    {
-                        new Track(Guid.NewGuid(), "Track1", DateTime.Now, Guid.NewGuid(), new List<CustomizationType>()),
-                        new Track(Guid.NewGuid(), "Track2", DateTime.Now, Guid.NewGuid(), new List<CustomizationType>()),
-                    }
-                );
-            }
-
-            public Result<Track> TryGetTrackById(Guid trackId)
-            {
-                return new Result<Track>(
-                    new Track( Guid.NewGuid(), "Track1", DateTime.Parse("2020-10-16 0:0:0Z"), Guid.NewGuid(), new List<CustomizationType>())
-                );
-            }
-
-            public Result<Track> TryUpdate(Track track)
-            {
-                return new Result<Track>(track);
-            }
-
-            public Result<bool> TryDelete(Guid trackId)
-            {
-                return new Result<bool>(true);
-            }
-        }
-
-        private class MockEventRepository : IEventRepository
-        {
-            public Result<bool> TryDeleteByTrack(Guid trackId)
-            {
-                return new Result<bool>(true);
-            }
-
-            public Result<Event> TryCreate(Event @event)
-            {
-                return new Result<Event>(new Exception());
-            }
-
-            public Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId)
-            {
-                return new Result<IEnumerable<Event>>(new Exception());
-            }
-
-            public Result<Event> TryGetById(Guid id)
-            {
-                throw new NotImplementedException();
-            }
-
-            public Result<Event> TryUpdate(Event @event)
-            {
-                return new Result<Event>(new Exception());
-            }
-
-            public Result<bool> TryDelete(Guid eventId)
-            {
-                return new Result<bool>(new Exception());
-            }
+            Assert.AreEqual(_testTrackId, result);
         }
     }
 }

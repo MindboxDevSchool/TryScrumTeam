@@ -44,30 +44,28 @@ namespace ItHappend.ConsoleClient
         {
             var result = _tracksService.GetTracks(userDto.Id);
             var tracks = new Dictionary<int, TrackDto>();
-            if (result.IsSuccessful())
-                if (!result.Value.Any())
-                    Console.WriteLine("Список треков пока пуст");
-                else
-                {
-                    Console.WriteLine("{0,-3} {1,-20} {2,-30} {3,-10}", "№", "Name", "CreatedAt", "Customizations");
-                    int i = 0;
-                    foreach (var track in result.Value)
-                    {
-                        i++;
-                        tracks[i] = track;
-                        Console.Write("{0,-3} {1,-20} {2,-30}",
-                            i,
-                            track.Name, 
-                            track.CreatedAt.ToString("g", CultureInfo.CreateSpecificCulture("de-DE")));
-                        foreach (var customizationType in track.AllowedCustomizations)
-                        {
-                            Console.Write(customizationType.ToString("G"), ", ");
-                        }
-                        Console.WriteLine();
-                    }
-                }
+            if (!result.Any())
+                Console.WriteLine("Список треков пока пуст");
             else
-                Console.WriteLine(result.Exception.Message);
+            {
+                Console.WriteLine("{0,-3} {1,-20} {2,-30} {3,-10}", "№", "Name", "CreatedAt", "Customizations");
+                int i = 0;
+                foreach (var track in result)
+                {
+                    i++;
+                    tracks[i] = track;
+                    Console.Write("{0,-3} {1,-20} {2,-30}",
+                        i,
+                        track.Name,
+                        track.CreatedAt.ToString("g", CultureInfo.CreateSpecificCulture("de-DE")));
+                    foreach (var customizationType in track.AllowedCustomizations)
+                    {
+                        Console.Write(customizationType.ToString("G"), ", ");
+                    }
+
+                    Console.WriteLine();
+                }
+            }
 
             return tracks;
         }
@@ -76,25 +74,22 @@ namespace ItHappend.ConsoleClient
         {
             var result = _eventService.GetEvents(userDto.Id, trackDto.Id); 
             var events = new Dictionary<int, EventDto>();
-            if (result.IsSuccessful())
-                if (!result.Value.Any())
-                    Console.WriteLine("Список событий пока пуст");
-                else
-                {
-                    Console.WriteLine("{0,-3} {1,-30} {2,-10}", "№", "CreatedAt", "Customizations");
-                    int i = 0;
-                    foreach (var @event in result.Value)
-                    {
-                        i++;
-                        events[i] = @event;
-                        Console.Write("{0,-3} {1,-20}",
-                            i,
-                            @event.CreatedAt.ToString("g", CultureInfo.CreateSpecificCulture("de-DE")));
-                        Console.WriteLine();
-                    }
-                }
+            if (!result.Any())
+                Console.WriteLine("Список событий пока пуст");
             else
-                Console.WriteLine(result.Exception.Message);
+            {
+                Console.WriteLine("{0,-3} {1,-30} {2,-10}", "№", "CreatedAt", "Customizations");
+                int i = 0;
+                foreach (var @event in result)
+                {
+                    i++;
+                    events[i] = @event;
+                    Console.Write("{0,-3} {1,-20}",
+                        i,
+                        @event.CreatedAt.ToString("g", CultureInfo.CreateSpecificCulture("de-DE")));
+                    Console.WriteLine();
+                }
+            }
 
             return events;
         }
@@ -126,16 +121,12 @@ namespace ItHappend.ConsoleClient
                             events = PrintEventList(userDto, track);
                             break;
                         case 2:
-                            var result = _eventService.CreateEvent(userDto.Id, track.Id, DateTime.Now, new Customizations());
-                            if (!result.IsSuccessful())
-                                Console.WriteLine(result.Exception.Message);
+                            _eventService.CreateEvent(userDto.Id, track.Id, DateTime.Now, new Customizations());
                             break;
                         case 4:
                             Console.Write("Введите номер событие:");
                             var num = Convert.ToInt32(Console.ReadLine());
-                            var deleteResult = _eventService.DeleteEvent(userDto.Id, events[num].Id);
-                            if (!deleteResult.IsSuccessful())
-                                Console.WriteLine(deleteResult.Exception.Message);
+                            _eventService.DeleteEvent(userDto.Id, events[num].Id);
                             break;
                         case 5:
                             isRunning = false;
@@ -181,9 +172,7 @@ namespace ItHappend.ConsoleClient
                             break;
                         case 2:
                             var trackTuple = ReadTrackDto();
-                            var result = _tracksService.CreateTrack(userDto.Id, trackTuple.Item1, trackTuple.Item2, trackTuple.Item3);
-                            if (!result.IsSuccessful())
-                                Console.WriteLine(result.Exception.Message);
+                            _tracksService.CreateTrack(userDto.Id, trackTuple.Item1, trackTuple.Item2, trackTuple.Item3);
                             break;
                         case 3:
                             Console.Write("Введите номер трека:");
@@ -200,16 +189,12 @@ namespace ItHappend.ConsoleClient
                                 trackDto.CreatedAt, 
                                 trackDto.CreatorId,
                                 trackTuple.Item3);
-                            var editResult = _tracksService.EditTrack(userDto.Id, editedTrackDto);
-                            if (!editResult.IsSuccessful())
-                                Console.WriteLine(editResult.Exception.Message);
+                            _tracksService.EditTrack(userDto.Id, editedTrackDto);
                             break;
                         case 5:
                             Console.Write("Введите номер трека:");
                             num = Convert.ToInt32(Console.ReadLine());
-                            var deleteResult = _tracksService.DeleteTrack(userDto.Id, tracks[num].Id);
-                            if (!deleteResult.IsSuccessful())
-                                Console.WriteLine(deleteResult.Exception.Message);
+                            _tracksService.DeleteTrack(userDto.Id, tracks[num].Id);
                             break;
                         case 6:
                             isRunning = false;
