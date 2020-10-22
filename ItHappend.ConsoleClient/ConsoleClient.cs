@@ -20,7 +20,7 @@ namespace ItHappend.ConsoleClient
             var trackRepository = new TrackRepositoryInMemory();
             var eventRepository = new EventRepositoryInMemory();
             _userService = new UserService(userRepository);
-            _tracksService = new TracksService(trackRepository, eventRepository, userRepository);
+            _tracksService = new TracksService(trackRepository, eventRepository);
             _eventService = new EventService(eventRepository, trackRepository);
         }
 

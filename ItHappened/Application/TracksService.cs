@@ -10,17 +10,14 @@ namespace ItHappened.Application
     public class TracksService: ITracksService
     {
         public TracksService(ITrackRepository trackRepository, 
-            IEventRepository eventRepository, 
-            IUserRepository userRepository)
+            IEventRepository eventRepository)
         {
             _trackRepository = trackRepository;
             _eventRepository = eventRepository;
-            _userRepository = userRepository;
         }
 
         private readonly ITrackRepository _trackRepository;
         private readonly IEventRepository _eventRepository;
-        private readonly IUserRepository _userRepository;
 
         public IEnumerable<TrackDto> GetTracks(AuthData authData)
         {
