@@ -35,10 +35,7 @@ namespace ItHappened.Application
 
         public TrackDto EditTrack(Guid userId, TrackDto trackDto)
         {
-            var trackToEdit = _trackRepository.TryGetTrackById(trackDto.Id);
-            
-            if (userId != trackToEdit.CreatorId)
-                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackDto.Id);
+            var trackToEdit = TryGetAccessToTrack(userId, trackDto.Id);
             
             var track = new Track(trackDto.Id, trackDto.Name, trackDto.CreatedAt, userId, trackDto.AllowedCustomizations);
             var trackWithResult = _trackRepository.TryUpdate(track);
@@ -48,16 +45,25 @@ namespace ItHappened.Application
 
         public Guid DeleteTrack(Guid userId, Guid trackId)
         {
-            var trackToEdit = _trackRepository.TryGetTrackById(trackId);
-            
-            if (userId != trackToEdit.CreatorId)
-                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
+            var trackToDelete = TryGetAccessToTrack(userId, trackId);
             
             _eventRepository.TryDeleteByTrack(trackId);
 
             var deletedTrackId = _trackRepository.TryDelete(trackId);
 
             return deletedTrackId;
+        }
+        
+        private Track TryGetAccessToTrack(Guid userId, Guid trackId)
+        {
+            var track = _trackRepository.TryGetTrackById(trackId);
+
+            if (track.CreatorId != userId)
+            {
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
+            }
+
+            return track;
         }
     }
 }
