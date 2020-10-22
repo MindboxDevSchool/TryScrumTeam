@@ -2,6 +2,7 @@
 {
     public enum DomainExceptionType
     {
-        TrackAccessDenied
+        TrackAccessDenied,
+        IncorrectPassword
     }
 }

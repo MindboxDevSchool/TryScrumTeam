@@ -263,18 +263,12 @@ namespace ItHappend.ConsoleClient
                         case 1:
                             var loginAndPassword = ReadLoginAndPassword();
                             var result = _userService.CreateUser(loginAndPassword.Item1, loginAndPassword.Item2);
-                            if (result.IsSuccessful())
-                                WorkWithUser(result.Value);
-                            else
-                                Console.WriteLine(result.Exception.Message);
+                            WorkWithUser(result);
                             break;
                         case 2:
                             loginAndPassword = ReadLoginAndPassword();
                             result = _userService.LoginUser(loginAndPassword.Item1, loginAndPassword.Item2);
-                            if (result.IsSuccessful())
-                                WorkWithUser(result.Value);
-                            else
-                                Console.WriteLine(result.Exception.Message);
+                            WorkWithUser(result);
                             break;
                         case 3:
                             isRunning = false;

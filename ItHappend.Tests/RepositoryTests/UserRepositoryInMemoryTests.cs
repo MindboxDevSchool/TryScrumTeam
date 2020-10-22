@@ -16,7 +16,7 @@ namespace ItHappend.Tests
             repository.TryCreate(user);
             var result = repository.TryGetById(user.Id);
             
-            Assert.AreEqual(result.Value,user);
+            Assert.AreEqual(result,user);
         }
         
         [Test]
@@ -28,7 +28,7 @@ namespace ItHappend.Tests
             repository.TryCreate(user);
             var result = repository.TryGetByLogin("1");
             
-            Assert.AreEqual(result.Value,user);
+            Assert.AreEqual(result,user);
         }
     }
 }

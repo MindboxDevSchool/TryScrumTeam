@@ -1,6 +1,7 @@
 using System;
 using ItHappened.Application;
 using ItHappened.Domain;
+using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 using NUnit.Framework;
 
@@ -10,26 +11,28 @@ namespace ItHappend.Tests
     {
         public class UserMocRepository : IUserRepository
         {
-            public Result<User> ReturnedResult { get; set; }
             public User SavedUser { get; set; }
 
-            public Result<User> TryCreate(User user)
+            public User TryCreate(User user)
             {
-                if (ReturnedResult == null)
+                if (SavedUser == null)
                 {
                     SavedUser = user;
-                    return new Result<User>(user);
+                    return user;
                 }
 
-                return ReturnedResult;
+                throw new RepositoryException(RepositoryExceptionType.LoginAlreadyExists, user.Login);
             }
 
-            public Result<User> TryGetByLogin(string login)
+            public User TryGetByLogin(string login)
             {
-                return ReturnedResult;
+                if (SavedUser == null)
+                    throw new RepositoryException(RepositoryExceptionType.UserNotFoundByLogin, login);
+                
+                return SavedUser;
             }
 
-            public Result<User> TryGetById(Guid id)
+            public User TryGetById(Guid id)
             {
                 throw new NotImplementedException();
             }
@@ -44,57 +47,73 @@ namespace ItHappend.Tests
             var userService = new UserService(repository);
 
             var result = userService.CreateUser(login, password);
-
-            Assert.True(result.IsSuccessful());
-            Assert.AreEqual(result.Value.Login, login);
-            Assert.AreEqual(result.Value.Id, repository.SavedUser.Id);
-            Assert.NotNull(result.Value.Id);
+            
+            Assert.AreEqual(result.Login, login);
+            Assert.AreEqual(result.Id, repository.SavedUser.Id);
+            Assert.NotNull(result.Id);
         }
 
         [Test]
-        public void CreateUser_ForRepeatLogin_ReturnBadDataException()
-        {
-            var login = "login";
-            var password = "password";
-            var repository = new UserMocRepository();
-            var userService = new UserService(repository);
-            repository.ReturnedResult = new Result<User>(new Exception());
-            var result = userService.CreateUser(login, password);
-
-            Assert.False(result.IsSuccessful());
-            Assert.True(result.Exception is BadDataException);
-        }
-
-        [Test]
-        public void LoginUser_ForCorrectLoginIncorrectPassword_ReturnUnauthorizedException()
+        public void CreateUser_ForRepeatLogin_ThrowException()
         {
             var login = "login";
             var password = "password";
             var repository = new UserMocRepository();
             var userService = new UserService(repository);
             userService.CreateUser(login, password);
-            repository.ReturnedResult = new Result<User>(repository.SavedUser);
+            RepositoryException exception = null;
 
-            var result = userService.LoginUser(login, "failed");
+            try
+            {
+                var result = userService.CreateUser(login, password);
+            }
+            catch (RepositoryException e)
+            {
+                exception = e;
+            }
 
-            Assert.False(result.IsSuccessful());
-            Assert.True(result.Exception is UnauthorizedException);
+            Assert.AreEqual(RepositoryExceptionType.LoginAlreadyExists, exception.Type);
+        }
+
+        [Test]
+        public void LoginUser_ForCorrectLoginIncorrectPassword_ThrowException()
+        {
+            var login = "login";
+            var password = "password";
+            var repository = new UserMocRepository();
+            var userService = new UserService(repository);
+            userService.CreateUser(login, password);
+            DomainException exception = null;
+
+            try
+            {
+                var result = userService.LoginUser(login, "failed");
+            }
+            catch (DomainException e)
+            {
+                exception = e;
+            }
+
+            Assert.AreEqual(DomainExceptionType.IncorrectPassword, exception.Type);
         }
 
         [Test]
         public void LoginUser_ForInvalidLogin_ReturnUnauthorizedException()
         {
-            var login = "login";
-            var password = "password";
             var repository = new UserMocRepository();
             var userService = new UserService(repository);
-            userService.CreateUser(login, password);
-            repository.ReturnedResult = new Result<User>(new Exception());
+            RepositoryException exception = null;
 
-            var result = userService.LoginUser("failed", password);
-
-            Assert.False(result.IsSuccessful());
-            Assert.True(result.Exception is UnauthorizedException);
+            try
+            {
+                var result = userService.LoginUser("login", "password");
+            }
+            catch (RepositoryException e)
+            {
+                exception = e;
+            }
+            
+            Assert.AreEqual(RepositoryExceptionType.UserNotFoundByLogin, exception.Type);
         }
 
         [Test]
@@ -105,13 +124,11 @@ namespace ItHappend.Tests
             var repository = new UserMocRepository();
             var userService = new UserService(repository);
             userService.CreateUser(login, password);
-            repository.ReturnedResult = new Result<User>(repository.SavedUser);
 
             var result = userService.LoginUser(login, password);
-
-            Assert.True(result.IsSuccessful());
-            Assert.AreEqual(result.Value.Login, login);
-            Assert.AreEqual(result.Value.Id, repository.SavedUser.Id);
+            
+            Assert.AreEqual(result.Login, login);
+            Assert.AreEqual(result.Id, repository.SavedUser.Id);
         }
     }
 }
