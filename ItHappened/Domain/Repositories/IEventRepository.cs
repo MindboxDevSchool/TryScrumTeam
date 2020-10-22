@@ -5,12 +5,12 @@ namespace ItHappened.Domain.Repositories
 {
     public interface IEventRepository
     {
-        Result<Event> TryCreate(Event @event);
-        Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId);
+        Event TryCreate(Event @event);
+        IEnumerable<Event> TryGetEventsByTrack(Guid trackId);
 
-        Result<Event> TryGetById(Guid id);
-        Result<Event> TryUpdate(Event @event);
-        Result<bool> TryDelete(Guid eventId);
-        Result<bool> TryDeleteByTrack(Guid trackId);
+        Event TryGetById(Guid id);
+        Event TryUpdate(Event @event);
+        Guid TryDelete(Guid eventId);
+        Guid TryDeleteByTrack(Guid trackId);
     }
 }

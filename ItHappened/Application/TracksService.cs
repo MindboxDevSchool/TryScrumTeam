@@ -67,11 +67,8 @@ namespace ItHappened.Application
                 return new Result<TrackDto>(new TrackAccessDeniedException(authData.Id, trackDto.Id));
 
             var trackToEdit = _trackRepository.TryGetTrackById(trackDto.Id);
-            
-            if (!trackToEdit.IsSuccessful())
-                return new Result<TrackDto>(trackToEdit.Exception);
-            
-            if (trackToEdit.Value.CreatedAt != trackDto.CreatedAt)
+
+            if (trackToEdit.CreatedAt != trackDto.CreatedAt)
                 return new Result<TrackDto>(new EditingImmutableDataException(nameof(trackDto.CreatedAt)));
 
             var track = new Track(trackDto.Id, trackDto.Name, trackDto.CreatedAt, authData.Id, trackDto.AllowedCustomizations);
@@ -93,9 +90,6 @@ namespace ItHappened.Application
 
             var eventsDeletingResult = _eventRepository.TryDeleteByTrack(trackId);
 
-            if (!eventsDeletingResult.IsSuccessful())
-                return eventsDeletingResult;
-            
             return _trackRepository.TryDelete(trackId);
         }
     }

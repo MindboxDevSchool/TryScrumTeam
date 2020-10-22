@@ -118,11 +118,14 @@ namespace ItHappend.Tests
                 );
             }
 
-            public Result<Track> TryGetTrackById(Guid trackId)
+            public Track TryGetTrackById(Guid trackId)
             {
-                return new Result<Track>(
-                    new Track( Guid.NewGuid(), "Track1", DateTime.Parse("2020-10-16 0:0:0Z"), Guid.NewGuid(), new List<CustomizationType>())
-                );
+                return new Track(
+                    Guid.NewGuid(), 
+                    "Track1", 
+                    DateTime.Parse("2020-10-16 0:0:0Z"), 
+                    Guid.NewGuid(),
+                    new List<CustomizationType>());
             }
 
             public Result<Track> TryUpdate(Track track)
@@ -138,34 +141,34 @@ namespace ItHappend.Tests
 
         private class MockEventRepository : IEventRepository
         {
-            public Result<bool> TryDeleteByTrack(Guid trackId)
+            public Guid TryDeleteByTrack(Guid trackId)
             {
-                return new Result<bool>(true);
+                return trackId;
             }
 
-            public Result<Event> TryCreate(Event @event)
+            public Event TryCreate(Event @event)
             {
-                return new Result<Event>(new Exception());
+                return @event;
             }
 
-            public Result<IEnumerable<Event>> TryGetEventsByTrack(Guid trackId)
+            public IEnumerable<Event> TryGetEventsByTrack(Guid trackId)
             {
-                return new Result<IEnumerable<Event>>(new Exception());
+                return new List<Event>();
             }
 
-            public Result<Event> TryGetById(Guid id)
+            public Event TryGetById(Guid id)
             {
                 throw new NotImplementedException();
             }
 
-            public Result<Event> TryUpdate(Event @event)
+            public Event TryUpdate(Event @event)
             {
-                return new Result<Event>(new Exception());
+                return @event;
             }
 
-            public Result<bool> TryDelete(Guid eventId)
+            public Guid TryDelete(Guid eventId)
             {
-                return new Result<bool>(new Exception());
+                return eventId;
             }
         }
 

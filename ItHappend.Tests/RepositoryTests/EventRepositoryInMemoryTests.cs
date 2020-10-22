@@ -19,7 +19,7 @@ namespace ItHappend.Tests
             
             var gotEvents = repository.TryGetEventsByTrack(trackId);
             
-            Assert.AreEqual(eventId,gotEvents.Value.First().Id);
+            Assert.AreEqual(eventId,gotEvents.First().Id);
 
 
         }
@@ -41,7 +41,7 @@ namespace ItHappend.Tests
             
             var gotEvents = repository.TryGetEventsByTrack(trackId);
             
-            Assert.AreEqual(eventId,gotEvents.Value.First().Id);
+            Assert.AreEqual(eventId,gotEvents.First().Id);
         }
         
         [Test]
@@ -58,7 +58,7 @@ namespace ItHappend.Tests
             
             var gotEvents = repository.TryGetEventsByTrack(trackId);
             
-            Assert.IsEmpty(gotEvents.Value);
+            Assert.IsEmpty(gotEvents);
 
 
         }

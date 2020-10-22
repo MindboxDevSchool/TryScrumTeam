@@ -76,14 +76,14 @@ namespace ItHappend.ConsoleClient
         {
             var result = _eventService.GetEvents(authData, trackDto.Id); 
             var events = new Dictionary<int, EventDto>();
-            if (result.IsSuccessful())
-                if (!result.Value.Any())
+            if (true)
+                if (!result.Any())
                     Console.WriteLine("Список событий пока пуст");
                 else
                 {
                     Console.WriteLine("{0,-3} {1,-30} {2,-10}", "№", "CreatedAt", "Customizations");
                     int i = 0;
-                    foreach (var @event in result.Value)
+                    foreach (var @event in result)
                     {
                         i++;
                         events[i] = @event;
@@ -93,8 +93,6 @@ namespace ItHappend.ConsoleClient
                         Console.WriteLine();
                     }
                 }
-            else
-                Console.WriteLine(result.Exception.Message);
 
             return events;
         }
@@ -127,15 +125,11 @@ namespace ItHappend.ConsoleClient
                             break;
                         case 2:
                             var result = _eventService.CreateEvent(authData, track.Id, DateTime.Now, new Customizations());
-                            if (!result.IsSuccessful())
-                                Console.WriteLine(result.Exception.Message);
                             break;
                         case 4:
                             Console.Write("Введите номер событие:");
                             var num = Convert.ToInt32(Console.ReadLine());
                             var deleteResult = _eventService.DeleteEvent(authData, events[num].Id);
-                            if (!deleteResult.IsSuccessful())
-                                Console.WriteLine(deleteResult.Exception.Message);
                             break;
                         case 5:
                             isRunning = false;

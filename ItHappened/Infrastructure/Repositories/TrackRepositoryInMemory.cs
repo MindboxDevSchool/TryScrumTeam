@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using ItHappened.Domain;
+using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 
 namespace ItHappened.Infrastructure
@@ -25,13 +26,13 @@ namespace ItHappened.Infrastructure
             return new Result<IEnumerable<Track>>(res);
         }
 
-        public Result<Track> TryGetTrackById(Guid trackId)
+        public Track TryGetTrackById(Guid trackId)
         {
             if (!_tracks.ContainsKey(trackId))
             {
-                return new Result<Track>(new DataException());
+                throw new RepositoryException(RepositoryExceptionType.TrackNotFound, trackId);
             }
-            return new Result<Track>(_tracks[trackId]);
+            return _tracks[trackId];
         }
 
         public Result<Track> TryUpdate(Track track)
