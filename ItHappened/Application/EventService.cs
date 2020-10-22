@@ -7,9 +7,9 @@ using ItHappened.Domain.Exceptions;
 
 namespace ItHappened.Application
 {
-    public class EventService:IEventService
+    public class EventService : IEventService
     {
-        public EventService(IEventRepository eventRepository,ITrackRepository trackRepository)
+        public EventService(IEventRepository eventRepository, ITrackRepository trackRepository)
         {
             _eventRepository = eventRepository;
             _trackRepository = trackRepository;
@@ -17,41 +17,41 @@ namespace ItHappened.Application
 
         private IEventRepository _eventRepository;
         private ITrackRepository _trackRepository;
-        
-        public IEnumerable<EventDto> GetEvents(AuthData authData, Guid trackId)
+
+        public IEnumerable<EventDto> GetEvents(Guid userId, Guid trackId)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
 
-            if (track.CreatorId != authData.Id)
+            if (track.CreatorId != userId)
             {
-               throw new DomainException(DomainExceptionType.TrackAccessDenied, authData.Id, trackId);
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
             }
-            
+
             var events = _eventRepository.TryGetEventsByTrack(trackId);
             return new List<EventDto>(events.Select(elem => new EventDto(elem)));
         }
 
-        public EventDto CreateEvent(AuthData authData, Guid trackId, DateTime createdAt, Customizations customizations)
+        public EventDto CreateEvent(Guid userId, Guid trackId, DateTime createdAt, Customizations customizations)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
 
-            if (track.CreatorId != authData.Id)
+            if (track.CreatorId != userId)
             {
-                throw new DomainException(DomainExceptionType.TrackAccessDenied, authData.Id, trackId);
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
             }
-            
+
             var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customizations);
             var createdEvent = _eventRepository.TryCreate(newEvent);
             return new EventDto(createdEvent);
         }
 
-        public EventDto EditEvent(AuthData authData, EventDto eventDto)
+        public EventDto EditEvent(Guid userId, EventDto eventDto)
         {
             var track = _trackRepository.TryGetTrackById(eventDto.TrackId);
 
-            if (track.CreatorId != authData.Id)
+            if (track.CreatorId != userId)
             {
-                throw new DomainException(DomainExceptionType.EventAccessDenied, authData.Id, eventDto.Id);
+                throw new DomainException(DomainExceptionType.EventAccessDenied, userId, eventDto.Id);
             }
 
             var oldEvent = _eventRepository.TryGetById(eventDto.Id);
@@ -60,17 +60,17 @@ namespace ItHappened.Application
             return new EventDto(editResult);
         }
 
-        public Guid DeleteEvent(AuthData authData, Guid eventId)
+        public Guid DeleteEvent(Guid userId, Guid eventId)
         {
             var @event = _eventRepository.TryGetById(eventId);
 
             var track = _trackRepository.TryGetTrackById(@event.TrackId);
 
-            if (track.CreatorId != authData.Id)
+            if (track.CreatorId != userId)
             {
-                throw new DomainException(DomainExceptionType.EventAccessDenied, authData.Id, @event.Id);
+                throw new DomainException(DomainExceptionType.EventAccessDenied, userId, @event.Id);
             }
-            
+
             var deletedEventId = _eventRepository.TryDelete(eventId);
             return deletedEventId;
         }

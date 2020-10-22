@@ -16,14 +16,13 @@ namespace ItHappend.Tests
         {
             _testTrackId = Guid.NewGuid();
             _testUserId = Guid.NewGuid();
+            _testInvalidUserId = Guid.NewGuid();
             _testTrack = new Track(
                 _testTrackId,
                 "Test track",
                 DateTime.Now,
                 _testUserId,
                 new List<CustomizationType>());
-            _authData = new AuthData(_testUserId, Guid.NewGuid().ToString());
-            _authDataWrong = new AuthData(Guid.NewGuid(), Guid.NewGuid().ToString());
         }
 
         private void SetupMoqEventRepository()
@@ -53,12 +52,11 @@ namespace ItHappend.Tests
         }
 
         private Guid _testUserId;
+        private Guid _testInvalidUserId;
         private Guid _testTrackId;
         private Track _testTrack;
         private IEventRepository _eventRepository;
         private ITrackRepository _trackRepository;
-        private AuthData _authData;
-        private AuthData _authDataWrong;
 
         [SetUp]
         public void Setup()
@@ -75,7 +73,7 @@ namespace ItHappend.Tests
             var tracksService = new TracksService(_trackRepository, _eventRepository);
             
             // act
-            var result = tracksService.GetTracks(_authData);
+            var result = tracksService.GetTracks(_testUserId);
 
             // assert
             Assert.AreEqual(1, result.Count());
@@ -91,7 +89,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                tracksService.CreateTrack(_authData, "Test track", DateTime.Now, new List<CustomizationType>());
+                tracksService.CreateTrack(_testUserId, "NewTrack", DateTime.Now, new List<CustomizationType>());
 
             // assert
             Assert.AreEqual("Test track", result.Name);
@@ -105,7 +103,7 @@ namespace ItHappend.Tests
             var trackDto = new TrackDto(_testTrack);
 
             // act
-            var result = tracksService.EditTrack(_authData, trackDto);
+            var result = tracksService.EditTrack(_testUserId, trackDto);
 
                 // assert
             Assert.AreEqual(_testTrackId, result.Id);
@@ -122,13 +120,15 @@ namespace ItHappend.Tests
             // act
             try
             {
-                var result = tracksService.EditTrack(_authDataWrong, trackDto);
+                var result = tracksService.EditTrack(_testInvalidUserId, trackDto);
             }
             catch (DomainException e)
             {
                 exception = e;
             }
-
+            
+            // TODO
+            
             // assert
             Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
         }
@@ -140,8 +140,8 @@ namespace ItHappend.Tests
             var tracksService = new TracksService(_trackRepository, _eventRepository);
 
             // act
-            var result = tracksService.DeleteTrack(_authData, Guid.NewGuid());
-            
+            var result = tracksService.DeleteTrack(_testUserId, Guid.NewGuid());
+
             // assert
             Assert.AreEqual(_testTrackId, result);
         }

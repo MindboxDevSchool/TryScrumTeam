@@ -17,6 +17,7 @@ namespace ItHappend.Tests
             _testTrackId = Guid.NewGuid();
             _testEventId = Guid.NewGuid();
             _testUserId = Guid.NewGuid();
+            _testInvalidUserId = Guid.NewGuid();
             _testTrack = new Track(
                 _testTrackId,
                 "Test track",
@@ -33,8 +34,6 @@ namespace ItHappend.Tests
                 DateTime.Today,
                 _testTrackId,
                 new Customizations());
-            _authData = new AuthData(_testUserId, Guid.NewGuid().ToString());
-            _authDataWrong = new AuthData(Guid.NewGuid(), Guid.NewGuid().ToString());
         }
 
         private void SetupMoqEventRepository()
@@ -64,6 +63,7 @@ namespace ItHappend.Tests
         }
 
         private Guid _testUserId;
+        private Guid _testInvalidUserId;
         private Guid _testTrackId;
         private Guid _testEventId;
         private Track _testTrack;
@@ -71,8 +71,6 @@ namespace ItHappend.Tests
         private Event _testEventToUpdate;
         private IEventRepository _eventRepository;
         private ITrackRepository _trackRepository;
-        private AuthData _authData;
-        private AuthData _authDataWrong;
 
         [SetUp]
         public void Setup()
@@ -89,7 +87,7 @@ namespace ItHappend.Tests
             var eventService = new EventService(_eventRepository, _trackRepository);
 
             // act
-            var result = eventService.GetEvents(_authData, _testTrackId);
+            var result = eventService.GetEvents(_testUserId, _testTrackId);
 
             // assert
             Assert.AreEqual(1, result.Count());
@@ -106,7 +104,7 @@ namespace ItHappend.Tests
             // act
             try
             {
-                var result = eventService.GetEvents(_authDataWrong, _testTrackId);
+                var result = eventService.GetEvents(_testInvalidUserId, _testTrackId);
             }
             catch (DomainException e)
             {
@@ -128,7 +126,7 @@ namespace ItHappend.Tests
             try
             {
                 var result =
-                    eventService.CreateEvent(_authDataWrong, _testTrackId, DateTime.Now, new Customizations());
+                    eventService.CreateEvent(_testInvalidUserId, _testTrackId, DateTime.Now, new Customizations());
             }
             catch (DomainException e)
             {
@@ -147,7 +145,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_authData, _testTrackId, DateTime.Now, new Customizations());
+                eventService.CreateEvent(_testUserId, _testTrackId, DateTime.Now, new Customizations());
 
             // assert
             Assert.AreEqual(_testEventId, result.Id);
@@ -162,7 +160,7 @@ namespace ItHappend.Tests
             // act
             var customizations = new Customizations();
 
-            var result = eventService.EditEvent(_authData, new EventDto(_testEventToUpdate));
+            var result = eventService.EditEvent(_testUserId, new EventDto(_testEventToUpdate));
 
             // assert
             Assert.AreEqual(_testEventId, result.Id);
@@ -177,7 +175,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.DeleteEvent(_authData, _testEventId);
+                eventService.DeleteEvent(_testUserId, _testEventId);
 
             // assert
             Assert.AreEqual(_testEventId, result);
@@ -194,7 +192,7 @@ namespace ItHappend.Tests
             try
             {
                 var result =
-                    eventService.DeleteEvent(_authDataWrong, _testEventId);
+                    eventService.DeleteEvent(_testInvalidUserId, _testEventId);
             }
             catch (DomainException e)
             {
