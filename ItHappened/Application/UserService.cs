@@ -18,7 +18,6 @@ namespace ItHappened.Application
         public Result<UserDto> CreateUser(string login, string password)
         {
             var hashedPassword = _hashingPassword.HashPassword(password);
-            var token = GenerateToken();
             var userId = Guid.NewGuid();
             var user = new User(userId, login, hashedPassword);
             var result = _userRepository.TryCreate(user);
@@ -38,11 +37,6 @@ namespace ItHappened.Application
                 return new Result<UserDto>(new UserDto(user.Id, user.Login));
 
             return new Result<UserDto>(new UnauthorizedException("incorrect password"));
-        }
-
-        private string GenerateToken()
-        {
-            return Guid.NewGuid().ToString();
         }
     }
 }
