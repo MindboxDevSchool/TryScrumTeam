@@ -200,8 +200,7 @@ namespace ItHappend.Tests
             }
 
             // assert
-            //Assert.True(result.Exception is EventAccessDeniedException);
-            Assert.AreEqual(DomainExceptionType.EventAccessDenied, exception.Type);
+            Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
         }
     }
 }
