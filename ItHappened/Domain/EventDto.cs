@@ -9,20 +9,20 @@ namespace ItHappened.Domain
             Id = @event.Id;
             CreatedAt = @event.CreatedAt;
             TrackId = @event.TrackId;
-            Customization = @event.Customization;
+            CustomizationDto = @event.Customization.GetDto();
         }
-        
-        public EventDto(Guid id, DateTime createdAt, Guid trackId, Customizations customization)
+
+        public EventDto(Guid id, DateTime createdAt, Guid trackId, CustomizationsDto customizationDto)
         {
             Id = id;
             CreatedAt = createdAt;
             TrackId = trackId;
-            Customization = customization;
+            CustomizationDto = customizationDto;
         }
+
         public readonly Guid Id;
         public readonly DateTime CreatedAt;
         public readonly Guid TrackId;
-        public readonly Customizations Customization;
-
+        public readonly CustomizationsDto CustomizationDto;
     }
 }

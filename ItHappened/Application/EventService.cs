@@ -31,7 +31,7 @@ namespace ItHappened.Application
             return new List<EventDto>(events.Select(elem => new EventDto(elem)));
         }
 
-        public EventDto CreateEvent(Guid userId, Guid trackId, DateTime createdAt, Customizations customizations)
+        public EventDto CreateEvent(Guid userId, Guid trackId, DateTime createdAt, CustomizationsDto customizationsDto)
         {
             var track = _trackRepository.TryGetTrackById(trackId);
 
@@ -40,6 +40,7 @@ namespace ItHappened.Application
                 throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
             }
 
+            var customizations = new Customizations(customizationsDto, track.AllowedCustomizations);
             var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customizations);
             var createdEvent = _eventRepository.TryCreate(newEvent);
             return new EventDto(createdEvent);
@@ -54,8 +55,9 @@ namespace ItHappened.Application
                 throw new DomainException(DomainExceptionType.EventAccessDenied, userId, eventDto.Id);
             }
 
+            var customizations = new Customizations(eventDto.CustomizationDto, track.AllowedCustomizations);
             var oldEvent = _eventRepository.TryGetById(eventDto.Id);
-            var editedEvent = new Event(eventDto.Id, oldEvent.CreatedAt, eventDto.TrackId, eventDto.Customization);
+            var editedEvent = new Event(eventDto.Id, oldEvent.CreatedAt, eventDto.TrackId, customizations);
             var editResult = _eventRepository.TryUpdate(editedEvent);
             return new EventDto(editResult);
         }
