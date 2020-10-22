@@ -6,65 +6,107 @@ using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 using NUnit.Framework;
+using Moq;
 
 namespace ItHappend.Tests
 {
     public class EventServiceTest
     {
+        private void SetupEntities()
+        {
+            _testTrackId = Guid.NewGuid();
+            _testEventId = Guid.NewGuid();
+            _testUserId = Guid.NewGuid();
+            _testTrack = new Track(
+                _testTrackId,
+                "Test track",
+                DateTime.Now,
+                _testUserId,
+                new List<CustomizationType>());
+            _testEvent = new Event(
+                _testEventId,
+                DateTime.Today,
+                _testTrackId,
+                new Customizations());
+            _testEventToUpdate = new Event(
+                _testEventId,
+                DateTime.Today,
+                _testTrackId,
+                new Customizations());
+            _authData = new AuthData(_testUserId, Guid.NewGuid().ToString());
+            _authDataWrong = new AuthData(Guid.NewGuid(), Guid.NewGuid().ToString());
+        }
+
+        private void SetupMoqEventRepository()
+        {
+            var mock = new Mock<IEventRepository>();
+            mock.Setup(method => method.TryGetEventsByTrack(It.IsAny<Guid>()))
+                .Returns(new List<Event>() {_testEvent});
+            mock.Setup(method => method.TryCreate(It.IsAny<Event>()))
+                .Returns(_testEvent);
+            mock.Setup(method => method.TryGetById(It.IsAny<Guid>()))
+                .Returns(_testEvent);
+            mock.Setup(method => method.TryUpdate(It.IsAny<Event>()))
+                .Returns(_testEventToUpdate);
+            mock.Setup(method => method.TryDelete(It.IsAny<Guid>()))
+                .Returns(_testEventId);
+
+            _eventRepository = mock.Object;
+        }
+
+        private void SetupMoqTrackRepository()
+        {
+            var mock = new Mock<ITrackRepository>();
+            mock.Setup(method => method.TryGetTrackById(It.IsAny<Guid>()))
+                .Returns(_testTrack);
+
+            _trackRepository = mock.Object;
+        }
+
+        private Guid _testUserId;
+        private Guid _testTrackId;
+        private Guid _testEventId;
+        private Track _testTrack;
+        private Event _testEvent;
+        private Event _testEventToUpdate;
+        private IEventRepository _eventRepository;
+        private ITrackRepository _trackRepository;
+        private AuthData _authData;
+        private AuthData _authDataWrong;
+
         [SetUp]
         public void Setup()
         {
-            _trackRepository = new TrackRepositoryMock();
-            _eventRepository = new EventRepositoryMock();
-            _authData = new AuthData(Guid.Parse("00000000000000000000000000000002"), "01");
-            _authDataWrong = new AuthData(Guid.Parse("00000000000000000000000000000010"), "05");
-            _track = new Track(
-                Guid.Parse("00000000000000000000000000000003"),
-                "00",
-                DateTime.Now,
-                Guid.Parse("00000000000000000000000000000002"),
-                new List<CustomizationType>());
-            _event = new Event(Guid.Parse("00000000000000000000000000000003"),
-                DateTime.Now, 
-                _track.Id,
-                new Customizations());
-            _trackRepository.TryCreate(_track);
-            _eventRepository.TryCreate(_event);
-
+            SetupEntities();
+            SetupMoqEventRepository();
+            SetupMoqTrackRepository();
         }
-        
-        private ITrackRepository _trackRepository;
-        private IEventRepository _eventRepository;
-        private AuthData _authData;
-        private AuthData _authDataWrong;
-        private Track _track;
-        private Event _event;
 
         [Test]
         public void GetEvents_SuccessfulEventsReceiving()
         {
             // arrange
-            var eventService = new EventService(_eventRepository,_trackRepository);
-            
+            var eventService = new EventService(_eventRepository, _trackRepository);
+
             // act
-            var result = eventService.GetEvents(_authData,_track.Id);
+            var result = eventService.GetEvents(_authData, _testTrackId);
 
             // assert
             Assert.AreEqual(1, result.Count());
-            Assert.AreEqual(_track.Id, result.First().TrackId);
+            Assert.AreEqual(_testTrackId, result.First().TrackId);
         }
-        
+
         [Test]
         public void GetEvents_AccessDeny()
         {
             // arrange
-            var eventService = new EventService(_eventRepository,_trackRepository);
+            var eventService = new EventService(_eventRepository, _trackRepository);
             DomainException exception = null;
-            
+
             // act
             try
             {
-                var result = eventService.GetEvents(_authDataWrong, _track.Id);
+                var result = eventService.GetEvents(_authDataWrong, _testTrackId);
             }
             catch (DomainException e)
             {
@@ -72,7 +114,6 @@ namespace ItHappend.Tests
             }
 
             // assert
-            //Assert.True(result.Exception is TrackAccessDeniedException);
             Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
         }
 
@@ -80,14 +121,14 @@ namespace ItHappend.Tests
         public void CreateEvent_AccessDeny()
         {
             // arrange
-            var eventService = new EventService(_eventRepository,_trackRepository);
+            var eventService = new EventService(_eventRepository, _trackRepository);
             DomainException exception = null;
 
             // act
             try
             {
                 var result =
-                    eventService.CreateEvent(_authDataWrong, _track.Id, DateTime.Now, new Customizations());
+                    eventService.CreateEvent(_authDataWrong, _testTrackId, DateTime.Now, new Customizations());
             }
             catch (DomainException e)
             {
@@ -95,94 +136,65 @@ namespace ItHappend.Tests
             }
 
             // assert
-            //Assert.True(result.Exception is TrackAccessDeniedException);
             Assert.AreEqual(DomainExceptionType.TrackAccessDenied, exception.Type);
         }
-        
+
         [Test]
         public void CreateEvent_SuccessfulEventCreation()
         {
             // arrange
-            var eventService = new EventService(_eventRepository,_trackRepository);
+            var eventService = new EventService(_eventRepository, _trackRepository);
 
             // act
             var result =
-                eventService.CreateEvent(_authData, _track.Id, DateTime.Now, new Customizations());
-            var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Id));
-            
+                eventService.CreateEvent(_authData, _testTrackId, DateTime.Now, new Customizations());
+
             // assert
-            Assert.AreEqual(result.Id,eventFromRepository.Id);
-            Assert.AreEqual(result.CreatedAt,eventFromRepository.CreatedAt);
+            Assert.AreEqual(_testEventId, result.Id);
         }
 
         [Test]
         public void EditEvent_SuccessfulEventEditing()
         {
             // arrange
-            var eventService = new EventService(_eventRepository,_trackRepository);
-            
-            // act
-            var customizations = new Customizations();
-            
-            var newEvent = new Event(Guid.Parse("00000000000000000000000000000003"),
-                _event.CreatedAt, 
-                _track.Id,
-                customizations);
-            var result = eventService.EditEvent(_authData, new EventDto(newEvent));
-            var eventFromRepository =new EventDto(_eventRepository.TryGetById(result.Id));
-            // assert
-            Assert.AreEqual(result.Id,eventFromRepository.Id);
-            Assert.AreEqual(result.CreatedAt,eventFromRepository.CreatedAt);
-            Assert.AreEqual(result.Customization,eventFromRepository.Customization);
+            var eventService = new EventService(_eventRepository, _trackRepository);
 
-        }
-        
-        [Test]
-        public void EditEvent_UnsuccessfulEventEditing_TryingToUpdateImmutableField()
-        {
-            // arrange
-            var eventService = new EventService(_eventRepository,_trackRepository);
-            
             // act
             var customizations = new Customizations();
-            
-            var newEvent = new Event(Guid.Parse("00000000000000000000000000000003"),
-                DateTime.Now, 
-                _track.Id,
-                customizations);
-            var result = eventService.EditEvent(_authData, new EventDto(newEvent));
+
+            var result = eventService.EditEvent(_authData, new EventDto(_testEventToUpdate));
+
             // assert
-            //Assert.IsTrue(result.Exception is EditingImmutableDataException);
+            Assert.AreEqual(_testEventId, result.Id);
+            Assert.AreEqual(_testEvent.CreatedAt, result.CreatedAt);
         }
 
         [Test]
         public void DeleteEvent_SuccessfulTrackAndEventsDeletion()
         {
             // arrange
-            var eventService = new EventService(_eventRepository,_trackRepository);
+            var eventService = new EventService(_eventRepository, _trackRepository);
 
             // act
             var result =
-                eventService.DeleteEvent(_authData,_event.Id);
-            var events = _eventRepository.TryGetEventsByTrack(_track.Id);
-            
+                eventService.DeleteEvent(_authData, _testEventId);
+
             // assert
-            Assert.IsEmpty(events);
+            Assert.AreEqual(_testEventId, result);
         }
-        
+
         [Test]
         public void DeleteEvent_AccessDeny()
         {
             // arrange
-            var eventService = new EventService(_eventRepository,_trackRepository);
+            var eventService = new EventService(_eventRepository, _trackRepository);
             DomainException exception = null;
-            
+
             // act
             try
             {
                 var result =
-                    eventService.DeleteEvent(_authDataWrong, _event.Id);
-                var events = _eventRepository.TryGetEventsByTrack(_track.Id);
+                    eventService.DeleteEvent(_authDataWrong, _testEventId);
             }
             catch (DomainException e)
             {
@@ -194,87 +206,4 @@ namespace ItHappend.Tests
             Assert.AreEqual(DomainExceptionType.EventAccessDenied, exception.Type);
         }
     }
-    
-    public class EventRepositoryMock :IEventRepository
-    {
-        private Dictionary<Guid, Event> _events = new Dictionary<Guid, Event>();
-        
-        public Event TryCreate(Event @event)
-        {
-            _events[@event.Id] = @event;
-            return @event;
-        }
-
-        public IEnumerable<Event> TryGetEventsByTrack(Guid trackId)
-        {
-            var result = _events
-                .Where(elem => elem.Value.TrackId == trackId)
-                .Select(elem => elem.Value);
-            return result;
-        }
-
-        public Event TryGetById(Guid id)
-        {
-            return _events[id];
-        }
-
-        public Event TryUpdate(Event @event)
-        {
-            _events[@event.Id] = @event;
-            return @event;
-        }
-
-        public Guid TryDelete(Guid eventId)
-        {
-            _events.Remove(eventId);
-            return eventId;
-        }
-
-        public Guid TryDeleteByTrack(Guid trackId)
-        {
-            var eventsToDelete = _events.Where(elem => elem.Value.TrackId == trackId);
-            foreach (var element in eventsToDelete)
-            {
-                _events.Remove(element.Key);
-            }
-            return trackId;
-        }
-    }
-    
-    public class TrackRepositoryMock:ITrackRepository
-    {
-        private Dictionary<Guid, Track> _tracks = new Dictionary<Guid, Track>();
-        
-        public Result<Track> TryCreate(Track track)
-        {
-            _tracks[track.Id] = track;
-            return new Result<Track>(track);
-        }
-
-        public Result<IEnumerable<Track>> TryGetTracksByUser(Guid userId)
-        {
-            var res = _tracks
-                .Where(elem => elem.Value.CreatorId == userId)
-                .Select(elem => elem.Value);
-            return new Result<IEnumerable<Track>>(res);
-        }
-
-        public Track TryGetTrackById(Guid trackId)
-        {
-            return _tracks[trackId];
-        }
-
-        public Result<Track> TryUpdate(Track track)
-        {
-            _tracks[track.Id] = track;
-            return new Result<Track>(track);
-        }
-
-        public Result<bool> TryDelete(Guid trackId)
-        {
-            _tracks.Remove(trackId);
-            return new Result<bool>(true);
-        }
-    }
-
 }
