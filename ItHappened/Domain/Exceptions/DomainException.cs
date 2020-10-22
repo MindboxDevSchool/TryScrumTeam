@@ -9,8 +9,6 @@ namespace ItHappened.Domain.Exceptions
         {
             switch (type)
             {
-                case DomainExceptionType.EventAccessDenied:
-                    return $"User [{userId}] does not have permission to access the event [{entityId}]";
                 case DomainExceptionType.TrackAccessDenied:
                     return $"User [{userId}] does not have permission to access the track [{entityId}]";
                 default:
