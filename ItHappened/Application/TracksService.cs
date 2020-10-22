@@ -10,93 +10,55 @@ namespace ItHappened.Application
     public class TracksService: ITracksService
     {
         public TracksService(ITrackRepository trackRepository, 
-            IEventRepository eventRepository, 
-            IUserRepository userRepository)
+            IEventRepository eventRepository)
         {
             _trackRepository = trackRepository;
             _eventRepository = eventRepository;
-            _userRepository = userRepository;
         }
 
         private readonly ITrackRepository _trackRepository;
         private readonly IEventRepository _eventRepository;
-        private readonly IUserRepository _userRepository;
 
-        public Result<IEnumerable<TrackDto>> GetTracks(AuthData authData)
+        public IEnumerable<TrackDto> GetTracks(AuthData authData)
         {
-            var isAuthValid = _userRepository.IsUserAuthDataValid(authData);
-            if (!isAuthValid.IsSuccessful())
-                return new Result<IEnumerable<TrackDto>>(new UserNotFoundException(authData.Id));
-            if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
-                return new Result<IEnumerable<TrackDto>>(new InvalidAuthDataException(authData));
-
             var userTracksWithResult = _trackRepository.TryGetTracksByUser(authData.Id);
 
-            if (!userTracksWithResult.IsSuccessful())
-                return new Result<IEnumerable<TrackDto>>(userTracksWithResult.Exception);
-
-            return new Result<IEnumerable<TrackDto>>(userTracksWithResult.Value.Select(track => new TrackDto(track)));
+            return userTracksWithResult.Select(track => new TrackDto(track));
         }
 
-        public Result<TrackDto> CreateTrack(AuthData authData, string name, DateTime createdAt, IEnumerable<CustomizationType> allowedCustomizations)
+        public TrackDto CreateTrack(AuthData authData, string name, DateTime createdAt, IEnumerable<CustomizationType> allowedCustomizations)
         {
-            var isAuthValid = _userRepository.IsUserAuthDataValid(authData);
-            if (!isAuthValid.IsSuccessful())
-                return new Result<TrackDto>(new UserNotFoundException(authData.Id));
-            if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
-                return new Result<TrackDto>(new InvalidAuthDataException(authData));
-
             var track = new Track(Guid.NewGuid(), name, createdAt, authData.Id, allowedCustomizations);
-            var trackWithResult = _trackRepository.TryCreate(track);
-            
-            if (!trackWithResult.IsSuccessful())
-                return new Result<TrackDto>(trackWithResult.Exception);
-            
-            return new Result<TrackDto>(new TrackDto(trackWithResult.Value));
+            var createdTrack = _trackRepository.TryCreate(track);
+
+            return new TrackDto(createdTrack);
         }
 
-        public Result<TrackDto> EditTrack(AuthData authData, TrackDto trackDto)
+        public TrackDto EditTrack(AuthData authData, TrackDto trackDto)
         {
-            var isAuthValid = _userRepository.IsUserAuthDataValid(authData);
-            if (!isAuthValid.IsSuccessful())
-                return new Result<TrackDto>(new UserNotFoundException(authData.Id));
-            if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
-                return new Result<TrackDto>(new InvalidAuthDataException(authData));
-
-            if (authData.Id != trackDto.CreatorId)
-                return new Result<TrackDto>(new TrackAccessDeniedException(authData.Id, trackDto.Id));
-
             var trackToEdit = _trackRepository.TryGetTrackById(trackDto.Id);
             
-            if (!trackToEdit.IsSuccessful())
-                return new Result<TrackDto>(trackToEdit.Exception);
-            
-            if (trackToEdit.Value.CreatedAt != trackDto.CreatedAt)
-                return new Result<TrackDto>(new EditingImmutableDataException(nameof(trackDto.CreatedAt)));
+            if (authData.Id != trackToEdit.CreatorId)
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, authData.Id, trackDto.Id);
 
             var track = new Track(trackDto.Id, trackDto.Name, trackDto.CreatedAt, authData.Id, trackDto.AllowedCustomizations);
             var trackWithResult = _trackRepository.TryUpdate(track);
-            
-            if (!trackWithResult.IsSuccessful())
-                return new Result<TrackDto>(trackWithResult.Exception);
-            
-            return new Result<TrackDto>(new TrackDto(trackWithResult.Value));
+
+            return new TrackDto(trackWithResult);
         }
 
-        public Result<bool> DeleteTrack(AuthData authData, Guid trackId)
+        public Guid DeleteTrack(AuthData authData, Guid trackId)
         {
-            var isAuthValid = _userRepository.IsUserAuthDataValid(authData);
-            if (!isAuthValid.IsSuccessful())
-                return new Result<bool>(new UserNotFoundException(authData.Id));
-            if (isAuthValid.IsSuccessful() && isAuthValid.Value == false)
-                return new Result<bool>(new InvalidAuthDataException(authData));
-
-            var eventsDeletingResult = _eventRepository.TryDeleteByTrack(trackId);
-
-            if (!eventsDeletingResult.IsSuccessful())
-                return eventsDeletingResult;
+            var trackToEdit = _trackRepository.TryGetTrackById(trackId);
             
-            return _trackRepository.TryDelete(trackId);
+            if (authData.Id != trackToEdit.CreatorId)
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, authData.Id, trackId);
+            
+            _eventRepository.TryDeleteByTrack(trackId);
+            
+            var deletedTrackId = _trackRepository.TryDelete(trackId);
+
+            return deletedTrackId;
         }
     }
 }
