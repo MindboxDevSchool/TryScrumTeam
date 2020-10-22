@@ -5,7 +5,7 @@ using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 
-namespace ItHappened.Infrastructure
+namespace ItHappened.Infrastructure.Repositories
 {
     public class UserRepositoryInMemory : IUserRepository
     {

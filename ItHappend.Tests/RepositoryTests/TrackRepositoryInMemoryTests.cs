@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using ItHappened.Domain;
-using ItHappened.Infrastructure;
+using ItHappened.Infrastructure.Repositories;
 using NUnit.Framework;
 
-namespace ItHappend.Tests
+namespace ItHappend.Tests.RepositoryTests
 {
     public class TrackRepositoryInMemoryTests
     {

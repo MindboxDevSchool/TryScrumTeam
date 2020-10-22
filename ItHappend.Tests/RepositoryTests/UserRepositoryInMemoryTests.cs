@@ -1,9 +1,9 @@
 ﻿using System;
 using ItHappened.Domain;
-using ItHappened.Infrastructure;
+using ItHappened.Infrastructure.Repositories;
 using NUnit.Framework;
 
-namespace ItHappend.Tests
+namespace ItHappend.Tests.RepositoryTests
 {
     public class UserRepositoryInMemoryTests
     {
