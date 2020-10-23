@@ -24,7 +24,7 @@ namespace ItHappened.Infrastructure.Repositories
             var result = _users.FirstOrDefault(elem => elem.Value.Login == login);
             
             if (result.Equals(default(KeyValuePair<Guid, User>)))
-                throw new RepositoryException(RepositoryExceptionType.UserNotFound, login);
+                throw new RepositoryException(RepositoryExceptionType.UserNotFoundByLogin, login);
             
             return result.Value;
         }
