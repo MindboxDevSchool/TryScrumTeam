@@ -213,6 +213,51 @@ namespace ItHappend.Tests
             Assert.AreEqual(_testEventId, result.Id);
             Assert.AreEqual(_testEvent.CreatedAt, result.CreatedAt);
         }
+        
+        [Test]
+        public void EditEvent_SavedEventHasCustomizations_SuccessfulEventEditing()
+        {
+            // arrange
+            var extendedCustomizationDto = new CustomizationsDto();
+            extendedCustomizationDto.Comment = "comment";
+            extendedCustomizationDto.Scale = 5;
+            
+            var extendedEvent = new Event(
+                _testEventToUpdate.Id,
+                _testEventToUpdate.CreatedAt,
+                _testTrackId,
+                new Customizations(extendedCustomizationDto, _allTypes));
+
+            var newCustomizationDto = new CustomizationsDto();
+            newCustomizationDto.Comment = "comment";
+            newCustomizationDto.Scale = 5;
+            newCustomizationDto.PhotoUrl = "url";
+            
+            var @event = new Event(
+                _testEventToUpdate.Id,
+                _testEventToUpdate.CreatedAt,
+                _testTrackId,
+                new Customizations(newCustomizationDto, _allTypes));
+
+            var mock = new Mock<IEventRepository>();
+            mock.Setup(method => method.TryGetById(It.IsAny<Guid>()))
+                .Returns(extendedEvent);
+            mock.Setup(method => method.TryUpdate(It.IsAny<Event>()))
+                .Returns(@event);
+            var eventRepository = mock.Object;
+            
+            var eventService = new EventService(eventRepository, _trackRepository);
+
+            // act
+            var result = eventService.EditEvent(_testUserId, new EventDto(@event));
+
+            // assert
+            Assert.AreEqual(_testEventId, result.Id);
+            Assert.AreEqual(_testEvent.CreatedAt, result.CreatedAt);
+            Assert.AreEqual(newCustomizationDto.Comment, result.CustomizationDto.Comment);
+            Assert.AreEqual(newCustomizationDto.Scale, result.CustomizationDto.Scale);
+            Assert.AreEqual(newCustomizationDto.PhotoUrl, result.CustomizationDto.PhotoUrl);
+        }
 
         [Test]
         public void EditEvent_NotAllowedCustomizations()

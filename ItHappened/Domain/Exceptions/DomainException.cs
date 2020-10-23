@@ -37,13 +37,7 @@ namespace ItHappened.Domain.Exceptions
             switch (type)
             {
                 case DomainExceptionType.NotAllowedCustomizations:
-                    string customizations = "";
-                    foreach (var c in customizationTypes)
-                    {
-                        customizations += c.ToString() + " ";
-                    }
-
-                    return $"Customizations [{customizations}] not allowed in track [{trackId}]";
+                    return $"Customizations [{customizationTypes.CreateString()}] not allowed in track [{trackId}]";
                 default:
                     return "Unspecified exception occured, follow the link for additional info https://goo.su/2mvQ ";
             }
