@@ -3,91 +3,63 @@ using ItHappened.Application;
 using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
+using ItHappened.Infrastructure;
 using NUnit.Framework;
+using Moq;
 
 namespace ItHappend.Tests.ServiceTests
 {
     public class UserServiceTests
     {
-        public class UserMocRepository : IUserRepository
+        private void SetupEntities()
         {
-            public User SavedUser { get; set; }
+            _testUserId = Guid.NewGuid();
+            var shaHashing = new ShaHashing();
+            _testUser = new User(_testUserId, "login", shaHashing.HashPassword("password"));
+        }
 
-            public User TryCreate(User user)
-            {
-                if (SavedUser == null)
-                {
-                    SavedUser = user;
-                    return user;
-                }
+        private void SetupMoqUserRepository()
+        {
+            var mock = new Mock<IUserRepository>();
+            mock.Setup(method => method.TryCreate(It.IsAny<User>()))
+                .Returns(_testUser);
+            mock.Setup(method => method.TryGetByLogin(It.IsAny<string>()))
+                .Returns(_testUser);
 
-                throw new RepositoryException(RepositoryExceptionType.LoginAlreadyExists, user.Login);
-            }
+            _userRepository = mock.Object;
+        }
 
-            public User TryGetByLogin(string login)
-            {
-                if (SavedUser == null)
-                    throw new RepositoryException(RepositoryExceptionType.UserNotFoundByLogin, login);
-                
-                return SavedUser;
-            }
+        private User _testUser;
+        private Guid _testUserId;
+        private IUserRepository _userRepository;
 
-            public User TryGetById(Guid id)
-            {
-                throw new NotImplementedException();
-            }
+        [SetUp]
+        public void Setup()
+        {
+            SetupEntities();
+            SetupMoqUserRepository();
         }
 
         [Test]
         public void CreateUser_ForUniqueLogin_ReturnUserDto()
         {
-            var login = "login";
-            var password = "password";
-            var repository = new UserMocRepository();
-            var userService = new UserService(repository);
+            var userService = new UserService(_userRepository);
 
-            var result = userService.CreateUser(login, password);
-            
-            Assert.AreEqual(result.Login, login);
-            Assert.AreEqual(result.Id, repository.SavedUser.Id);
-            Assert.NotNull(result.Id);
-        }
+            var result = userService.CreateUser("login", "password");
 
-        [Test]
-        public void CreateUser_ForRepeatLogin_ThrowException()
-        {
-            var login = "login";
-            var password = "password";
-            var repository = new UserMocRepository();
-            var userService = new UserService(repository);
-            userService.CreateUser(login, password);
-            RepositoryException exception = null;
-
-            try
-            {
-                var result = userService.CreateUser(login, password);
-            }
-            catch (RepositoryException e)
-            {
-                exception = e;
-            }
-
-            Assert.AreEqual(RepositoryExceptionType.LoginAlreadyExists, exception.Type);
+            Assert.AreEqual(_testUser.Id, result.Id);
+            Assert.AreEqual(_testUser.Login, result.Login);
         }
 
         [Test]
         public void LoginUser_ForCorrectLoginIncorrectPassword_ThrowException()
         {
-            var login = "login";
-            var password = "password";
-            var repository = new UserMocRepository();
-            var userService = new UserService(repository);
-            userService.CreateUser(login, password);
+            var userService = new UserService(_userRepository);
             DomainException exception = null;
 
             try
             {
-                var result = userService.LoginUser(login, "failed");
+                var result = userService.LoginUser("login", "incorrectPassword");
             }
             catch (DomainException e)
             {
@@ -98,37 +70,14 @@ namespace ItHappend.Tests.ServiceTests
         }
 
         [Test]
-        public void LoginUser_ForInvalidLogin_ReturnUnauthorizedException()
-        {
-            var repository = new UserMocRepository();
-            var userService = new UserService(repository);
-            RepositoryException exception = null;
-
-            try
-            {
-                var result = userService.LoginUser("login", "password");
-            }
-            catch (RepositoryException e)
-            {
-                exception = e;
-            }
-            
-            Assert.AreEqual(RepositoryExceptionType.UserNotFoundByLogin, exception.Type);
-        }
-
-        [Test]
         public void LoginUser_ForCorrectLoginAndPassword_ReturnUserDto()
         {
-            var login = "login";
-            var password = "password";
-            var repository = new UserMocRepository();
-            var userService = new UserService(repository);
-            userService.CreateUser(login, password);
-
-            var result = userService.LoginUser(login, password);
+            var userService = new UserService(_userRepository);
             
-            Assert.AreEqual(result.Login, login);
-            Assert.AreEqual(result.Id, repository.SavedUser.Id);
+            var result = userService.LoginUser("login", "password");
+            
+            Assert.AreEqual(_testUser.Id, result.Id);
+            Assert.AreEqual(_testUser.Login, result.Login);
         }
     }
 }
