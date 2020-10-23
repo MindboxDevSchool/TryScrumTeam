@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Claims;
 using ItHappend.RestAPI.Authentication;
+using ItHappend.RestAPI.Filters;
 using ItHappend.RestAPI.Models;
 using ItHappened.Application;
 using ItHappened.Domain;
@@ -22,14 +23,11 @@ namespace ItHappend.RestAPI.Controllers
         
         [HttpPost]
         [Route("authentication")]
+        [GlobalException]
         public IActionResult Authenticate([FromBody]LoginRequest request)
         {
             var user = _userService.LoginUser(request.Login, request.Password);
-            if (user == null)
-            {
-                return Unauthorized("User with provided credentials not found");
-            }
-
+            
             var token = _jwtIssuer.GenerateToken(user);
             
             var response = new LoginResponse(token);
@@ -38,6 +36,7 @@ namespace ItHappend.RestAPI.Controllers
 
         [HttpPost]
         [Route("user")]
+        [GlobalException]
         public IActionResult RegisterUser([FromBody]LoginRequest request)
         {
             var newUser = _userService.CreateUser(request.Login, request.Password);
