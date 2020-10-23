@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ItHappend.RestAPI.Controllers
 {
-    public class AuthenticationController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IJwtIssuer _jwtIssuer;
         private readonly IUserService _userService;
 
-        public AuthenticationController(IJwtIssuer jwtIssuer, IUserService userService)
+        public UserController(IJwtIssuer jwtIssuer, IUserService userService)
         {
             _jwtIssuer = jwtIssuer ?? throw new ArgumentNullException(nameof(jwtIssuer));
             _userService = userService ?? throw new ArgumentNullException(nameof(userService));
@@ -24,14 +24,6 @@ namespace ItHappend.RestAPI.Controllers
         [Route("authentication")]
         public IActionResult Authenticate([FromBody]LoginRequest request)
         {
-            if (request.Login == request.Password)
-            {
-                var token1 = _jwtIssuer.GenerateToken(new UserDto(Guid.Empty, request.Login));
-            
-                var response1 = new LoginResponse(token1);
-                return Ok(response1);
-            }
-
             var user = _userService.LoginUser(request.Login, request.Password);
             if (user == null)
             {
@@ -44,6 +36,20 @@ namespace ItHappend.RestAPI.Controllers
             return Ok(response);
         }
 
+        [HttpPost]
+        [Route("user")]
+        public IActionResult RegisterUser([FromBody]LoginRequest request)
+        {
+            var newUser = _userService.CreateUser(request.Login, request.Password);
+            var result = new
+            {
+                Id = newUser.Id,
+                Login = newUser.Login
+            };
+            
+            return Ok(result);
+        }
+        
         [HttpGet]
         [Route("self")]
         [Authorize]

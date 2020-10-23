@@ -1,6 +1,8 @@
 using System.Text;
 using ItHappend.RestAPI.Authentication;
 using ItHappened.Application;
+using ItHappened.Domain.Repositories;
+using ItHappened.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,6 +42,7 @@ namespace ItHappend.RestAPI
                     };
                 });
 
+            services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IJwtIssuer, JwtIssuer>();
             services.AddControllers();
@@ -53,10 +56,9 @@ namespace ItHappend.RestAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
