@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
 using ItHappened.Domain;
+using ItHappened.Infrastructure.Repositories;
 using NUnit.Framework;
-using ItHappened.Infrastructure;
-namespace ItHappend.Tests
+
+namespace ItHappend.Tests.RepositoryTests
 {
     public class EventRepositoryInMemoryTests
     {

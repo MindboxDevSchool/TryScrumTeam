@@ -5,7 +5,7 @@ using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 using NUnit.Framework;
 
-namespace ItHappend.Tests
+namespace ItHappend.Tests.ServiceTests
 {
     public class UserServiceTests
     {

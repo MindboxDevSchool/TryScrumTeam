@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 
-namespace ItHappened.Infrastructure
+namespace ItHappened.Infrastructure.Repositories
 {
     public class EventRepositoryInMemory : IEventRepository
     {

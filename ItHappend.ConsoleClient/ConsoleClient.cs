@@ -5,6 +5,7 @@ using System.Linq;
 using ItHappened.Application;
 using ItHappened.Domain;
 using ItHappened.Infrastructure;
+using ItHappened.Infrastructure.Repositories;
 
 namespace ItHappend.ConsoleClient
 {

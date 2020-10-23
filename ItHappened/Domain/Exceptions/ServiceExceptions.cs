@@ -1,6 +1,6 @@
 using System;
 
-namespace ItHappened.Domain
+namespace ItHappened.Domain.Exceptions
 {
     public class UnauthorizedException : Exception
     {
