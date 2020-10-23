@@ -126,7 +126,7 @@ namespace ItHappend.Tests
             try
             {
                 var result =
-                    eventService.CreateEvent(_testInvalidUserId, _testTrackId, DateTime.Now, new Customizations());
+                    eventService.CreateEvent(_testInvalidUserId, _testTrackId, DateTime.Now, new CustomizationsDto());
             }
             catch (DomainException e)
             {
@@ -145,7 +145,7 @@ namespace ItHappend.Tests
 
             // act
             var result =
-                eventService.CreateEvent(_testUserId, _testTrackId, DateTime.Now, new Customizations());
+                eventService.CreateEvent(_testUserId, _testTrackId, DateTime.Now, new CustomizationsDto());
 
             // assert
             Assert.AreEqual(_testEventId, result.Id);

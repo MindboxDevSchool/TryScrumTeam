@@ -4,11 +4,11 @@ namespace ItHappened.Domain.CustomizationTypes
 {
     public class PhotoCustomization
     {
-        public PhotoCustomization(byte[] value)
+        public PhotoCustomization(string value)
         {
             Value = value ?? throw new ArgumentNullException("PhotoCustomization");
         }
 
-        public byte[] Value { get; }
+        public string Value { get; }
     }
 }

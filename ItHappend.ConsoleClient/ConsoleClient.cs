@@ -121,7 +121,7 @@ namespace ItHappend.ConsoleClient
                             events = PrintEventList(userDto, track);
                             break;
                         case 2:
-                            _eventService.CreateEvent(userDto.Id, track.Id, DateTime.Now, new Customizations());
+                            _eventService.CreateEvent(userDto.Id, track.Id, DateTime.Now, new CustomizationsDto());
                             break;
                         case 4:
                             Console.Write("Введите номер событие:");
