@@ -75,5 +75,21 @@ namespace ItHappened.Domain
 
             return customizationDto;
         }
+
+        public static IEnumerable<CustomizationType> GetCustomizationTypes(CustomizationsDto customizationsDto)
+        {
+            var types = new List<CustomizationType>();
+            if (customizationsDto.Comment != null)
+                types.Add(CustomizationType.Comment);
+            if (customizationsDto.Rating != null)
+                types.Add(CustomizationType.Rating);
+            if (customizationsDto.Scale != null)
+                types.Add(CustomizationType.Scale);
+            if (customizationsDto.PhotoUrl != null)
+                types.Add(CustomizationType.Photo);
+            if (customizationsDto.GeotagLatitude != null && customizationsDto.GeotagLongitude != null)
+                types.Add(CustomizationType.Geotag);
+            return types;
+        }
     }
 }
