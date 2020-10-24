@@ -13,7 +13,7 @@ namespace ItHappend.RestAPI.Filters
         
         public void OnException(ExceptionContext context)
         {
-            int statusCode = 500;
+            int statusCode = 400;
             if(context.Exception is DomainException)
             {
                 DomainException exception;
@@ -24,7 +24,7 @@ namespace ItHappend.RestAPI.Filters
                         statusCode = 403;
                         break;
                     case DomainExceptionType.IncorrectPassword:
-                        statusCode = 406;
+                        statusCode = 401;
                         break;
                 }
             }
@@ -35,7 +35,7 @@ namespace ItHappend.RestAPI.Filters
                 switch (exception.Type)
                 {
                     case RepositoryExceptionType.LoginAlreadyExists :
-                        statusCode = 406;
+                        statusCode = 400;
                         break;
                     case RepositoryExceptionType.EventNotFound :
                         statusCode = 404;
