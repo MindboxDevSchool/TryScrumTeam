@@ -30,6 +30,8 @@ namespace ItHappened.Application
         {
             var track = TryGetAccessToTrack(userId, trackId);
 
+            CheckNotAllowedCustomizationsInDto(customizationsDto, track.AllowedCustomizations, trackId);
+            
             var customizations = new Customizations(customizationsDto, track.AllowedCustomizations);
             var newEvent = new Event(Guid.NewGuid(), createdAt, trackId, customizations);
             var createdEvent = _eventRepository.TryCreate(newEvent);
@@ -39,9 +41,13 @@ namespace ItHappened.Application
         public EventDto EditEvent(Guid userId, EventDto eventDto)
         {
             var track = TryGetAccessToTrack(userId, eventDto.TrackId);
-
-            var customizations = new Customizations(eventDto.CustomizationDto, track.AllowedCustomizations);
             var oldEvent = _eventRepository.TryGetById(eventDto.Id);
+
+            var oldCustomizations = Customizations.GetCustomizationTypes(oldEvent.Customization.GetDto());
+            var allowedCustomizations = track.AllowedCustomizations.Concat(oldCustomizations);
+            CheckNotAllowedCustomizationsInDto(eventDto.CustomizationDto, allowedCustomizations, eventDto.TrackId);
+            
+            var customizations = new Customizations(eventDto.CustomizationDto, allowedCustomizations);
             var editedEvent = new Event(eventDto.Id, oldEvent.CreatedAt, eventDto.TrackId, customizations);
             var editResult = _eventRepository.TryUpdate(editedEvent);
             return new EventDto(editResult);
@@ -67,6 +73,20 @@ namespace ItHappened.Application
             }
 
             return track;
+        }
+
+        private void CheckNotAllowedCustomizationsInDto(
+            CustomizationsDto customizationsDto,
+            IEnumerable<CustomizationType> allowedCustomizations, 
+            Guid trackId)
+        {
+            var givenCustomizations = Customizations.GetCustomizationTypes(customizationsDto);
+            
+            var notAllowedCustomizations =
+                givenCustomizations.Where(c => !allowedCustomizations.Contains(c)).ToList();
+            
+            if (notAllowedCustomizations.Any())
+                throw new DomainException(DomainExceptionType.NotAllowedCustomizations, trackId, notAllowedCustomizations);
         }
     }
 }

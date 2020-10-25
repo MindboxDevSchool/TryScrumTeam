@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ItHappened.Domain.Exceptions
 {
-    public class DomainException:Exception
+    public class DomainException : Exception
     {
         public DomainExceptionType Type { get; }
+
         private static string GetMessage(DomainExceptionType type, Guid userId, Guid entityId)
         {
             switch (type)
@@ -27,14 +29,37 @@ namespace ItHappened.Domain.Exceptions
             }
         }
 
+        private static string GetMessage(
+            DomainExceptionType type,
+            Guid trackId,
+            IEnumerable<CustomizationType> customizationTypes)
+        {
+            switch (type)
+            {
+                case DomainExceptionType.NotAllowedCustomizations:
+                    return $"Customizations [{customizationTypes.CreateString()}] not allowed in track [{trackId}]";
+                default:
+                    return "Unspecified exception occured, follow the link for additional info https://goo.su/2mvQ ";
+            }
+        }
+
         public DomainException(DomainExceptionType type, Guid authorId, Guid entityId)
-            : base(GetMessage(type,authorId,entityId))
+            : base(GetMessage(type, authorId, entityId))
         {
             Type = type;
         }
 
         public DomainException(DomainExceptionType type, string login)
             : base(GetMessage(type, login))
+        {
+            Type = type;
+        }
+
+        public DomainException(
+            DomainExceptionType type,
+            Guid trackId,
+            IEnumerable<CustomizationType> customizationTypes)
+            : base(GetMessage(type, trackId, customizationTypes))
         {
             Type = type;
         }
