@@ -15,46 +15,28 @@ namespace ItHappend.RestAPI.Filters
         
         public void OnException(ExceptionContext context)
         {
-            int statusCode = 400;
-            if(context.Exception is DomainException)
+            var statusCode = 400;
+            statusCode = context.Exception switch
             {
-                DomainException exception;
-                exception = context.Exception as DomainException;
-                switch (exception.Type)
+                DomainException domainException => domainException.Type switch
                 {
-                    case DomainExceptionType.TrackAccessDenied:
-                        statusCode = 403;
-                        break;
-                    case DomainExceptionType.IncorrectPassword:
-                        statusCode = 401;
-                        break;
-                }
-            }
-            if(context.Exception is RepositoryException)
-            {
-                RepositoryException exception;
-                exception = context.Exception as RepositoryException;
-                switch (exception.Type)
+                    DomainExceptionType.TrackAccessDenied => 403,
+                    DomainExceptionType.IncorrectPassword => 401,
+                    _ => statusCode
+                },
+                RepositoryException repositoryException => repositoryException.Type switch
                 {
-                    case RepositoryExceptionType.LoginAlreadyExists :
-                        statusCode = 400;
-                        break;
-                    case RepositoryExceptionType.EventNotFound :
-                        statusCode = 404;
-                        break;
-                    case RepositoryExceptionType.TrackNotFound :
-                        statusCode = 404;
-                        break;
-                    case RepositoryExceptionType.UserNotFound :
-                        statusCode = 404;
-                        break;
-                    case RepositoryExceptionType.UserNotFoundByLogin :
-                        statusCode = 404;
-                        break;
-                }
-            }
-            
-            Log.Logger.Warning("Exception occured: " + statusCode+ " " + context.Exception.Message);
+                    RepositoryExceptionType.LoginAlreadyExists => 400,
+                    RepositoryExceptionType.EventNotFound => 404,
+                    RepositoryExceptionType.TrackNotFound => 404,
+                    RepositoryExceptionType.UserNotFound => 404,
+                    RepositoryExceptionType.UserNotFoundByLogin => 404,
+                    _ => statusCode
+                },
+                _ => statusCode
+            };
+
+            Log.Logger.Information("Exception occured: " + statusCode+ " " + context.Exception.Message);
 
             context.Result = new ObjectResult(context.Exception.Message)
             {
