@@ -54,7 +54,6 @@ namespace ItHappend.RestAPI.Filters
                 }
             }
             
-            
             Log.Logger.Warning("Exception occured: " + statusCode+ " " + context.Exception.Message);
 
             context.Result = new ObjectResult(context.Exception.Message)

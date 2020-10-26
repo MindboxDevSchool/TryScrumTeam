@@ -46,7 +46,6 @@ namespace ItHappend.RestAPI.Controllers
                 Id = newUser.Id,
                 Login = newUser.Login
             };
-            
             return Ok(result);
         }
         
@@ -60,7 +59,6 @@ namespace ItHappend.RestAPI.Controllers
                 Id = User.FindFirstValue(JwtClaimTypes.Id),
                 Login = User.FindFirstValue(JwtClaimTypes.Login)
             };
-            
             return Ok(result);
         }
     }
