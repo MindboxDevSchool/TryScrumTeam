@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Security.Claims;
+using ItHappend.RestAPI.Authentication;
 using ItHappend.RestAPI.Extensions;
 using ItHappend.RestAPI.Filters;
 using ItHappend.RestAPI.Models;
@@ -21,9 +23,10 @@ namespace ItHappend.RestAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetTracks([FromBody] GetTracksRequest request)
+        public IActionResult GetTracks()
         {
-            var tracks = _trackService.GetTracks(request.UserId);
+            var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
+            var tracks = _trackService.GetTracks(userId);
             var response = tracks.Map();
             return Ok(response);
         }
@@ -32,7 +35,7 @@ namespace ItHappend.RestAPI.Controllers
         public IActionResult CreateTrack([FromBody] CreateTrackRequest request)
         {
             var createdTrack = _trackService.CreateTrack(
-                request.UserId,
+                Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id)),
                 request.Name,
                 request.CreatedAt,
                 request.AllowedCustomizations.Map());
@@ -43,19 +46,22 @@ namespace ItHappend.RestAPI.Controllers
         }
 
         [HttpPut]
-        public IActionResult EditTrack([FromBody] EditTrackRequest request)
+        [Route("{id}")]
+        public IActionResult EditTrack([FromRoute]Guid id, [FromBody] EditTrackRequest request)
         {
-            var trackDto = request.Map();
-            var editedTrack = _trackService.EditTrack(request.CreatorId, trackDto);
+            var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
+            var trackDto = request.Map(id, userId);
+            var editedTrack = _trackService.EditTrack(userId, trackDto);
             var response = editedTrack.MapToResponse();
             return Ok(response);
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Route("{id}")]
-        public IActionResult DeleteTrack([FromRoute] Guid id, [FromBody] DeleteTrackRequest request)
+        public IActionResult DeleteTrack([FromRoute] Guid id)
         {
-            var trackId = _trackService.DeleteTrack(request.UserId, id);
+            var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
+            var trackId = _trackService.DeleteTrack(userId, id);
             return Ok(trackId);
         }
     }

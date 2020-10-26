@@ -15,7 +15,6 @@ namespace ItHappend.RestAPI.Extensions
                 Id = track.Id,
                 Name = track.Name,
                 CreatedAt = track.CreatedAt,
-                CreatorId = track.CreatorId,
                 AllowedCustomizations = track.AllowedCustomizations.Map()
             });
         }
@@ -27,18 +26,17 @@ namespace ItHappend.RestAPI.Extensions
                 Id = track.Id,
                 Name = track.Name,
                 CreatedAt = track.CreatedAt,
-                CreatorId = track.CreatorId,
                 AllowedCustomizations = track.AllowedCustomizations.Map()
             };
         }
 
-        public static TrackDto Map(this EditTrackRequest trackRequest)
+        public static TrackDto Map(this EditTrackRequest trackRequest, Guid Id, Guid userId)
         {
             return new TrackDto(
-                trackRequest.Id,
+                Id,
                 trackRequest.Name,
                 trackRequest.CreatedAt,
-                trackRequest.CreatorId,
+                userId,
                 trackRequest.AllowedCustomizations.Map()
             );
         }
@@ -50,7 +48,6 @@ namespace ItHappend.RestAPI.Extensions
                 Id = track.Id,
                 Name = track.Name,
                 CreatedAt = track.CreatedAt,
-                CreatorId = track.CreatorId,
                 AllowedCustomizations = track.AllowedCustomizations.Map()
             };
         }
