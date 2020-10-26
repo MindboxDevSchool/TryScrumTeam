@@ -185,10 +185,8 @@ namespace ItHappend.ConsoleClient
                             num = Convert.ToInt32(Console.ReadLine());
                             trackTuple = ReadTrackDto();
                             var trackDto = tracks[num];
-                            var editedTrackDto = new TrackDto(trackDto.Id, 
-                                trackTuple.Item1, 
-                                trackDto.CreatedAt, 
-                                trackDto.CreatorId,
+                            var editedTrackDto = new TrackToEditDto(trackDto.Id, 
+                                trackTuple.Item1,
                                 trackTuple.Item3);
                             _tracksService.EditTrack(userDto.Id, editedTrackDto);
                             break;

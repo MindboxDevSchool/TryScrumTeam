@@ -9,7 +9,7 @@ namespace ItHappened.Application
     {
         IEnumerable<TrackDto> GetTracks(Guid userId);
         TrackDto CreateTrack(Guid userId, string name, DateTime createdAt, IEnumerable<CustomizationType> allowedCustomizations);
-        TrackDto EditTrack(Guid userId, TrackDto trackDto);
+        TrackDto EditTrack(Guid userId, TrackToEditDto trackDto);
         Guid DeleteTrack(Guid userId, Guid trackId);
     }
 }
