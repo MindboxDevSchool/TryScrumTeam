@@ -100,7 +100,7 @@ namespace ItHappend.Tests.ServiceTests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository);
-            var trackDto = new TrackDto(_testTrack);
+            var trackDto = new TrackToEditDto(_testTrack.Id, _testTrack.Name, _testTrack.AllowedCustomizations);
 
             // act
             var result = tracksService.EditTrack(_testUserId, trackDto);
@@ -148,7 +148,7 @@ namespace ItHappend.Tests.ServiceTests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository);
-            var trackDto = new TrackDto(_testTrack);
+            var trackDto = new TrackToEditDto(_testTrack.Id, _testTrack.Name, _testTrack.AllowedCustomizations);
             DomainException exception = null;
 
             // act

@@ -30,13 +30,11 @@ namespace ItHappend.RestAPI.Extensions
             };
         }
 
-        public static TrackDto Map(this EditTrackRequest trackRequest, Guid Id, Guid userId)
+        public static TrackToEditDto Map(this EditTrackRequest trackRequest, Guid Id)
         {
-            return new TrackDto(
+            return new TrackToEditDto(
                 Id,
                 trackRequest.Name,
-                trackRequest.CreatedAt,
-                userId,
                 trackRequest.AllowedCustomizations.Map()
             );
         }

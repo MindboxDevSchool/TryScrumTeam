@@ -50,7 +50,7 @@ namespace ItHappend.RestAPI.Controllers
         public IActionResult EditTrack([FromRoute]Guid id, [FromBody] EditTrackRequest request)
         {
             var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
-            var trackDto = request.Map(id, userId);
+            var trackDto = request.Map(id);
             var editedTrack = _trackService.EditTrack(userId, trackDto);
             var response = editedTrack.MapToResponse();
             return Ok(response);
