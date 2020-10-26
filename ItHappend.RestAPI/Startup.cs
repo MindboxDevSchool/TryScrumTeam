@@ -44,6 +44,9 @@ namespace ItHappend.RestAPI
 
             services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<ITracksService, TracksService>();
+            services.AddSingleton<ITrackRepository, TrackRepositoryInMemory>();
+            services.AddSingleton<IEventRepository, EventRepositoryInMemory>();
             services.AddSingleton<IJwtIssuer, JwtIssuer>();
             services.AddControllers();
         }
