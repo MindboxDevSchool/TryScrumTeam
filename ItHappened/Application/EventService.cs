@@ -38,17 +38,17 @@ namespace ItHappened.Application
             return new EventDto(createdEvent);
         }
 
-        public EventDto EditEvent(Guid userId, EventDto eventDto)
+        public EventDto EditEvent(Guid userId, EventToEditDto eventDto)
         {
-            var track = TryGetAccessToTrack(userId, eventDto.TrackId);
             var oldEvent = _eventRepository.TryGetById(eventDto.Id);
+            var track = TryGetAccessToTrack(userId, oldEvent.TrackId);
 
             var oldCustomizations = Customizations.GetCustomizationTypes(oldEvent.Customization.GetDto());
             var allowedCustomizations = track.AllowedCustomizations.Concat(oldCustomizations);
-            CheckNotAllowedCustomizationsInDto(eventDto.CustomizationDto, allowedCustomizations, eventDto.TrackId);
+            CheckNotAllowedCustomizationsInDto(eventDto.CustomizationDto, allowedCustomizations, track.Id);
             
             var customizations = new Customizations(eventDto.CustomizationDto, allowedCustomizations);
-            var editedEvent = new Event(eventDto.Id, oldEvent.CreatedAt, eventDto.TrackId, customizations);
+            var editedEvent = new Event(eventDto.Id, oldEvent.CreatedAt, track.Id, customizations);
             var editResult = _eventRepository.TryUpdate(editedEvent);
             return new EventDto(editResult);
         }

@@ -70,7 +70,7 @@ namespace ItHappend.RestAPI.Controllers
         {
             var userId = GetUserId();
             var customizations = _mapper.Map<CustomizationsDto>(request.Customizations);
-            var eventDto = new EventDto(eventId, request.CreatedAt, trackId, customizations);
+            var eventDto = new EventToEditDto(eventId, customizations);
             var @event = _eventService.EditEvent(userId, eventDto);
 
             var result = _mapper.Map<EditEventResponse>(@event);

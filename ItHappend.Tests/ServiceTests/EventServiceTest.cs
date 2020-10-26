@@ -207,7 +207,7 @@ namespace ItHappend.Tests.ServiceTests
             // act
             var customizations = new Customizations();
 
-            var result = eventService.EditEvent(_testUserId, new EventDto(_testEventToUpdate));
+            var result = eventService.EditEvent(_testUserId, new EventToEditDto(_testEventToUpdate));
 
             // assert
             Assert.AreEqual(_testEventId, result.Id);
@@ -249,7 +249,7 @@ namespace ItHappend.Tests.ServiceTests
             var eventService = new EventService(eventRepository, _trackRepository);
 
             // act
-            var result = eventService.EditEvent(_testUserId, new EventDto(@event));
+            var result = eventService.EditEvent(_testUserId, new EventToEditDto(@event));
 
             // assert
             Assert.AreEqual(_testEventId, result.Id);
@@ -275,7 +275,7 @@ namespace ItHappend.Tests.ServiceTests
             // act
             try
             {
-                var result = eventService.EditEvent(_testUserId, new EventDto(@event));
+                var result = eventService.EditEvent(_testUserId, new EventToEditDto(@event));
             }
             catch (DomainException e)
             {
