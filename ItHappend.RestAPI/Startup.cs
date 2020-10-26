@@ -2,7 +2,6 @@ using System.Text;
 using AutoMapper;
 using ItHappend.RestAPI.Authentication;
 using ItHappend.RestAPI.Filters;
-using ItHappend.RestAPI.Filters;
 using ItHappened.Application;
 using ItHappened.Domain.Repositories;
 using ItHappened.Infrastructure.Repositories;

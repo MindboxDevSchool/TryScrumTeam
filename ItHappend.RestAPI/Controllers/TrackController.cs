@@ -12,7 +12,6 @@ namespace ItHappend.RestAPI.Controllers
 {
     [Route("tracks")]
     [Authorize]
-    [GlobalException]
     public class TrackController: ControllerBase
     {
         private readonly ITracksService _trackService;
