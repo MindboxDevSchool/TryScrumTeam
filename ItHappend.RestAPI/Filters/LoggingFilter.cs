@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
 
 namespace ItHappend.RestAPI.Filters
@@ -9,15 +7,15 @@ namespace ItHappend.RestAPI.Filters
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
+            var message = "Executing request: ";
+            message += context.HttpContext.Request.Method + "  ";
+            message += context.HttpContext.Request.Path.ToString();
+            Log.Logger.Information(message);
+            
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            var message = "Executed request: ";
-            message += context.HttpContext.Request.Method + "  ";
-            message += context.HttpContext.Request.Path.ToString();
-            Log.Logger.Information(message);
-            Log.Logger.Information(context.HttpContext.Request.Body.ToString());
         }
     }
 }

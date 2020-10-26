@@ -33,15 +33,31 @@ namespace ItHappend.RestAPI.Filters
                     RepositoryExceptionType.UserNotFoundByLogin => 404,
                     _ => statusCode
                 },
-                _ => statusCode
+                _ => 500
             };
-
-            Log.Logger.Information("Exception occured: " + statusCode+ " " + context.Exception.Message);
-
+            LogException(context, statusCode);
             context.Result = new ObjectResult(context.Exception.Message)
             {
                 StatusCode = statusCode,
             };
+        }
+
+        private void LogException(ExceptionContext context, int statusCode)
+        {
+            if (statusCode == 500)
+            {
+                Log.Logger.Error("Unexpected exception occured: "
+                                 + statusCode
+                                 + " "
+                                 + context.Exception.Message);
+            }
+            else
+            {
+                Log.Logger.Information("Exception occured: "
+                                       + statusCode
+                                       + " "
+                                       + context.Exception.Message);
+            }
         }
     }
 }
