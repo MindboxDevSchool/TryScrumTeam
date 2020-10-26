@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using ItHappened.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Serilog;
+using Serilog.Core;
 
 namespace ItHappend.RestAPI.Filters
 {
@@ -53,7 +55,7 @@ namespace ItHappend.RestAPI.Filters
             }
             
             
-            
+            Log.Logger.Warning("Exception occured: " + statusCode+ " " + context.Exception.Message);
 
             context.Result = new ObjectResult(context.Exception.Message)
             {

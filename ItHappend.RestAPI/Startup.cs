@@ -1,5 +1,6 @@
 using System.Text;
 using ItHappend.RestAPI.Authentication;
+using ItHappend.RestAPI.Filters;
 using ItHappened.Application;
 using ItHappened.Domain.Repositories;
 using ItHappened.Infrastructure.Repositories;
@@ -42,6 +43,8 @@ namespace ItHappend.RestAPI
                     };
                 });
 
+            services.AddScoped<LoggingFilter>();
+            
             services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IJwtIssuer, JwtIssuer>();

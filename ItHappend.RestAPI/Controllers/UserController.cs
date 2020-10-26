@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ItHappend.RestAPI.Controllers
 {
+    [ServiceFilter(typeof(LoggingFilter))]
     public class UserController : ControllerBase
     {
         private readonly IJwtIssuer _jwtIssuer;
