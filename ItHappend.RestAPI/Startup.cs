@@ -1,5 +1,7 @@
 using System.Text;
+using AutoMapper;
 using ItHappend.RestAPI.Authentication;
+using ItHappend.RestAPI.Filters;
 using ItHappend.RestAPI.Filters;
 using ItHappened.Application;
 using ItHappened.Domain.Repositories;
@@ -22,6 +24,17 @@ namespace ItHappend.RestAPI
         }
 
         public IConfiguration Configuration { get; }
+
+        private void ConfigureMapper(IServiceCollection services)
+        {
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new EventMapperProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -53,8 +66,14 @@ namespace ItHappend.RestAPI
                 options.Filters.Add(typeof(GlobalExceptionAttribute));
             });
             
+            ConfigureMapper(services);
+            
             services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
+            services.AddSingleton<IEventRepository, EventRepositoryInMemory>();
+            services.AddSingleton<ITrackRepository, TrackRepositoryInMemory>();
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<ITracksService, TracksService>();
+            services.AddSingleton<IEventService, EventService>();
             services.AddSingleton<IJwtIssuer, JwtIssuer>();
             services.AddControllers();
         }
