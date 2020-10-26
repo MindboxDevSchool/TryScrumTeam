@@ -43,7 +43,15 @@ namespace ItHappend.RestAPI
                     };
                 });
 
-            services.AddScoped<LoggingFilter>();
+            //services.AddScoped<LoggingFilter>();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(LoggingFilter));
+            });
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(GlobalExceptionAttribute));
+            });
             
             services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
             services.AddSingleton<IUserService, UserService>();

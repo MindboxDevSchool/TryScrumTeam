@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ItHappend.RestAPI.Controllers
 {
-    [ServiceFilter(typeof(LoggingFilter))]
     public class UserController : ControllerBase
     {
         private readonly IJwtIssuer _jwtIssuer;
@@ -24,7 +23,6 @@ namespace ItHappend.RestAPI.Controllers
         
         [HttpPost]
         [Route("authentication")]
-        [GlobalException]
         public IActionResult Authenticate([FromBody]LoginRequest request)
         {
             var user = _userService.LoginUser(request.Login, request.Password);
@@ -37,7 +35,6 @@ namespace ItHappend.RestAPI.Controllers
 
         [HttpPost]
         [Route("user")]
-        [GlobalException]
         public IActionResult RegisterUser([FromBody]LoginRequest request)
         {
             var newUser = _userService.CreateUser(request.Login, request.Password);
