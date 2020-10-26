@@ -1,6 +1,7 @@
 using System.Text;
 using AutoMapper;
 using ItHappend.RestAPI.Authentication;
+using ItHappend.RestAPI.Filters;
 using ItHappened.Application;
 using ItHappened.Domain.Repositories;
 using ItHappened.Infrastructure.Repositories;
@@ -54,6 +55,16 @@ namespace ItHappend.RestAPI
                     };
                 });
 
+            //services.AddScoped<LoggingFilter>();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(LoggingFilter));
+            });
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(GlobalExceptionAttribute));
+            });
+            
             ConfigureMapper(services);
             
             services.AddSingleton<IUserRepository, UserRepositoryInMemory>();

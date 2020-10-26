@@ -23,7 +23,6 @@ namespace ItHappend.RestAPI.Controllers
         
         [HttpPost]
         [Route("authentication")]
-        [GlobalException]
         public IActionResult Authenticate([FromBody]LoginRequest request)
         {
             var user = _userService.LoginUser(request.Login, request.Password);
@@ -36,7 +35,6 @@ namespace ItHappend.RestAPI.Controllers
 
         [HttpPost]
         [Route("user")]
-        [GlobalException]
         public IActionResult RegisterUser([FromBody]LoginRequest request)
         {
             var newUser = _userService.CreateUser(request.Login, request.Password);
@@ -45,7 +43,6 @@ namespace ItHappend.RestAPI.Controllers
                 Id = newUser.Id,
                 Login = newUser.Login
             };
-            
             return Ok(result);
         }
         
@@ -59,7 +56,6 @@ namespace ItHappend.RestAPI.Controllers
                 Id = User.FindFirstValue(JwtClaimTypes.Id),
                 Login = User.FindFirstValue(JwtClaimTypes.Login)
             };
-            
             return Ok(result);
         }
     }

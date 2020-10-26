@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ItHappend.RestAPI.Controllers
 {
     [Authorize]
-    [GlobalException]
     [Route("tracks/{trackId}/events")]
     public class EventController : ControllerBase
     {

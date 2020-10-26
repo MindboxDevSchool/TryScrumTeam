@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using ItHappened.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Serilog;
+using Serilog.Core;
 
 namespace ItHappend.RestAPI.Filters
 {
@@ -13,52 +15,49 @@ namespace ItHappend.RestAPI.Filters
         
         public void OnException(ExceptionContext context)
         {
-            int statusCode = 400;
-            if(context.Exception is DomainException)
+            var statusCode = 400;
+            statusCode = context.Exception switch
             {
-                DomainException exception;
-                exception = context.Exception as DomainException;
-                switch (exception.Type)
+                DomainException domainException => domainException.Type switch
                 {
-                    case DomainExceptionType.TrackAccessDenied:
-                        statusCode = 403;
-                        break;
-                    case DomainExceptionType.IncorrectPassword:
-                        statusCode = 401;
-                        break;
-                }
-            }
-            if(context.Exception is RepositoryException)
-            {
-                RepositoryException exception;
-                exception = context.Exception as RepositoryException;
-                switch (exception.Type)
+                    DomainExceptionType.TrackAccessDenied => 403,
+                    DomainExceptionType.IncorrectPassword => 401,
+                    _ => statusCode
+                },
+                RepositoryException repositoryException => repositoryException.Type switch
                 {
-                    case RepositoryExceptionType.LoginAlreadyExists :
-                        statusCode = 400;
-                        break;
-                    case RepositoryExceptionType.EventNotFound :
-                        statusCode = 404;
-                        break;
-                    case RepositoryExceptionType.TrackNotFound :
-                        statusCode = 404;
-                        break;
-                    case RepositoryExceptionType.UserNotFound :
-                        statusCode = 404;
-                        break;
-                    case RepositoryExceptionType.UserNotFoundByLogin :
-                        statusCode = 404;
-                        break;
-                }
-            }
-            
-            
-            
-
+                    RepositoryExceptionType.LoginAlreadyExists => 400,
+                    RepositoryExceptionType.EventNotFound => 404,
+                    RepositoryExceptionType.TrackNotFound => 404,
+                    RepositoryExceptionType.UserNotFound => 404,
+                    RepositoryExceptionType.UserNotFoundByLogin => 404,
+                    _ => statusCode
+                },
+                _ => 500
+            };
+            LogException(context, statusCode);
             context.Result = new ObjectResult(context.Exception.Message)
             {
                 StatusCode = statusCode,
             };
+        }
+
+        private void LogException(ExceptionContext context, int statusCode)
+        {
+            if (statusCode == 500)
+            {
+                Log.Logger.Error("Unexpected exception occured: "
+                                 + statusCode
+                                 + " "
+                                 + context.Exception.Message);
+            }
+            else
+            {
+                Log.Logger.Information("Exception occured: "
+                                       + statusCode
+                                       + " "
+                                       + context.Exception.Message);
+            }
         }
     }
 }
