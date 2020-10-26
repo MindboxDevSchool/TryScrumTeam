@@ -33,11 +33,11 @@ namespace ItHappened.Application
             return new TrackDto(createdTrack);
         }
 
-        public TrackDto EditTrack(Guid userId, TrackDto trackDto)
+        public TrackDto EditTrack(Guid userId, TrackToEditDto trackDto)
         {
             var trackToEdit = TryGetAccessToTrack(userId, trackDto.Id);
             
-            var track = new Track(trackDto.Id, trackDto.Name, trackDto.CreatedAt, userId, trackDto.AllowedCustomizations);
+            var track = new Track(trackDto.Id, trackDto.Name, trackToEdit.CreatedAt, userId, trackDto.AllowedCustomizations);
             var trackWithResult = _trackRepository.TryUpdate(track);
 
             return new TrackDto(trackWithResult);
