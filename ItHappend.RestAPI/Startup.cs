@@ -1,6 +1,7 @@
 using System.Text;
 using AutoMapper;
 using ItHappend.RestAPI.Authentication;
+using ItHappend.RestAPI.Extensions;
 using ItHappend.RestAPI.Filters;
 using ItHappened.Application;
 using ItHappened.Domain.Repositories;
@@ -29,6 +30,7 @@ namespace ItHappend.RestAPI
             var mappingConfig = new MapperConfiguration(mc =>
             {
                 mc.AddProfile(new EventMapperProfile());
+                mc.AddProfile(new TrackMapperProfile());
             });
 
             IMapper mapper = mappingConfig.CreateMapper();

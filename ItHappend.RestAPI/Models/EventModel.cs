@@ -2,7 +2,7 @@ using System;
 
 namespace ItHappend.RestAPI.Models
 {
-    public class EditEventResponse
+    public class EventModel
     {
         public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; }
