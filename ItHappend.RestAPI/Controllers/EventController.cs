@@ -34,7 +34,7 @@ namespace ItHappend.RestAPI.Controllers
             
             var result = new GetEventsResponse()
             {
-                Events = _mapper.Map<IEnumerable<EventDto>, GetEventsResponseItem[]>(events),
+                Events = _mapper.Map<IEnumerable<EventDto>, EventModel[]>(events),
             };
             return Ok(result);
         }
@@ -47,7 +47,7 @@ namespace ItHappend.RestAPI.Controllers
             
             var @event = _eventService.CreateEvent(userId, trackId, request.CreatedAt, customizations);
 
-            var result = _mapper.Map<CreateEventResponse>(@event);
+            var result = _mapper.Map<EventModel>(@event);
             return Ok(result);
         }
         
@@ -72,7 +72,7 @@ namespace ItHappend.RestAPI.Controllers
             var eventDto = new EventToEditDto(eventId, customizations);
             var @event = _eventService.EditEvent(userId, eventDto);
 
-            var result = _mapper.Map<EditEventResponse>(@event);
+            var result = _mapper.Map<EventModel>(@event);
             return Ok(result);
         }
 
