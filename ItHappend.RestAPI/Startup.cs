@@ -64,6 +64,10 @@ namespace ItHappend.RestAPI
             {
                 options.Filters.Add(typeof(GlobalExceptionAttribute));
             });
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(ValidationFilter));
+            });
             
             ConfigureMapper(services);
             
