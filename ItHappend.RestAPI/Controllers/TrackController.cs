@@ -12,7 +12,7 @@ namespace ItHappend.RestAPI.Controllers
 {
     [Route("tracks")]
     [Authorize]
-    public class TrackController: ControllerBase
+    public class TrackController : ControllerBase
     {
         private readonly ITracksService _trackService;
 
@@ -24,7 +24,7 @@ namespace ItHappend.RestAPI.Controllers
         [HttpGet]
         public IActionResult GetTracks()
         {
-            var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
+            var userId = User.GetUserId();
             var tracks = _trackService.GetTracks(userId);
             var response = tracks.Map();
             return Ok(response);
@@ -34,21 +34,21 @@ namespace ItHappend.RestAPI.Controllers
         public IActionResult CreateTrack([FromBody] CreateTrackRequest request)
         {
             var createdTrack = _trackService.CreateTrack(
-                Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id)),
+                User.GetUserId(),
                 request.Name,
                 request.CreatedAt,
                 request.AllowedCustomizations.Map());
 
-            var respone = createdTrack.Map();
-            
-            return Ok(respone);
+            var response = createdTrack.Map();
+
+            return Ok(response);
         }
 
         [HttpPut]
         [Route("{id}")]
-        public IActionResult EditTrack([FromRoute]Guid id, [FromBody] EditTrackRequest request)
+        public IActionResult EditTrack([FromRoute] Guid id, [FromBody] EditTrackRequest request)
         {
-            var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
+            var userId = User.GetUserId();
             var trackDto = request.Map(id);
             var editedTrack = _trackService.EditTrack(userId, trackDto);
             var response = editedTrack.MapToResponse();
@@ -59,7 +59,7 @@ namespace ItHappend.RestAPI.Controllers
         [Route("{id}")]
         public IActionResult DeleteTrack([FromRoute] Guid id)
         {
-            var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
+            var userId = User.GetUserId();
             var trackId = _trackService.DeleteTrack(userId, id);
             return Ok(trackId);
         }
