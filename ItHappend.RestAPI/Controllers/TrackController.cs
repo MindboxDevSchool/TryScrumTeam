@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using AutoMapper;
-using ItHappend.RestAPI.Authentication;
-using ItHappend.RestAPI.Filters;
+using ItHappend.RestAPI.Extensions;
 using ItHappend.RestAPI.Models;
 using ItHappened.Application;
 using ItHappened.Domain;
@@ -28,7 +26,7 @@ namespace ItHappend.RestAPI.Controllers
         [HttpGet]
         public IActionResult GetTracks()
         {
-            var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
+            var userId = User.GetUserId();
             var tracks = _trackService.GetTracks(userId);
             var response = new GetTracksResponse()
             {
@@ -41,7 +39,7 @@ namespace ItHappend.RestAPI.Controllers
         public IActionResult CreateTrack([FromBody] CreateTrackRequest request)
         {
             var createdTrack = _trackService.CreateTrack(
-                Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id)),
+                User.GetUserId(),
                 request.Name,
                 request.CreatedAt,
                 _mapper.Map<IEnumerable<CustomizationType>>(request.AllowedCustomizations));
@@ -54,7 +52,7 @@ namespace ItHappend.RestAPI.Controllers
         [Route("{id}")]
         public IActionResult EditTrack([FromRoute] Guid id, [FromBody] EditTrackRequest request)
         {
-            var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
+            var userId = User.GetUserId();
             var trackToEitDto = new TrackToEditDto(
                 id,
                 request.Name,
@@ -68,7 +66,7 @@ namespace ItHappend.RestAPI.Controllers
         [Route("{id}")]
         public IActionResult DeleteTrack([FromRoute] Guid id)
         {
-            var userId = Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
+            var userId = User.GetUserId();
             var trackId = _trackService.DeleteTrack(userId, id);
             return Ok(trackId);
         }

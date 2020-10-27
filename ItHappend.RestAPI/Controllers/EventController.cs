@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Security.Claims;
 using AutoMapper;
-using ItHappend.RestAPI.Authentication;
-using ItHappend.RestAPI.Filters;
+using ItHappend.RestAPI.Extensions;
 using ItHappend.RestAPI.Models;
 using ItHappened.Application;
 using ItHappened.Domain;
@@ -25,60 +22,56 @@ namespace ItHappend.RestAPI.Controllers
             _eventService = eventService;
             _mapper = mapper;
         }
-        
+
         [HttpGet]
-        public IActionResult GetEvents([FromRoute]Guid trackId)
+        public IActionResult GetEvents([FromRoute] Guid trackId)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             var events = _eventService.GetEvents(userId, trackId);
-            
+
             var result = new GetEventsResponse()
             {
                 Events = _mapper.Map<IEnumerable<EventDto>, EventModel[]>(events),
             };
             return Ok(result);
         }
-        
+
         [HttpPost]
-        public IActionResult CreateEvent([FromRoute]Guid trackId, [FromBody]CreateEventRequest request)
+        public IActionResult CreateEvent([FromRoute] Guid trackId, [FromBody] CreateEventRequest request)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             var customizations = _mapper.Map<CustomizationsDto>(request.Customizations);
-            
+
             var @event = _eventService.CreateEvent(userId, trackId, request.CreatedAt, customizations);
 
             var result = _mapper.Map<EventModel>(@event);
             return Ok(result);
         }
-        
+
         [HttpDelete]
         [Route("{eventId}")]
-        public IActionResult DeleteEvent([FromRoute]Guid eventId)
+        public IActionResult DeleteEvent([FromRoute] Guid eventId)
         {
-            var userId = GetUserId();
-            
+            var userId = User.GetUserId();
+
             var @event = _eventService.DeleteEvent(userId, eventId);
 
-            var result = new DeleteEventResponse { Id = @event};
+            var result = new DeleteEventResponse {Id = @event};
             return Ok(result);
         }
-        
+
         [HttpPut]
         [Route("{eventId}")]
-        public IActionResult EditEvent([FromRoute]Guid trackId, [FromRoute]Guid eventId, [FromBody] EditEventRequest request)
+        public IActionResult EditEvent([FromRoute] Guid trackId, [FromRoute] Guid eventId,
+            [FromBody] EditEventRequest request)
         {
-            var userId = GetUserId();
+            var userId = User.GetUserId();
             var customizations = _mapper.Map<CustomizationsDto>(request.Customizations);
             var eventDto = new EventToEditDto(eventId, customizations);
             var @event = _eventService.EditEvent(userId, eventDto);
 
             var result = _mapper.Map<EventModel>(@event);
             return Ok(result);
-        }
-
-        private Guid GetUserId()
-        {
-            return Guid.Parse(User.FindFirstValue(JwtClaimTypes.Id));
         }
     }
 }
