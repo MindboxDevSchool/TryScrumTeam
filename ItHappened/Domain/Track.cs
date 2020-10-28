@@ -5,6 +5,9 @@ namespace ItHappened.Domain
 {
     public class Track
     {
+        public Track()
+        {
+        }
         public Track(Guid id, string name, DateTime createdAt, Guid creatorId, IEnumerable<CustomizationType> allowedCustomizations)
         {
             Id = id;

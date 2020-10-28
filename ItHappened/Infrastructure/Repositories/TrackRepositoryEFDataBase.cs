@@ -18,6 +18,7 @@ namespace ItHappened.Infrastructure.Repositories
         public Track TryCreate(Track track)
         {
             _trackDbContext.Tracks.Add(track);
+            Console.WriteLine(_trackDbContext.Tracks.Find(track.Id).Name);
             return track;
         }
 
@@ -26,6 +27,7 @@ namespace ItHappened.Infrastructure.Repositories
             return 
                 _trackDbContext
                     .Tracks
+                    .ToList()
                     .Where(track => track.CreatorId == userId);
         }
 
@@ -39,12 +41,15 @@ namespace ItHappened.Infrastructure.Repositories
 
         public Track TryUpdate(Track track)
         {
+            //it should be tracked
             return track;
         }
 
         public Guid TryDelete(Guid trackId)
         {
-            throw new NotImplementedException();
+            var trackToRemove = _trackDbContext.Tracks.Single(track => track.Id == trackId);
+            _trackDbContext.Tracks.Remove(trackToRemove);
+            return trackToRemove.Id;
         }
     }
 }

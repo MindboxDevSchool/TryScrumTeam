@@ -2,7 +2,7 @@
 
 namespace ItHappend.ConsoleClient
 {
-    class Program
+    class asdadasd
     {
         static void Main(string[] args)
         {

@@ -1,13 +1,16 @@
+using System;
 using System.Text;
 using AutoMapper;
 using ItHappend.RestAPI.Authentication;
 using ItHappend.RestAPI.Filters;
 using ItHappened.Application;
 using ItHappened.Domain.Repositories;
+using ItHappened.Infrastructure;
 using ItHappened.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -66,15 +69,29 @@ namespace ItHappend.RestAPI
             });
             
             ConfigureMapper(services);
-            
+            RegisterEfCoreRepository(services);
             services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
             services.AddSingleton<IEventRepository, EventRepositoryInMemory>();
-            services.AddSingleton<ITrackRepository, TrackRepositoryInMemory>();
+            //services.AddSingleton<ITrackRepository, TrackRepositoryInMemory>();
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<ITracksService, TracksService>();
             services.AddSingleton<IEventService, EventService>();
             services.AddSingleton<IJwtIssuer, JwtIssuer>();
             services.AddControllers();
+        }
+        
+        private void RegisterEfCoreRepository(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddDbContext<TrackDbContext>(builder => builder.UseSqlServer(GetConnectionString()));
+
+            serviceCollection.AddScoped<ITrackRepository, TrackRepositoryEfDataBase>();
+            
+            serviceCollection.AddScoped<SaveChangesFilter>();
+
+            serviceCollection.AddControllers(options =>
+            {
+                options.Filters.AddService<SaveChangesFilter>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -91,6 +108,11 @@ namespace ItHappend.RestAPI
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+        
+        public string GetConnectionString()
+        {
+            return Configuration.GetValue<string>("ConnectionString");
         }
     }
 }
