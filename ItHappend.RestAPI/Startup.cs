@@ -63,10 +63,10 @@ namespace ItHappend.RestAPI
             {
                 options.Filters.Add(typeof(LoggingFilter));
             });
-            services.AddControllers(options =>
+            /*services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(GlobalExceptionAttribute));
-            });
+            });*/
             
             ConfigureMapper(services);
             RegisterEfCoreRepository(services);
@@ -74,8 +74,8 @@ namespace ItHappend.RestAPI
             services.AddSingleton<IEventRepository, EventRepositoryInMemory>();
             //services.AddSingleton<ITrackRepository, TrackRepositoryInMemory>();
             services.AddSingleton<IUserService, UserService>();
-            services.AddSingleton<ITracksService, TracksService>();
-            services.AddSingleton<IEventService, EventService>();
+            services.AddScoped<ITracksService, TracksService>();
+            services.AddScoped<IEventService, EventService>();
             services.AddSingleton<IJwtIssuer, JwtIssuer>();
             services.AddControllers();
         }
@@ -112,6 +112,7 @@ namespace ItHappend.RestAPI
         
         public string GetConnectionString()
         {
+            Console.WriteLine(Configuration.GetValue<string>("ConnectionString"));
             return Configuration.GetValue<string>("ConnectionString");
         }
     }

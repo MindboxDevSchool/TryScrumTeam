@@ -9,6 +9,6 @@ namespace ItHappened.Domain.CustomizationTypes
             Value = value ?? throw new ArgumentNullException("PhotoCustomization");
         }
 
-        public string Value { get; }
+        public string Value { get; set;}
     }
 }

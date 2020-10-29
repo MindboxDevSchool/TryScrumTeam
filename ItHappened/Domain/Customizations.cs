@@ -46,15 +46,15 @@ namespace ItHappened.Domain
             }
         }
 
-        public CommentCustomization Comment { get; }
+        public CommentCustomization Comment { get; set; }
 
-        public RatingCustomization Rating { get; }
+        public RatingCustomization Rating { get; set;}
 
-        public ScaleCustomization Scale { get; }
+        public ScaleCustomization Scale { get; set;}
 
-        public PhotoCustomization Photo { get; }
+        public PhotoCustomization Photo { get; set;}
 
-        public GeotagCustomization Geotag { get; }
+        public GeotagCustomization Geotag { get; set; }
 
         public CustomizationsDto GetDto()
         {

@@ -18,9 +18,9 @@ namespace ItHappened.Domain
         }
 
         [Key]
-        public Guid Id { get; }
-        public DateTime CreatedAt { get; }
-        public Guid TrackId { get; }
-        public Customizations Customization { get; }
+        public Guid Id { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public Guid TrackId { get; set; }
+        public Customizations Customization { get; set; }
     }
 }
