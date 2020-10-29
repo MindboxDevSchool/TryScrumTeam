@@ -45,9 +45,6 @@ namespace ItHappened.Infrastructure.Repositories
                                     where CreatorId = @CreatorId",
                     new{CreatorId = userId}).ToList();
             
-            if (!result.Any())
-                throw new RepositoryException(RepositoryExceptionType.TrackNotFound, userId);
-
             var resultConverted = result.Select(FromTrackDbToTrack);
             
             return resultConverted;
