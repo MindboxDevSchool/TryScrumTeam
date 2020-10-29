@@ -58,20 +58,18 @@ namespace ItHappend.RestAPI
                         ValidateLifetime = true
                     };
                 });
-
-            //services.AddScoped<LoggingFilter>();
+            
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(LoggingFilter));
             });
-            /*services.AddControllers(options =>
+            services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(GlobalExceptionAttribute));
-            });*/
+            });
             
             ConfigureMapper(services);
             RegisterDapperRepository(services);
-            //services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
             services.AddSingleton<IEventRepository, EventRepositoryInMemory>();
             services.AddSingleton<ITrackRepository, TrackRepositoryInMemory>();
             services.AddScoped<IUserService, UserService>();

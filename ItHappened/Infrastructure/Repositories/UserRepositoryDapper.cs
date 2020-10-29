@@ -19,27 +19,33 @@ namespace ItHappened.Infrastructure.Repositories
         }
         public User TryCreate(User user)
         {
-            var a = _connection
-                .Query<User>(@"insert into ItHappend.Users
+            try
+            {
+                var a = _connection
+                    .Query<User>(@"insert into ItHappend.Users
                 (Id, Login, HashedPassword) 
                 VALUES (@Id, @Login, @HashedPassword)",
-            new
+                        new
+                        {
+                            Id = user.Id,
+                            Login = user.Login,
+                            HashedPassword = user.HashedPassword
+                        });
+            }
+            catch
             {
-                Id = user.Id,
-                Login = user.Login,
-                HashedPassword = user.HashedPassword
-            });
-            //_connection.Insert<Guid,User>(user);
-            /*if (_users.Any(elem => elem.Value.Login == user.Login))
-                throw new RepositoryException(RepositoryExceptionType.LoginAlreadyExists, user.Login);
-            _users[user.Id] = user;*/
-            //user = _connection.Get<User>(user.Id);
+                throw new RepositoryException(RepositoryExceptionType.LoginAlreadyExists,user.Login);
+            }
+
             return user;
         }
 
         public User TryGetByLogin(string login)
         {
-            var result = _connection.GetList<User>(new { Login = login }).ToList();
+            var result = _connection
+                .Query<User>(@"select * from ItHappend.Users
+                                    where Login = @Login",
+            new{Login = login}).ToList();
             
             if (!result.Any())
                 throw new RepositoryException(RepositoryExceptionType.UserNotFoundByLogin, login);
@@ -49,13 +55,15 @@ namespace ItHappened.Infrastructure.Repositories
 
         public User TryGetById(Guid id)
         {
-            var result = _connection.Get<User>(id);
-            if (result.Equals(null))
+            var result = _connection
+                .Query<User>(@"select * from ItHappend.Users
+                                    where Id = @Id",
+                    new{Id = id}).ToList();
+            if (!result.Any())
             {
                 throw new RepositoryException(RepositoryExceptionType.UserNotFound, id);
             }
-
-            return result;
+            return result.Single();
         }
     }
 }
