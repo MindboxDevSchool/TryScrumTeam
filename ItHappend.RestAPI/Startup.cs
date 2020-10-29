@@ -63,15 +63,14 @@ namespace ItHappend.RestAPI
             {
                 options.Filters.Add(typeof(LoggingFilter));
             });
-            /*services.AddControllers(options =>
+            services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(GlobalExceptionAttribute));
-            });*/
+            });
             
             ConfigureMapper(services);
             RegisterDapperRepository(services);
             services.AddSingleton<IEventRepository, EventRepositoryInMemory>();
-            //services.AddSingleton<ITrackRepository, TrackRepositoryInMemory>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITracksService, TracksService>();
             services.AddScoped<IEventService, EventService>();
