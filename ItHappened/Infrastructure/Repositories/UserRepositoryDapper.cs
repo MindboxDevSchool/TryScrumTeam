@@ -12,7 +12,6 @@ namespace ItHappened.Infrastructure.Repositories
     public class UserRepositoryDapper:IUserRepository
     {
         private readonly IDbConnection _connection;
-        
         public UserRepositoryDapper(IDbConnection connection)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
