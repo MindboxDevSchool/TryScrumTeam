@@ -1,3 +1,5 @@
+using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 using AutoMapper;
 using ItHappend.RestAPI.Authentication;
@@ -62,21 +64,28 @@ namespace ItHappend.RestAPI
             {
                 options.Filters.Add(typeof(LoggingFilter));
             });
-            services.AddControllers(options =>
+            /*services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(GlobalExceptionAttribute));
-            });
+            });*/
             
             ConfigureMapper(services);
-            
-            services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
+            RegisterDapperRepository(services);
+            //services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
             services.AddSingleton<IEventRepository, EventRepositoryInMemory>();
             services.AddSingleton<ITrackRepository, TrackRepositoryInMemory>();
-            services.AddSingleton<IUserService, UserService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddSingleton<ITracksService, TracksService>();
             services.AddSingleton<IEventService, EventService>();
             services.AddSingleton<IJwtIssuer, JwtIssuer>();
             services.AddControllers();
+        }
+        
+        private void RegisterDapperRepository(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddScoped<IDbConnection>(
+                serviceProvider => new SqlConnection(GetConnectionString()));
+            serviceCollection.AddScoped<IUserRepository, UserRepositoryDapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,6 +102,11 @@ namespace ItHappend.RestAPI
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+        
+        private string GetConnectionString()
+        {
+            return Configuration.GetValue<string>("ConnectionString");
         }
     }
 }
