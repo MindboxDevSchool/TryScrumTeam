@@ -99,9 +99,9 @@ namespace ItHappened.Infrastructure.Repositories
 
         private Track FromTrackDbToTrack(TrackDb trackDb)
         {
-            var EnumStrings = trackDb.AllowedCustomizations.Split().ToList();
-            var Enums = EnumStrings.Select(Enum.Parse<CustomizationType>);
-            var newTrack = new Track(trackDb.Id,trackDb.Name,trackDb.CreatedAt,trackDb.CreatorId, Enums);
+            var enumStrings = trackDb.AllowedCustomizations.Split().ToList();
+            var enums = enumStrings.Select(Enum.Parse<CustomizationType>);
+            var newTrack = new Track(trackDb.Id,trackDb.Name,trackDb.CreatedAt,trackDb.CreatorId, enums);
             return newTrack;
         }
     }
