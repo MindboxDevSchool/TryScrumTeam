@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ItHappened.Domain
 {
@@ -13,14 +14,11 @@ namespace ItHappened.Domain
 
     public static class CustomizationTypeExtensions
     {
-        public static string CreateString(this IEnumerable<CustomizationType> types)
+        public static string CreateString(this IEnumerable<CustomizationType> AllowedCustomizations)
         {
-            string customizations = "";
-            foreach (var c in types)
-            {
-                customizations += c.ToString() + " ";
-            }
-            return customizations;
+            var allowedCustomizations =
+                string.Join(" ", AllowedCustomizations.Select(s => s.ToString()).ToArray());
+            return allowedCustomizations;
         }
     }
 }

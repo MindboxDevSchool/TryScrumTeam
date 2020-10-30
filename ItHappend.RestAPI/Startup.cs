@@ -1,3 +1,5 @@
+using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 using AutoMapper;
 using ItHappend.RestAPI.Authentication;
@@ -56,8 +58,7 @@ namespace ItHappend.RestAPI
                         ValidateLifetime = true
                     };
                 });
-
-            //services.AddScoped<LoggingFilter>();
+            
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(LoggingFilter));
@@ -68,15 +69,21 @@ namespace ItHappend.RestAPI
             });
             
             ConfigureMapper(services);
-            
-            services.AddSingleton<IUserRepository, UserRepositoryInMemory>();
+            RegisterDapperRepository(services);
             services.AddSingleton<IEventRepository, EventRepositoryInMemory>();
-            services.AddSingleton<ITrackRepository, TrackRepositoryInMemory>();
-            services.AddSingleton<IUserService, UserService>();
-            services.AddSingleton<ITracksService, TracksService>();
-            services.AddSingleton<IEventService, EventService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITracksService, TracksService>();
+            services.AddScoped<IEventService, EventService>();
             services.AddSingleton<IJwtIssuer, JwtIssuer>();
             services.AddControllers();
+        }
+        
+        private void RegisterDapperRepository(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddScoped<IDbConnection>(
+                serviceProvider => new SqlConnection(GetConnectionString()));
+            serviceCollection.AddScoped<IUserRepository, UserRepositoryDapper>();
+            serviceCollection.AddScoped<ITrackRepository, TrackRepositoryDapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,6 +100,11 @@ namespace ItHappend.RestAPI
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        }
+        
+        private string GetConnectionString()
+        {
+            return Configuration.GetValue<string>("ConnectionString");
         }
     }
 }
