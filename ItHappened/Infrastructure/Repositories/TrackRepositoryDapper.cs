@@ -20,19 +20,18 @@ namespace ItHappened.Infrastructure.Repositories
         }
         public Track TryCreate(Track track)
         {
-            var allowedCustomizations =
-                    string.Join(" ", track.AllowedCustomizations.Select(s => s.ToString()).ToArray());
-                var newTrack = _connection
+            var trackDb = FromTrackToTrackDb(track);
+                _connection
                     .Query<TrackDb>(@"insert into ItHappend.Tracks
                 (Id, Name, CreatedAt,CreatorId,AllowedCustomizations) 
                 VALUES (@Id, @Name, @CreatedAt,@CreatorId,@AllowedCustomizations)",
                         new
                         {
-                            Id = track.Id,
-                            Name = track.Name,
-                            CreatedAt = track.CreatedAt,
-                            CreatorId = track.CreatorId,
-                            AllowedCustomizations = allowedCustomizations
+                            Id = trackDb.Id,
+                            Name = trackDb.Name,
+                            CreatedAt = trackDb.CreatedAt,
+                            CreatorId = trackDb.CreatorId,
+                            AllowedCustomizations = trackDb.AllowedCustomizations
                         });
                 
             return track;
@@ -66,10 +65,9 @@ namespace ItHappened.Infrastructure.Repositories
 
         public Track TryUpdate(Track track)
         {
-            var allowedCustomizations =
-                string.Join(" ", track.AllowedCustomizations.Select(s => s.ToString()).ToArray());
-            var newTrack = _connection
-                .Query<TrackDb>(@"UPDATE ItHappend.Tracks 
+            var trackDb = FromTrackToTrackDb(track);
+            _connection
+                .Query(@"UPDATE ItHappend.Tracks 
                 SET
                 Name = @Name,
                  CreatedAt = @CreatedAt,
@@ -78,18 +76,18 @@ namespace ItHappened.Infrastructure.Repositories
                  where Id = @Id",
             new
             {
-                Id = track.Id,
-                Name = track.Name,
-                CreatedAt = track.CreatedAt,
-                CreatorId = track.CreatorId,
-                AllowedCustomizations = allowedCustomizations
+                Id = trackDb.Id,
+                Name = trackDb.Name,
+                CreatedAt = trackDb.CreatedAt,
+                CreatorId = trackDb.CreatorId,
+                AllowedCustomizations =trackDb.AllowedCustomizations
             });
             return track;
         }
 
         public Guid TryDelete(Guid trackId)
         {
-            var result = _connection.Query<TrackDb>(
+            _connection.Query(
                 @"delete from ItHappend.Tracks
                       where Id = @Id",
                 new {Id = trackId}
@@ -103,6 +101,12 @@ namespace ItHappened.Infrastructure.Repositories
             var enums = enumStrings.Select(Enum.Parse<CustomizationType>);
             var newTrack = new Track(trackDb.Id,trackDb.Name,trackDb.CreatedAt,trackDb.CreatorId, enums);
             return newTrack;
+        }
+        private TrackDb FromTrackToTrackDb(Track track)
+        {
+            var stringOfEnums = track.AllowedCustomizations.CreateString();
+            var newTrackDb = new TrackDb(track.Id,track.Name,track.CreatedAt,track.CreatorId,stringOfEnums);
+            return newTrackDb;
         }
     }
 }
