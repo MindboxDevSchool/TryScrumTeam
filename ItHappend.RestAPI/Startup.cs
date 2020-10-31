@@ -70,7 +70,6 @@ namespace ItHappend.RestAPI
             
             ConfigureMapper(services);
             RegisterDapperRepository(services);
-            services.AddSingleton<IEventRepository, EventRepositoryInMemory>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITracksService, TracksService>();
             services.AddScoped<IEventService, EventService>();
@@ -84,6 +83,7 @@ namespace ItHappend.RestAPI
                 serviceProvider => new SqlConnection(GetConnectionString()));
             serviceCollection.AddScoped<IUserRepository, UserRepositoryDapper>();
             serviceCollection.AddScoped<ITrackRepository, TrackRepositoryDapper>();
+            serviceCollection.AddScoped<IEventRepository, EventRepositoryDapper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

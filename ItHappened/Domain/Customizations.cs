@@ -11,6 +11,22 @@ namespace ItHappened.Domain
         {
         }
 
+        public Customizations(
+            string comment,
+            double? geotagLatitude, double? geotagLongitude,
+            string photoUrl,
+            int? rating,
+            double? scale)
+        {
+            Comment = comment is null ? null : new CommentCustomization(comment);
+            Geotag = geotagLatitude is null || geotagLongitude is null
+                ? null
+                : new GeotagCustomization((double) geotagLatitude, (double) geotagLongitude);
+            Rating = rating is null ? null : new RatingCustomization((int) rating);
+            Scale = scale is null ? null : new ScaleCustomization((int) scale);
+            Photo = photoUrl is null ? null : new PhotoCustomization(photoUrl);
+        }
+
         public Customizations(CustomizationsDto customizationsDto, IEnumerable<CustomizationType> allowedCustoms)
         {
             if (allowedCustoms.Contains(CustomizationType.Comment))
