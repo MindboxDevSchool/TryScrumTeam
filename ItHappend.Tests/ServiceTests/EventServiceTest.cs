@@ -39,11 +39,11 @@ namespace ItHappend.Tests.ServiceTests
                 new Customizations());
 
             var trackRepositoryMock = new Mock<ITrackRepository>();
-            trackRepositoryMock.Setup(method => method.TryGetTrackById(It.IsAny<Guid>()))
+            trackRepositoryMock.Setup(method => method.TryGetTrackById(_track.Id))
                 .Returns(_track);
 
             var eventRepositoryMock = new Mock<IEventRepository>();
-            eventRepositoryMock.Setup(method => method.TryGetById(It.IsAny<Guid>()))
+            eventRepositoryMock.Setup(method => method.TryGetById(_event.Id))
                 .Returns(_event);
 
             _eventService = new EventService(eventRepositoryMock.Object, trackRepositoryMock.Object);
@@ -146,15 +146,15 @@ namespace ItHappend.Tests.ServiceTests
                 new Customizations());
 
             var trackRepositoryMock = new Mock<ITrackRepository>();
-            trackRepositoryMock.Setup(method => method.TryGetTrackById(It.IsAny<Guid>()))
+            trackRepositoryMock.Setup(method => method.TryGetTrackById(_track.Id))
                 .Returns(_track);
 
             var eventRepositoryMock = new Mock<IEventRepository>();
-            eventRepositoryMock.Setup(method => method.TryGetEventsByTrack(It.IsAny<Guid>(), null, null))
+            eventRepositoryMock.Setup(method => method.TryGetEventsByTrack(_track.Id, null, null))
                 .Returns(new List<Event>() {_event});
-            eventRepositoryMock.Setup(method => method.TryDelete(It.IsAny<Guid>()))
+            eventRepositoryMock.Setup(method => method.TryDelete(_event.Id))
                 .Returns(_event.Id);
-            eventRepositoryMock.Setup(method => method.TryGetById(It.IsAny<Guid>()))
+            eventRepositoryMock.Setup(method => method.TryGetById(_event.Id))
                 .Returns(_event);
 
             _eventService = new EventService(eventRepositoryMock.Object, trackRepositoryMock.Object);
@@ -339,13 +339,13 @@ namespace ItHappend.Tests.ServiceTests
                 new Customizations(customizationsDto, customizationsForDto));
 
             var trackRepositoryMock = new Mock<ITrackRepository>();
-            trackRepositoryMock.Setup(method => method.TryGetTrackById(It.IsAny<Guid>()))
+            trackRepositoryMock.Setup(method => method.TryGetTrackById(_track.Id))
                 .Returns(_track);
 
             var eventRepositoryMock = new Mock<IEventRepository>();
             eventRepositoryMock.Setup(method => method.TryCreate(It.IsAny<Event>()))
                 .Returns(_event);
-            eventRepositoryMock.Setup(method => method.TryGetById(It.IsAny<Guid>()))
+            eventRepositoryMock.Setup(method => method.TryGetById(_event.Id))
                 .Returns(_event);
             eventRepositoryMock.Setup(method => method.TryUpdate(It.IsAny<Event>()))
                 .Returns(_event);
