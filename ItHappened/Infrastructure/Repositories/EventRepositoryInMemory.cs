@@ -17,11 +17,13 @@ namespace ItHappened.Infrastructure.Repositories
             return @event;
         }
 
-        public IEnumerable<Event> TryGetEventsByTrack(Guid trackId)
+        public IEnumerable<Event> TryGetEventsByTrack(Guid trackId, int? take = null, int? skip = null)
         {
             var result = _events
                 .Where(elem => elem.Value.TrackId == trackId)
                 .Select(elem => elem.Value);
+            if (skip != null) result = result.Skip((int) skip);
+            if (take != null) result = result.Take((int) take);
             return result;
         }
 

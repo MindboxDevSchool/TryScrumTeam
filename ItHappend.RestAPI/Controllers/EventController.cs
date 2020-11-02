@@ -24,10 +24,10 @@ namespace ItHappend.RestAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetEvents([FromRoute] Guid trackId)
+        public IActionResult GetEvents([FromRoute] Guid trackId, [FromQuery]int? take, [FromQuery]int? skip)
         {
             var userId = User.GetUserId();
-            var events = _eventService.GetEvents(userId, trackId);
+            var events = _eventService.GetEvents(userId, trackId, take, skip);
 
             var result = new GetEventsResponse()
             {
