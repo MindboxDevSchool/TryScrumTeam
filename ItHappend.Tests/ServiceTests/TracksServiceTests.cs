@@ -23,6 +23,12 @@ namespace ItHappend.Tests.ServiceTests
                 DateTime.Now,
                 _testUserId,
                 new List<CustomizationType>());
+            _testTrackUpdated = new Track(
+                _testTrackId,
+                "Test track Updated",
+                _testTrack.CreatedAt,
+                _testUserId,
+                new List<CustomizationType>());
         }
 
         private void SetupMoqEventRepository()
@@ -37,15 +43,26 @@ namespace ItHappend.Tests.ServiceTests
         private void SetupMoqTrackRepository()
         {
             var mock = new Mock<ITrackRepository>();
-            mock.Setup(method => method.TryGetTrackById(It.IsAny<Guid>()))
+            mock.Setup(method => method.TryGetTrackById(_testTrackId))
                 .Returns(_testTrack);
-            mock.Setup(method => method.TryGetTracksByUser(It.IsAny<Guid>(), null, null))
+            mock.Setup(method => method.TryGetTracksByUser(_testUserId, null, null))
                 .Returns(new List<Track>() {_testTrack});
-            mock.Setup(method => method.TryCreate(It.IsAny<Track>()))
+            
+            mock.Setup(method => method.TryCreate(
+                    It.Is<Track>(tr=> _testTrack.Name == tr.Name 
+                                      && Equals(_testTrack.AllowedCustomizations, tr.AllowedCustomizations) 
+                                      && _testTrack.CreatedAt == tr.CreatedAt
+                                      && _testTrack.CreatorId == tr.CreatorId)))
                 .Returns(_testTrack);
-            mock.Setup(method => method.TryUpdate(It.IsAny<Track>()))
-                .Returns(_testTrack);
-            mock.Setup(method => method.TryDelete(It.IsAny<Guid>()))
+            
+            mock.Setup(method => method.TryUpdate(
+                    It.Is<Track>(tr=> _testTrackUpdated.Name == tr.Name 
+                                      && Equals(_testTrackUpdated.AllowedCustomizations, tr.AllowedCustomizations) 
+                                      && _testTrackUpdated.CreatedAt == tr.CreatedAt
+                                      && _testTrackUpdated.CreatorId == tr.CreatorId)))
+                .Returns(_testTrackUpdated);
+            
+            mock.Setup(method => method.TryDelete(_testTrackId))
                 .Returns(_testTrackId);
 
             _trackRepository = mock.Object;
@@ -55,6 +72,7 @@ namespace ItHappend.Tests.ServiceTests
         private Guid _testInvalidUserId;
         private Guid _testTrackId;
         private Track _testTrack;
+        private Track _testTrackUpdated;
         private IEventRepository _eventRepository;
         private ITrackRepository _trackRepository;
 
@@ -76,8 +94,12 @@ namespace ItHappend.Tests.ServiceTests
             var result = tracksService.GetTracks(_testUserId);
 
             // assert
-            Assert.AreEqual(1, result.Count());
-            Assert.AreEqual("Test track", result.First().Name);
+            var trackDtos = result.ToList();
+            Assert.AreEqual(1, trackDtos.Count());
+            Assert.AreEqual(_testTrack.Name, trackDtos.Single().Name);
+            Assert.AreEqual(_testUserId, trackDtos.Single().CreatorId);
+            Assert.AreEqual(_testTrack.AllowedCustomizations, trackDtos.Single().AllowedCustomizations);
+            Assert.AreEqual(_testTrack.CreatedAt, trackDtos.Single().CreatedAt);
         }
         
         
@@ -89,10 +111,13 @@ namespace ItHappend.Tests.ServiceTests
 
             // act
             var result =
-                tracksService.CreateTrack(_testUserId, "NewTrack", DateTime.Now, new List<CustomizationType>());
+                tracksService.CreateTrack(_testUserId, _testTrack.Name, _testTrack.CreatedAt, _testTrack.AllowedCustomizations);
 
             // assert
-            Assert.AreEqual("Test track", result.Name);
+            Assert.AreEqual(_testTrack.Name, result.Name);
+            Assert.AreEqual(_testUserId, result.CreatorId);
+            Assert.AreEqual(_testTrack.AllowedCustomizations, result.AllowedCustomizations);
+            Assert.AreEqual(_testTrack.CreatedAt, result.CreatedAt);
         }
 
         [Test]
@@ -100,13 +125,17 @@ namespace ItHappend.Tests.ServiceTests
         {
             // arrange
             var tracksService = new TracksService(_trackRepository, _eventRepository);
-            var trackDto = new TrackToEditDto(_testTrack.Id, _testTrack.Name, _testTrack.AllowedCustomizations);
+            var trackDto = new TrackToEditDto(_testTrackUpdated.Id, _testTrackUpdated.Name, _testTrackUpdated.AllowedCustomizations);
 
             // act
             var result = tracksService.EditTrack(_testUserId, trackDto);
 
                 // assert
-            Assert.AreEqual(_testTrackId, result.Id);
+            Assert.AreEqual(result.Id,_testTrackUpdated.Id);
+            Assert.AreEqual(result.Name,_testTrackUpdated.Name);
+            Assert.AreEqual(result.AllowedCustomizations,_testTrackUpdated.AllowedCustomizations);
+            Assert.AreEqual(result.CreatedAt,_testTrackUpdated.CreatedAt);
+            Assert.AreEqual(result.CreatorId,_testTrackUpdated.CreatorId);
         }
 
         [Test]
@@ -116,7 +145,7 @@ namespace ItHappend.Tests.ServiceTests
             var tracksService = new TracksService(_trackRepository, _eventRepository);
 
             // act
-            var result = tracksService.DeleteTrack(_testUserId, Guid.NewGuid());
+            var result = tracksService.DeleteTrack(_testUserId, _testTrackId);
 
             // assert
             Assert.AreEqual(_testTrackId, result);
