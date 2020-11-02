@@ -61,7 +61,7 @@ namespace ItHappend.Tests.ServiceTests
         private void SetupMoqEventRepository()
         {
             var mock = new Mock<IEventRepository>();
-            mock.Setup(method => method.TryGetEventsByTrack(It.IsAny<Guid>()))
+            mock.Setup(method => method.TryGetEventsByTrack(It.IsAny<Guid>(), null, null))
                 .Returns(new List<Event>() {_testEvent});
             mock.Setup(method => method.TryCreate(It.IsAny<Event>()))
                 .Returns(_testEvent);

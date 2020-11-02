@@ -6,7 +6,7 @@ namespace ItHappened.Domain.Repositories
     public interface IEventRepository
     {
         Event TryCreate(Event @event);
-        IEnumerable<Event> TryGetEventsByTrack(Guid trackId);
+        IEnumerable<Event> TryGetEventsByTrack(Guid trackId, int? take = null, int? skip = null);
 
         Event TryGetById(Guid id);
         Event TryUpdate(Event @event);

@@ -31,12 +31,20 @@ namespace ItHappened.Infrastructure.Repositories
             return @event;
         }
 
-        public IEnumerable<Event> TryGetEventsByTrack(Guid trackId)
+        public IEnumerable<Event> TryGetEventsByTrack(Guid trackId, int? take, int? skip)
         {
+            var takeString = take is null ? "" : $" FETCH NEXT {take} ROWS ONLY";
             var result = _connection
                 .Query<EventDb>(@"select * from ItHappend.Events
-                                    where TrackId = @trackId",
-                    new {TrackId = trackId}).ToList();
+                                    where TrackId = @trackId
+                                    ORDER BY CreatedAt DESC
+                                    OFFSET  @Skip ROWS
+                                    " + takeString,
+                    new
+                    {
+                        TrackId = trackId,
+                        Skip = skip ?? 0,
+                    }).ToList();
 
             if (!result.Any())
                 return new List<Event>();
