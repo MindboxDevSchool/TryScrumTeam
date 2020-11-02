@@ -15,15 +15,18 @@ namespace ItHappend.Tests.ServiceTests
         {
             _testUserId = Guid.NewGuid();
             var shaHashing = new ShaHashing();
-            _testUser = new User(_testUserId, "login", shaHashing.HashPassword("password"));
+            _loginString = "login";
+            _passwordString = "password";
+            _testUser = new User(_testUserId, _loginString, shaHashing.HashPassword(_passwordString));
         }
 
         private void SetupMoqUserRepository()
         {
             var mock = new Mock<IUserRepository>();
-            mock.Setup(method => method.TryCreate(It.IsAny<User>()))
+            mock.Setup(method => method.TryCreate(
+                    It.Is<User>(a => _testUser.Login == a.Login && _testUser.HashedPassword == a.HashedPassword)))
                 .Returns(_testUser);
-            mock.Setup(method => method.TryGetByLogin(It.IsAny<string>()))
+            mock.Setup(method => method.TryGetByLogin(_loginString))
                 .Returns(_testUser);
 
             _userRepository = mock.Object;
@@ -32,6 +35,8 @@ namespace ItHappend.Tests.ServiceTests
         private User _testUser;
         private Guid _testUserId;
         private IUserRepository _userRepository;
+        private string _loginString;
+        private string _passwordString;
 
         [SetUp]
         public void Setup()
@@ -45,7 +50,7 @@ namespace ItHappend.Tests.ServiceTests
         {
             var userService = new UserService(_userRepository);
 
-            var result = userService.CreateUser("login", "password");
+            var result = userService.CreateUser(_loginString, _passwordString);
 
             Assert.AreEqual(_testUser.Id, result.Id);
             Assert.AreEqual(_testUser.Login, result.Login);
@@ -59,7 +64,7 @@ namespace ItHappend.Tests.ServiceTests
 
             try
             {
-                var result = userService.LoginUser("login", "incorrectPassword");
+                var result = userService.LoginUser(_loginString, "incorrectPassword");
             }
             catch (DomainException e)
             {
@@ -74,7 +79,7 @@ namespace ItHappend.Tests.ServiceTests
         {
             var userService = new UserService(_userRepository);
             
-            var result = userService.LoginUser("login", "password");
+            var result = userService.LoginUser(_loginString, _passwordString);
             
             Assert.AreEqual(_testUser.Id, result.Id);
             Assert.AreEqual(_testUser.Login, result.Login);
