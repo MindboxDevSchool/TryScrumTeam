@@ -7,6 +7,12 @@ namespace ItHappened.Domain.Exceptions
     {
         public DomainExceptionType Type { get; }
 
+        public DomainException(DomainExceptionType type, Guid authorId, Guid entityId)
+            : base(GetMessage(type, authorId, entityId))
+        {
+            Type = type;
+        }
+
         private static string GetMessage(DomainExceptionType type, Guid userId, Guid entityId)
         {
             switch (type)
@@ -18,6 +24,12 @@ namespace ItHappened.Domain.Exceptions
             }
         }
 
+        public DomainException(DomainExceptionType type, string login)
+            : base(GetMessage(type, login))
+        {
+            Type = type;
+        }
+
         private static string GetMessage(DomainExceptionType type, string login)
         {
             switch (type)
@@ -27,6 +39,15 @@ namespace ItHappened.Domain.Exceptions
                 default:
                     return "Unspecified exception occured, follow the link for additional info https://goo.su/2mvQ ";
             }
+        }
+
+        public DomainException(
+            DomainExceptionType type,
+            Guid trackId,
+            IEnumerable<CustomizationType> customizationTypes)
+            : base(GetMessage(type, trackId, customizationTypes))
+        {
+            Type = type;
         }
 
         private static string GetMessage(
@@ -43,25 +64,21 @@ namespace ItHappened.Domain.Exceptions
             }
         }
 
-        public DomainException(DomainExceptionType type, Guid authorId, Guid entityId)
-            : base(GetMessage(type, authorId, entityId))
+        public DomainException(DomainExceptionType type)
+            : base(GetMessage(type))
         {
             Type = type;
         }
 
-        public DomainException(DomainExceptionType type, string login)
-            : base(GetMessage(type, login))
+        private static string GetMessage(DomainExceptionType type)
         {
-            Type = type;
-        }
-
-        public DomainException(
-            DomainExceptionType type,
-            Guid trackId,
-            IEnumerable<CustomizationType> customizationTypes)
-            : base(GetMessage(type, trackId, customizationTypes))
-        {
-            Type = type;
+            switch (type)
+            {
+                case DomainExceptionType.BestEventNotFound:
+                    return $"Best event not found.";
+                default:
+                    return "Unspecified exception occured, follow the link for additional info https://goo.su/2mvQ ";
+            }
         }
     }
 }
