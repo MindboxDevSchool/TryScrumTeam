@@ -18,11 +18,11 @@ namespace ItHappened.Application
         private IEventRepository _eventRepository;
         private ITrackRepository _trackRepository;
 
-        public IEnumerable<EventDto> GetEvents(Guid userId, Guid trackId)
+        public IEnumerable<EventDto> GetEvents(Guid userId, Guid trackId, int? take = null, int? skip = null)
         {
             var track = TryGetAccessToTrack(userId, trackId);
 
-            var events = _eventRepository.TryGetEventsByTrack(trackId);
+            var events = _eventRepository.TryGetEventsByTrack(trackId, take, skip);
             return new List<EventDto>(events.Select(elem => new EventDto(elem)));
         }
 
