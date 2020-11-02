@@ -52,9 +52,9 @@ namespace ItHappend.Tests.ServiceTests
         public void GetBestEvent_ReturnBestEventForCorrectData()
         {
             // arrange
-            moqEventRepository.Setup(method => method.TryGetEventsByTrack(It.IsAny<Guid>()))
+            moqEventRepository.Setup(method => method.TryGetEventsByTrack(It.IsAny<Guid>(), null, null))
                 .Returns(events);
-            
+
             var statisticsService = new StatisticsService(moqEventRepository.Object, _settings);
 
             // act
