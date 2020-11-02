@@ -39,7 +39,7 @@ namespace ItHappend.Tests.ServiceTests
             var mock = new Mock<ITrackRepository>();
             mock.Setup(method => method.TryGetTrackById(It.IsAny<Guid>()))
                 .Returns(_testTrack);
-            mock.Setup(method => method.TryGetTracksByUser(It.IsAny<Guid>()))
+            mock.Setup(method => method.TryGetTracksByUser(It.IsAny<Guid>(), null, null))
                 .Returns(new List<Track>() {_testTrack});
             mock.Setup(method => method.TryCreate(It.IsAny<Track>()))
                 .Returns(_testTrack);

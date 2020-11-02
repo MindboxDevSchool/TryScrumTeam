@@ -31,12 +31,16 @@ namespace ItHappened.Infrastructure.Repositories
             return track;
         }
 
-        public IEnumerable<Track> TryGetTracksByUser(Guid userId)
+        public IEnumerable<Track> TryGetTracksByUser(Guid userId, int? take = null, int? skip = null)
         {
+            var takeString = take is null ? "" : $" FETCH NEXT {take} ROWS ONLY";
             var result = _connection
                 .Query<TrackDb>(@"select * from ItHappend.Tracks
-                                    where CreatorId = @CreatorId",
-                    new {CreatorId = userId}).ToList();
+                                    where CreatorId = @CreatorId
+                                    ORDER BY CreatedAt DESC
+                                    OFFSET  @Skip ROWS"
+                                + takeString,
+                    new {CreatorId = userId, Skip = skip ?? 0}).ToList();
 
             var resultConverted = result.Select(FromTrackDbToTrack);
 

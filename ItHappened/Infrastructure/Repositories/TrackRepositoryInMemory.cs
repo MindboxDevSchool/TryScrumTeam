@@ -17,12 +17,14 @@ namespace ItHappened.Infrastructure.Repositories
             return track;
         }
 
-        public IEnumerable<Track> TryGetTracksByUser(Guid userId)
+        public IEnumerable<Track> TryGetTracksByUser(Guid userId, int? take = null, int? skip = null)
         {
-            var res = _tracks
+            var result = _tracks
                 .Where(elem => elem.Value.CreatorId == userId)
                 .Select(elem => elem.Value);
-            return res;
+            if (skip != null) result = result.Skip((int) skip);
+            if (take != null) result = result.Take((int) take);
+            return result;
         }
 
         public Track TryGetTrackById(Guid trackId)

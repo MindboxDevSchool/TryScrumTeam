@@ -18,9 +18,9 @@ namespace ItHappened.Application
         private readonly ITrackRepository _trackRepository;
         private readonly IEventRepository _eventRepository;
 
-        public IEnumerable<TrackDto> GetTracks(Guid userId)
+        public IEnumerable<TrackDto> GetTracks(Guid userId, int? take = null, int? skip = null)
         {
-            var userTracksWithResult = _trackRepository.TryGetTracksByUser(userId);
+            var userTracksWithResult = _trackRepository.TryGetTracksByUser(userId, take, skip);
 
             return userTracksWithResult.Select(track => new TrackDto(track));
         }
