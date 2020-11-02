@@ -164,8 +164,6 @@ namespace ItHappend.Tests.ServiceTests
         [Test]
         public void TestGetEvents_ForValidUserAndTrack_Successful()
         {
-            DomainException exception = null;
-
             var result = _eventService.GetEvents(_creatorId, _track.Id);
 
             Assert.AreEqual(1, result.Count());
