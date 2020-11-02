@@ -31,7 +31,7 @@ namespace ItHappened.Infrastructure.Repositories
             return @event;
         }
 
-        public IEnumerable<Event> TryGetEventsByTrack(Guid trackId, int? take, int? skip)
+        public IEnumerable<Event> TryGetEventsByTrack(Guid trackId, int? take = null, int? skip = null)
         {
             var takeString = take is null ? "" : $" FETCH NEXT {take} ROWS ONLY";
             var result = _connection
