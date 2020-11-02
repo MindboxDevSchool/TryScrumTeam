@@ -24,10 +24,10 @@ namespace ItHappend.RestAPI.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetTracks()
+        public IActionResult GetTracks([FromQuery]int? take, [FromQuery]int? skip)
         {
             var userId = User.GetUserId();
-            var tracks = _trackService.GetTracks(userId);
+            var tracks = _trackService.GetTracks(userId, take, skip);
             var response = new GetTracksResponse()
             {
                 Tracks = _mapper.Map<IEnumerable<TrackDto>, TrackModel[]>(tracks),
