@@ -21,23 +21,25 @@ namespace ItHappend.Tests.ServiceTests
                 30, 
                 0);
 
+            var allowedCustomizations = new List<CustomizationType>() {CustomizationType.Rating};
+
             events = new List<Event>()
             {
                 new Event(
                     Guid.NewGuid(),
                     DateTime.Today,
                     Guid.NewGuid(),
-                    new Customizations("", 0, 0, "", 1, 0)),
+                    new Customizations(new CustomizationsDto() {Rating = 1}, allowedCustomizations)),
                 new Event(
                     Guid.NewGuid(),
                     DateTime.Today,
                     Guid.NewGuid(),
-                    new Customizations("", 0, 0, "", 4, 0)),
+                    new Customizations(new CustomizationsDto() {Rating = 4}, allowedCustomizations)),
                 new Event(
                     Guid.NewGuid(),
                     DateTime.Today,
                     Guid.NewGuid(),
-                    new Customizations("", 0, 0, "", 7, 0)),
+                    new Customizations(new CustomizationsDto() {Rating = 7}, allowedCustomizations)),
             };
         }
         
