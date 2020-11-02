@@ -27,17 +27,17 @@ namespace ItHappend.Tests.ServiceTests
                     Guid.NewGuid(),
                     DateTime.Today,
                     Guid.NewGuid(),
-                    new Customizations(null, null, null, null, 1, null)),
+                    new Customizations("", 0, 0, "", 1, 0)),
                 new Event(
                     Guid.NewGuid(),
                     DateTime.Today,
                     Guid.NewGuid(),
-                    new Customizations(null, null, null, null, 4, null)),
+                    new Customizations("", 0, 0, "", 4, 0)),
                 new Event(
                     Guid.NewGuid(),
                     DateTime.Today,
                     Guid.NewGuid(),
-                    new Customizations(null, null, null, null, 7, null))
+                    new Customizations("", 0, 0, "", 7, 0)),
             };
         }
         
