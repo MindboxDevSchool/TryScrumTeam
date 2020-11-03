@@ -21,7 +21,7 @@ function App() {
         ?
         <div>Body</div>
         :
-        <Login onLogin={authenticate}/>
+        <Login onLogin={authenticate} />
       }
     </div>
   );

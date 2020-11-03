@@ -5,7 +5,7 @@ import { TabContext, TabList, TabPanel } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import { createUser, loginUser } from './api';
 import { red } from '@material-ui/core/colors';
- 
+
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -26,18 +26,15 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function LoginForm({ onSubmit, buttonText, errorMessage, login, setLogin, password, setPassword}) {
+function LoginForm({ onSubmit, buttonText, errorMessage, login, setLogin, password, setPassword }) {
     const classes = useStyles();
     const [errorLogin, setErrorLogin] = useState(false);
     const [errorPassword, setErrorPassword] = useState(false);
     const onInput = () => {
-        console.log(login);
-        if (!login) {
+        if (!login)
             setErrorLogin(true);
-        }
-        if (!password) {
+        if (!password)
             setErrorPassword(true);
-        }
         if (errorLogin || errorPassword)
             return;
         onSubmit();
@@ -77,12 +74,10 @@ function LoginForm({ onSubmit, buttonText, errorMessage, login, setLogin, passwo
                 :
                 null}
             <Button
-                //type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                //onSubmit don't work for material-ui buttons
                 onClick={onInput}
             >
                 {buttonText}
@@ -93,11 +88,12 @@ function LoginForm({ onSubmit, buttonText, errorMessage, login, setLogin, passwo
 
 export default function Login({ onLogin }) {
     const classes = useStyles();
+
     const [tabLogin, setTabLogin] = useState("login");
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
-
     const [errorMessage, setErrorMessage] = useState(null);
+
     const changeTab = () => {
         if (tabLogin === "login") setTabLogin("registration");
         else
@@ -105,7 +101,7 @@ export default function Login({ onLogin }) {
         setErrorMessage(null);
     }
 
-    const getUserToken = async() => {
+    const getUserToken = async () => {
         var token = await loginUser(login, password);
         if (!token) {
             setErrorMessage("Неправильная пара логин-пароль!")
@@ -118,9 +114,9 @@ export default function Login({ onLogin }) {
         setErrorMessage(null);
         getUserToken();
     }
+
     const onRegistrationButton = async () => {
         setErrorMessage(null);
-        console.log("registration");
         var user = await createUser(login, password);
         if (!user) {
             setErrorMessage("Пользователь с таким логином уже существует!")
@@ -128,6 +124,14 @@ export default function Login({ onLogin }) {
         }
         getUserToken();
     }
+
+    var loginFormParams = {};
+    loginFormParams.errorMessage = errorMessage;
+    loginFormParams.login = login;
+    loginFormParams.setLogin = setLogin;
+    loginFormParams.password = password;
+    loginFormParams.setPassword = setPassword;
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -140,24 +144,16 @@ export default function Login({ onLogin }) {
                         </TabList>
                     </AppBar>
                     <TabPanel value="login">
-                        <LoginForm 
-                        onSubmit={onLoginButton} 
-                        buttonText="Войти" 
-                        errorMessage={errorMessage}
-                        login={login}
-                        setLogin={setLogin}
-                        password={password}
-                        setPassword={setPassword}/>
+                        <LoginForm
+                            onSubmit={onLoginButton}
+                            buttonText="Войти"
+                            {...loginFormParams} />
                     </TabPanel>
                     <TabPanel value="registration">
-                        <LoginForm 
-                        onSubmit={onRegistrationButton} 
-                        buttonText="Зарегистрироваться" 
-                        errorMessage={errorMessage}
-                        login={login}
-                        setLogin={setLogin}
-                        password={password}
-                        setPassword={setPassword}/>
+                        <LoginForm
+                            onSubmit={onRegistrationButton}
+                            buttonText="Зарегистрироваться"
+                            {...loginFormParams} />
                     </TabPanel>
                 </TabContext>
             </div>
