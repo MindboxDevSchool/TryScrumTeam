@@ -98,6 +98,12 @@ namespace ItHappend.RestAPI
 
             app.UseAuthentication();
             app.UseAuthorization();
+            
+            app.UseCors(
+                options => options.WithOrigins("http://localhost:3000")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+            );
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
