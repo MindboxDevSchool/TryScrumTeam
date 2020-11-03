@@ -1,4 +1,4 @@
-import { AppBar, Button, Toolbar, Typography, Link } from '@material-ui/core';
+import { AppBar, Button, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -28,7 +28,7 @@ export default function Header({ onLogout }) {
     const classes = useStyles();
 
     const username = localStorage.getItem("login");
-    
+
     return (
         <AppBar position="static" color="default" elevation={0} className={classes.appBar}>
             <Toolbar className={classes.toolbar}>
