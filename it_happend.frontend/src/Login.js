@@ -26,18 +26,23 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function isLoginValid(value) {
+    return !!value;
+}
+
+function isPasswordValid(value) {
+    return !!value;
+}
+
 function LoginForm({ onSubmit, buttonText, errorMessage, login, setLogin, password, setPassword }) {
     const classes = useStyles();
     const [errorLogin, setErrorLogin] = useState(false);
     const [errorPassword, setErrorPassword] = useState(false);
     const onInput = () => {
-        if (!login)
-            setErrorLogin(true);
-        if (!password)
-            setErrorPassword(true);
-        if (errorLogin || errorPassword)
-            return;
-        onSubmit();
+        setErrorLogin(!isLoginValid(login));
+        setErrorPassword(!isPasswordValid(password));
+        if (isLoginValid(login) && isPasswordValid(password))
+            onSubmit();
     }
     return (
         <form className={classes.form} noValidate>
