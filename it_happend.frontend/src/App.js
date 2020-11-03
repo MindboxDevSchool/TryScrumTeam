@@ -1,23 +1,28 @@
-import logo from './logo.svg';
+import { useState } from "react";
 import './App.css';
+import Login from './Login';
 
 function App() {
+  const [isAuthenticated, setAuthenticated] = useState(false);
+  const authenticate = (login, token) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("login", login);
+    setAuthenticated(true);
+  }
+  const logOut = () => {
+    localStorage.setItem("token", null);
+    localStorage.setItem("login", null);
+    setAuthenticated(false);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {isAuthenticated
+        ?
+        <div>Body</div>
+        :
+        <Login onLogin={authenticate}/>
+      }
     </div>
   );
 }
