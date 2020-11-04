@@ -5,6 +5,7 @@ using AutoMapper;
 using ItHappend.RestAPI.Authentication;
 using ItHappend.RestAPI.Extensions;
 using ItHappend.RestAPI.Filters;
+using ItHappened;
 using ItHappened.Application;
 using ItHappened.Domain.Repositories;
 using ItHappened.Infrastructure.Repositories;
@@ -67,12 +68,14 @@ namespace ItHappend.RestAPI
             {
                 options.Filters.Add(typeof(GlobalExceptionAttribute));
             });
-            
+
             ConfigureMapper(services);
             RegisterDapperRepository(services);
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITracksService, TracksService>();
             services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
+            services.AddScoped(provider => ItHappenedSettings.FromJsonFile("coreappsettings.json"));
             services.AddSingleton<IJwtIssuer, JwtIssuer>();
             services.AddControllers();
         }

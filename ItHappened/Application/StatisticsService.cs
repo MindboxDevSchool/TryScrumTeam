@@ -8,7 +8,7 @@ using ItHappened.Domain.StatisticsFacts;
 
 namespace ItHappened.Application
 {
-    public class StatisticsService
+    public class StatisticsService : IStatisticsService
     {
         public StatisticsService(IEventRepository eventRepository, 
             ITrackRepository trackRepository, ItHappenedSettings settings)
