@@ -97,7 +97,7 @@ export default function Tracks({trackName,AllowedCustomizations}) {
                     </>
                     :
                     <Typography variant="h6" className={classes.emptyTracks}>
-                        У тебя пока нет отслеживаний. Попробуй добавить новое
+                        Ничего еще не случилось. Самое время добавить новое событие.
                  </Typography>
                 )}
         </>
