@@ -1,9 +1,8 @@
 import { useState } from "react";
-import './App.css';
 import Login from './Login';
 import Header from './Header';
-import EventBox from './Components/Events/EventBox'
-import EventList from './Components/Events/EventList'
+import Body from './Body';
+
 
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -17,18 +16,13 @@ function App() {
     localStorage.setItem("login", null);
     setAuthenticated(false);
   }
-
   return (
-    
-
     <div className="App">
-      
       {isAuthenticated
         ?
         <>
           <Header onLogout={logOut} />
-          <div>Body</div>
-          <EventList trackName="vssdvsdvsd" AllowedCustomizations = {["scsc","cscsc"]} />
+          <Body />
         </>
         :
         <Login onLogin={authenticate} />
