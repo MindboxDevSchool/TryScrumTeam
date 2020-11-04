@@ -1,8 +1,7 @@
 import { useState } from "react";
-import './App.css';
 import Login from './Login';
 import Header from './Header';
-import EventBox from './Components/Events/EventBox'
+import Body from './Body';
 
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -16,7 +15,6 @@ function App() {
     localStorage.setItem("login", null);
     setAuthenticated(false);
   }
-
   return (
     <div className="App">
       
@@ -24,7 +22,7 @@ function App() {
         ?
         <>
           <Header onLogout={logOut} />
-          <div>Body</div>
+          <Body />
         </>
         :
         <Login onLogin={authenticate} />

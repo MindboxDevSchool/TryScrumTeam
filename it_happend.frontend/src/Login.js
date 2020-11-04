@@ -144,6 +144,7 @@ export default function Login({ onLogin }) {
         var user = await createUser(login, password);
         if (!user) {
             setErrorMessage("Пользователь с таким логином уже существует!")
+            setDisabled(false);
             return;
         }
         await getUserToken();
