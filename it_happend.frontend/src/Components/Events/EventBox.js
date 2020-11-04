@@ -1,14 +1,12 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import CardMedia from '@material-ui/core/CardMedia';
-
-
+import {Card,CardActions,CardContent,Typography,Button} from "@material-ui/core";
+import moment from 'moment'
+import 'moment/locale/ru'
 import Rating from '@material-ui/lab/Rating';
+
+
+moment.locale('ru')
 
 const useStyles = makeStyles({
   root: {
@@ -38,10 +36,10 @@ export default function EventBox(props) {
                         color="textSecondary"
                         gutterBottom
                     >
-                    Comment
+                    Комментарий
                     </Typography>
                     <Typography variant="h5" component="h2">
-                    {props.commentText}
+                    {props.Comment}
                     </Typography>
                     </div>;
     
@@ -51,9 +49,9 @@ export default function EventBox(props) {
           color="textSecondary"
           gutterBottom
         >
-          Rating
+          Оценка
         </Typography>
-        <Rating max={10}  value={props.rating} readOnly/>
+        <Rating max={10}  value={props.Rating} readOnly/>
         </div>;
 
     const geoTag = <div>
@@ -62,13 +60,13 @@ export default function EventBox(props) {
           color="textSecondary"
           gutterBottom
         >
-          GeoTag
+          ГеоТег
         </Typography>
         <Typography className ={classes.geoTag} display="inline" variant="h5" component="h2">
-        Attitude  {props.geoTag[0]}  
+        Широта  {props.GeotagLatitude}  
         </Typography>
         <Typography display="inline" variant="h5" component="h2">
-        Longitude {props.geoTag[1]}  
+        Долгота {props.GeotagLongitude}  
         </Typography>
     </div>;
 
@@ -78,22 +76,15 @@ export default function EventBox(props) {
           color="textSecondary"
           gutterBottom
         >
-          Scale
+          Шкала
         </Typography>
         <Typography variant="h5" component="h2">
-          {props.scale}
+          {props.Scale}
         </Typography>
     </div>;
 
     const photo = <div>
-        <Typography
-          className={classes.title}
-          color="textSecondary"
-          gutterBottom
-        >
-          Photo
-        </Typography>
-        <img src={props.photoUrl}/>
+        <img src={props.PhotoUrl}/>
     </div>;
     
     
@@ -107,33 +98,33 @@ export default function EventBox(props) {
           color="textSecondary"
           gutterBottom
         >
-          {props.date.toUTCString()}
+          {moment(props.CreatedAt).format('LL h:mm a')}
         </Typography>
-        {props.commentText != null
+        {props.Comment != null
         ?
         comment
         :
         <div/>
         }
-        {props.rating != null
+        {props.Rating != null
         ?
         rating
         :
         <div/>
         }
-        {props.scale != null
+        {props.Scale != null
         ?
         scale
         :
         <div/>
         }
-        {props.geoTag != null
+        {props.GeotagLatitude != null && props.GeotagLongitude != null
         ?
         geoTag
         :
         <div/>
         }
-        {props.photoUrl != null
+        {props.PhotoUrl != null
         ?
         photo
         :

@@ -18,8 +18,16 @@ function App() {
   }
 
   return (
-    
-    <div className="App">
+    <EventBox
+CreatedAt ={new Date()}
+Comment = "sfsfsf"
+Rating = '8'
+Scale = '100'
+GeotagLatitude = '100'
+GeotagLongitude = '100'
+PhotoUrl = 'https://im0-tub-ru.yandex.net/i?id=62b749f07493402e841e8f66bb4570ff&ref=rim&n=33&w=391&h=188'
+/>
+    /*<div className="App">
       {isAuthenticated
         ?
         <>
@@ -29,7 +37,7 @@ function App() {
         :
         <Login onLogin={authenticate} />
       }
-    </div>
+    </div>*/
   );
 }
 
