@@ -21,12 +21,17 @@ function authHeader() {
     }
 };
 
-const getUserInfo = () => ({ name: localStorage.getItem("login"), token: localStorage.getItem("token") });
-const auth = { headers: { Authorization: getUserInfo().token } };
+
 
 //users
 export const createUser = (login, password) => instance.post(`/user`, { login: login, password: password }).then(result => result.data).catch(errorHandler);
 export const loginUser = (login, password) => instance.post(`/authentication`, { login: login, password: password }).then(result => result.data).catch(errorHandler);
 
+
 //Events
 export const getEventsByTrackId = (trackId,take = null, skip = null) => instance.get(`/tracks/${trackId}/events`, { params: { take: take, skip: skip }, headers: authHeader() }).then(result => result.data).catch(errorHandler);
+
+//tracks
+export const getTracks = (take = null, skip = null) => instance.get(`/tracks`, { params: { take: take, skip: skip }, headers: authHeader() }).then(result => result.data).catch(errorHandler);
+export const deleteTrack = (id) => instance.delete('/tracks/'+id, { headers: authHeader() }).then(result => result.data).catch(errorHandler);
+
