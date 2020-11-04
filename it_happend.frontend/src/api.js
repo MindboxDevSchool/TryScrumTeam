@@ -15,12 +15,9 @@ function errorHandler(error) {
     }
 }
 
-function auth() {
+function authHeader() {
     return {
-        headers:
-        {
-            authorization: "Bearer " + localStorage.getItem("token")
-        }
+        authorization: "Bearer " + localStorage.getItem("token")
     }
 };
 
@@ -29,4 +26,4 @@ export const createUser = (login, password) => instance.post(`/user`, { login: l
 export const loginUser = (login, password) => instance.post(`/authentication`, { login: login, password: password }).then(result => result.data).catch(errorHandler);
 
 //tracks
-export const getTracks = () => instance.get(`/tracks`, auth()).then(result => result.data).catch(errorHandler);
+export const getTracks = (take = null, skip = null) => instance.get(`/tracks`, { params: { take: take, skip: skip }, headers: authHeader() }).then(result => result.data).catch(errorHandler);

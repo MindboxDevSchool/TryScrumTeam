@@ -7,8 +7,10 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         backgroundColor: theme.palette.info.light,
+        minHeight: '100vh'
     },
     container: {
+        paddingBottom: theme.spacing(3)
     }
 }));
 
