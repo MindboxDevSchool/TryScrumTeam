@@ -27,3 +27,4 @@ export const loginUser = (login, password) => instance.post(`/authentication`, {
 
 //tracks
 export const getTracks = (take = null, skip = null) => instance.get(`/tracks`, { params: { take: take, skip: skip }, headers: authHeader() }).then(result => result.data).catch(errorHandler);
+export const deleteTrack = (id) => instance.delete('/tracks/'+id, { headers: authHeader() }).then(result => result.data).catch(errorHandler);
