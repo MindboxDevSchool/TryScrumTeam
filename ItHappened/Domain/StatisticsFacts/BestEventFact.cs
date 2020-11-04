@@ -43,19 +43,19 @@ namespace ItHappened.Domain.StatisticsFacts
 
         private bool CheckApplicable(IEnumerable<Event> eventsWithRating)
         {
-            return eventsWithRating.Count() >= _settings.EventsWithRatingCountForSearchingBestEvent &&
+            return eventsWithRating.Count() >= _settings.BestEvent.EventsWithRatingCount &&
                    DateTime.Compare(
                        eventsWithRating
                            .OrderBy(@event => @event.CreatedAt)
                            .First().CreatedAt,
-                       DateTime.Now - TimeSpan.FromDays(_settings.DaysSinceLastEventForSearchingBestEvent)) < 0 &&
+                       DateTime.Now - TimeSpan.FromDays(_settings.BestEvent.DaysSinceLastEvent)) < 0 &&
                    DateTime.Compare(
                        eventsWithRating
                            .OrderByDescending(@event => @event.CreatedAt)
                            .First(@event =>
                                @event.Customization.Rating.Value ==
                                eventsWithRating.Max(@event => @event.Customization.Rating.Value)).CreatedAt,
-                       DateTime.Now - TimeSpan.FromDays(_settings.DaysSinceBestEventForSearchingBestEvent)) < 0;
+                       DateTime.Now - TimeSpan.FromDays(_settings.BestEvent.DaysSinceBestEvent)) < 0;
         }
 
         private readonly ItHappenedSettings _settings;

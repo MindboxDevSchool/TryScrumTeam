@@ -66,9 +66,11 @@ namespace ItHappend.Tests.ServiceTests
                 .Returns(track);
             
             _settings = new ItHappenedSettings(
-                3, 
-                30, 
-                5);
+                new BestEventSettings(
+                    3, 
+                    30, 
+                    5
+                ));
             
             var statisticsService = new StatisticsService(
                 moqEventRepository.Object, 

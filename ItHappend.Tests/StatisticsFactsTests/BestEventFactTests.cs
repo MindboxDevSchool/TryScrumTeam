@@ -45,10 +45,12 @@ namespace ItHappend.Tests.StatisticsFactsTests
         {
             // arrange
             _settings = new ItHappenedSettings(
-                3, 
-                30, 
-                5);
-            
+                new BestEventSettings(
+                    3, 
+                    30, 
+                    5
+                    ));
+
             var bestEventFact = new BestEventFact(_settings);
 
             // act
@@ -67,9 +69,11 @@ namespace ItHappend.Tests.StatisticsFactsTests
         {
             // arrange
             _settings = new ItHappenedSettings(
-                4, 
-                30, 
-                5);
+                new BestEventSettings(
+                    4, 
+                    30, 
+                    5
+                ));
             
             var bestEventFact = new BestEventFact(_settings);
 
@@ -85,9 +89,11 @@ namespace ItHappend.Tests.StatisticsFactsTests
         {
             // arrange
             _settings = new ItHappenedSettings(
-                3, 
-                60, 
-                5);
+                new BestEventSettings(
+                    3, 
+                    60, 
+                    5
+                ));
 
             var bestEventFact = new BestEventFact(_settings);
 
@@ -103,9 +109,11 @@ namespace ItHappend.Tests.StatisticsFactsTests
         {
             // arrange
             _settings = new ItHappenedSettings(
-                3, 
-                30, 
-                15);
+                new BestEventSettings(
+                    3, 
+                    30, 
+                    15
+                ));
 
             var bestEventFact = new BestEventFact(_settings);
 
