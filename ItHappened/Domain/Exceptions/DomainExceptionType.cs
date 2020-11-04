@@ -4,7 +4,6 @@
     {
         TrackAccessDenied,
         IncorrectPassword,
-        NotAllowedCustomizations,
-        BestEventNotFound
+        NotAllowedCustomizations
     }
 }

@@ -63,22 +63,5 @@ namespace ItHappened.Domain.Exceptions
                     return "Unspecified exception occured, follow the link for additional info https://goo.su/2mvQ ";
             }
         }
-
-        public DomainException(DomainExceptionType type)
-            : base(GetMessage(type))
-        {
-            Type = type;
-        }
-
-        private static string GetMessage(DomainExceptionType type)
-        {
-            switch (type)
-            {
-                case DomainExceptionType.BestEventNotFound:
-                    return $"Best event not found.";
-                default:
-                    return "Unspecified exception occured, follow the link for additional info https://goo.su/2mvQ ";
-            }
-        }
     }
 }

@@ -4,51 +4,56 @@ using System.Linq;
 using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
+using ItHappened.Domain.StatisticsFacts;
 
 namespace ItHappened.Application
 {
     public class StatisticsService
     {
         public StatisticsService(IEventRepository eventRepository, 
-            ItHappenedSettings settings)
+            ITrackRepository trackRepository, ItHappenedSettings settings)
         {
             _eventRepository = eventRepository;
+            _trackRepository = trackRepository;
             _settings = settings;
+            _statisticsFacts = new List<IStatisticsFact>
+            {
+                new BestEventFact(settings)
+            };
         }
 
         private readonly IEventRepository _eventRepository;
+        private readonly ITrackRepository _trackRepository;
         private readonly ItHappenedSettings _settings;
+        private readonly List<IStatisticsFact> _statisticsFacts;
 
-        public EventDto GetBestEvent(Guid trackId)
+        public List<string> GetTrackStatistics(Guid userId, Guid trackId)
         {
-            Event bestEvent = null;
+            var track = TryGetAccessToTrack(userId, trackId);
             var trackEvents = _eventRepository.TryGetEventsByTrack(trackId);
-            var trackEventsWithRating = trackEvents
-                .Where(@event => @event.Customization.Rating != null).ToList();
 
-            if (trackEventsWithRating.Count() >= _settings.EventsWithRatingCountForSearchingBestEvent
-                && DateTime.Compare(
-                    trackEventsWithRating
-                        .OrderByDescending(@event => @event.CreatedAt)
-                        .Skip(_settings.EventsWithRatingCountForSearchingBestEvent - 1)
-                        .First().CreatedAt,
-                    DateTime.Now - TimeSpan.FromDays(_settings.DaysSinceLastEventForSearchingBestEvent)) > 0
-                && DateTime.Compare(
-                    trackEventsWithRating.First(@event =>
-                            @event.Customization.Rating.Value ==
-                            trackEventsWithRating.Max(@event => @event.Customization.Rating.Value))
-                        .CreatedAt,
-                    DateTime.Now - TimeSpan.FromDays(_settings.DaysSinceBestEventForSearchingBestEvent)) < 0)
+            foreach (var fact in _statisticsFacts)
             {
-                bestEvent = trackEventsWithRating.FirstOrDefault(@event =>
-                    @event.Customization.Rating.Value ==
-                    trackEventsWithRating.Max(@event => @event.Customization.Rating.Value));
+                fact.Process(trackEvents, track.Name);
             }
-            
-            if (bestEvent == null)
-                throw new DomainException(DomainExceptionType.BestEventNotFound);
 
-            return new EventDto(bestEvent);
+            return _statisticsFacts
+                .Where(fact => fact.IsApplicable)
+                .OrderByDescending(fact => fact.Priority)
+                .Select(fact => fact.Description)
+                .ToList();
+        }
+        
+        private Track TryGetAccessToTrack(Guid userId, Guid trackId)
+        {
+            var track = _trackRepository.TryGetTrackById(trackId);
+
+            if (track.CreatorId != userId)
+            {
+                throw new DomainException(DomainExceptionType.TrackAccessDenied, userId, trackId);
+            }
+
+            return track;
         }
     }
 }
