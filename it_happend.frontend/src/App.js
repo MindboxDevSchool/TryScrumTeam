@@ -19,20 +19,21 @@ function App() {
   }
 
   return (
-    <EventList></EventList>
+    
 
-    /*<div className="App">
+    <div className="App">
       
       {isAuthenticated
         ?
         <>
           <Header onLogout={logOut} />
           <div>Body</div>
+          <EventList trackName="vssdvsdvsd" AllowedCustomizations = {["scsc","cscsc"]} />
         </>
         :
         <Login onLogin={authenticate} />
       }
-    </div>*/
+    </div>
   );
 }
 

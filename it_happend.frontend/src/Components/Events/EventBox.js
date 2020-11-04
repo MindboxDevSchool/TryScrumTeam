@@ -39,7 +39,7 @@ export default function EventBox(props) {
                     Комментарий
                     </Typography>
                     <Typography variant="h5" component="h2">
-                    {props.Comment}
+                    {props.comment}
                     </Typography>
                     </div>;
     
@@ -51,7 +51,7 @@ export default function EventBox(props) {
         >
           Оценка
         </Typography>
-        <Rating max={10}  value={props.Rating} readOnly/>
+        <Rating max={10}  value={props.rating} readOnly/>
         </div>;
 
     const geoTag = <div>
@@ -63,10 +63,10 @@ export default function EventBox(props) {
           ГеоТег
         </Typography>
         <Typography className ={classes.geoTag} display="inline" variant="h5" component="h2">
-        Широта  {props.GeotagLatitude}  
+        Широта  {props.geotagLatitude}  
         </Typography>
         <Typography display="inline" variant="h5" component="h2">
-        Долгота {props.GeotagLongitude}  
+        Долгота {props.geotagLongitude}  
         </Typography>
     </div>;
 
@@ -79,12 +79,12 @@ export default function EventBox(props) {
           Шкала
         </Typography>
         <Typography variant="h5" component="h2">
-          {props.Scale}
+          {props.scale}
         </Typography>
     </div>;
 
     const photo = <div>
-        <img src={props.PhotoUrl}/>
+        <img src={props.photoUrl} width="50%"/>
     </div>;
     
     
@@ -98,33 +98,33 @@ export default function EventBox(props) {
           color="textSecondary"
           gutterBottom
         >
-          {moment(props.CreatedAt).format('LL h:mm a')}
+          {moment(props.createdAt).format('LL h:mm a')}
         </Typography>
-        {props.Comment != null
+        {props.comment != null
         ?
         comment
         :
         <div/>
         }
-        {props.Rating != null
+        {props.rating != null
         ?
         rating
         :
         <div/>
         }
-        {props.Scale != null
+        {props.scale != null
         ?
         scale
         :
         <div/>
         }
-        {props.GeotagLatitude != null && props.GeotagLongitude != null
+        {props.geotagLatitude != null && props.geotagLongitude != null
         ?
         geoTag
         :
         <div/>
         }
-        {props.PhotoUrl != null
+        {props.photoUrl != null
         ?
         photo
         :
