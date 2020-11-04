@@ -3,6 +3,7 @@ import './App.css';
 import Login from './Login';
 import Header from './Header';
 import EventBox from './Components/Events/EventBox'
+import EventList from './Components/Events/EventList'
 
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -18,7 +19,9 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <EventList></EventList>
+
+    /*<div className="App">
       
       {isAuthenticated
         ?
@@ -29,7 +32,7 @@ function App() {
         :
         <Login onLogin={authenticate} />
       }
-    </div>
+    </div>*/
   );
 }
 
