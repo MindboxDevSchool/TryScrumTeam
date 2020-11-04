@@ -1,6 +1,7 @@
 import { useState } from "react";
 import './App.css';
 import Login from './Login';
+import Header from './Header';
 
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -19,7 +20,10 @@ function App() {
     <div className="App">
       {isAuthenticated
         ?
-        <div>Body</div>
+        <>
+          <Header onLogout={logOut} />
+          <div>Body</div>
+        </>
         :
         <Login onLogin={authenticate} />
       }
