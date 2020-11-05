@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace ItHappend.Tests.StatisticsFactsTests
 {
-    public class BestEventFactTests
+    public class WorstEventFactTests
     {
         [SetUp]
         public void Setup()
@@ -20,14 +20,14 @@ namespace ItHappend.Tests.StatisticsFactsTests
             {
                 new Event(
                     Guid.NewGuid(),
-                    DateTime.Now - TimeSpan.FromDays(40), 
-                    Guid.NewGuid(),
-                    new Customizations(new CustomizationsDto() {Rating = 1}, allowedCustomizations)),
-                new Event(
-                    Guid.NewGuid(),
-                    DateTime.Now - TimeSpan.FromDays(15),
+                    DateTime.Now - TimeSpan.FromDays(40),
                     Guid.NewGuid(),
                     new Customizations(new CustomizationsDto() {Rating = 4}, allowedCustomizations)),
+                new Event(
+                    Guid.NewGuid(),
+                    DateTime.Now - TimeSpan.FromDays(15), 
+                    Guid.NewGuid(),
+                    new Customizations(new CustomizationsDto() {Rating = 1}, allowedCustomizations)),
                 new Event(
                     Guid.NewGuid(),
                     DateTime.Now - TimeSpan.FromDays(10),
@@ -45,23 +45,24 @@ namespace ItHappend.Tests.StatisticsFactsTests
         {
             // arrange
             _settings = new ItHappenedSettings(
+                null,
                 new TrackSettingsForRatingFacts(
                     3, 
                     30, 
-                    5), 
-                null);
+                    5
+                    ));
 
-            var bestEventFact = new BestEventFact(_settings);
+            var worstEventFact = new WorstEventFact(_settings);
 
             // act
-            bestEventFact.Process(events, trackName);
+            worstEventFact.Process(events, trackName);
 
             // assert
-            Assert.IsTrue(bestEventFact.IsApplicable);
-            Assert.AreEqual(7, bestEventFact.Priority);
+            Assert.IsTrue(worstEventFact.IsApplicable);
+            Assert.AreEqual(9, worstEventFact.Priority);
             Assert.AreEqual(
-                $"Событие TestTrack с самым высоким рейтингом 7 произошло {events[2].CreatedAt.ToString()}",
-                bestEventFact.Description);
+                $"Событие TestTrack с самым низким рейтингом 1 произошло {events[1].CreatedAt.ToString()}",
+                worstEventFact.Description);
         }
         
         [Test]
@@ -69,19 +70,20 @@ namespace ItHappend.Tests.StatisticsFactsTests
         {
             // arrange
             _settings = new ItHappenedSettings(
+                null,
                 new TrackSettingsForRatingFacts(
                     4, 
                     30, 
-                    5), 
-                null);
+                    5
+                ));
             
-            var bestEventFact = new BestEventFact(_settings);
+            var worstEventFact = new WorstEventFact(_settings);
 
             // act
-            bestEventFact.Process(events, trackName);
+            worstEventFact.Process(events, trackName);
 
             // assert
-            Assert.IsFalse(bestEventFact.IsApplicable);
+            Assert.IsFalse(worstEventFact.IsApplicable);
         }
         
         [Test]
@@ -89,69 +91,72 @@ namespace ItHappend.Tests.StatisticsFactsTests
         {
             // arrange
             _settings = new ItHappenedSettings(
+                null,
                 new TrackSettingsForRatingFacts(
                     3, 
                     60, 
-                    5),
-                null);
+                    5
+                ));
 
-            var bestEventFact = new BestEventFact(_settings);
+            var worstEventFact = new WorstEventFact(_settings);
 
             // act
-            bestEventFact.Process(events, trackName);
+            worstEventFact.Process(events, trackName);
 
             // assert
-            Assert.IsFalse(bestEventFact.IsApplicable);
+            Assert.IsFalse(worstEventFact.IsApplicable);
         }
         
         [Test]
-        public void Process_DaysSinceBestEventNotSatisfyRequiredCondition_ReturnNotApplicableFact()
+        public void Process_DaysSinceWorstEventNotSatisfyRequiredCondition_ReturnNotApplicableFact()
         {
             // arrange
             _settings = new ItHappenedSettings(
+                null,
                 new TrackSettingsForRatingFacts(
                     3, 
                     30, 
-                    15), 
-                null);
+                    20
+                ));
 
-            var bestEventFact = new BestEventFact(_settings);
+            var worstEventFact = new WorstEventFact(_settings);
 
             // act
-            bestEventFact.Process(events, trackName);
+            worstEventFact.Process(events, trackName);
 
             // assert
-            Assert.IsFalse(bestEventFact.IsApplicable);
+            Assert.IsFalse(worstEventFact.IsApplicable);
         }
         
         [Test]
-        public void Process_TwoEventsWithMaximumRating_ReturnApplicableFact()
+        public void Process_TwoEventsWithMinimalRating_ReturnApplicableFact()
         {
             // arrange
             _settings = new ItHappenedSettings(
+                null,
                 new TrackSettingsForRatingFacts(
                     3, 
                     30, 
-                    7), 
-                null);
+                    7
+                ));
 
             events.Add(new Event(
                 Guid.NewGuid(), 
-                DateTime.Now - TimeSpan.FromDays(20),
+                DateTime.Now - TimeSpan.FromDays(30),
                 Guid.NewGuid(),
-                new Customizations(new CustomizationsDto() {Rating = 7}, 
+                new Customizations(new CustomizationsDto() {Rating = 1}, 
                     new List<CustomizationType>() {CustomizationType.Rating})));
 
-            var bestEventFact = new BestEventFact(_settings);
+            var worstEventFact = new WorstEventFact(_settings);
 
             // act
-            bestEventFact.Process(events, trackName);
+            worstEventFact.Process(events, trackName);
 
             // assert
-            Assert.IsTrue(bestEventFact.IsApplicable);
+            Assert.IsTrue(worstEventFact.IsApplicable);
             Assert.AreEqual(
-                $"Событие TestTrack с самым высоким рейтингом 7 произошло {events[3].CreatedAt.ToString()}",
-                bestEventFact.Description);
+                $"Событие TestTrack с самым низким рейтингом 1 произошло {events[3].CreatedAt.ToString()}",
+                worstEventFact.Description);
         }
     }
 }

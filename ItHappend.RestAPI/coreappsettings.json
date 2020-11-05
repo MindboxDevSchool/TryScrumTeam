@@ -1,7 +1,12 @@
 ﻿{
   "BestEvent": {
     "MinimalAmountOfEventsWithRating": 3,
-    "DaysSinceLastEvent": 30,
-    "DaysSinceBestEvent": 7
+    "DaysSinceEarliestEvent": 30,
+    "DaysSinceSoughtEvent": 7
+  },
+  "WorstEvent": {
+    "MinimalAmountOfEventsWithRating": 3,
+    "DaysSinceEarliestEvent": 30,
+    "DaysSinceSoughtEvent": 7
   }
 }

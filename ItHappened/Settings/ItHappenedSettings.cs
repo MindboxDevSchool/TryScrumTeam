@@ -5,9 +5,10 @@ namespace ItHappened
 {
     public class ItHappenedSettings
     {
-        public ItHappenedSettings(BestEventSettings bestEvent)
+        public ItHappenedSettings(TrackSettingsForRatingFacts bestEvent, TrackSettingsForRatingFacts worstEvent)
         {
             BestEvent = bestEvent;
+            WorstEvent = worstEvent;
         }
         
         public static ItHappenedSettings FromJsonFile(string filePath)
@@ -19,6 +20,8 @@ namespace ItHappened
             return settings;
         }
 
-        public BestEventSettings BestEvent { get; }
+        public TrackSettingsForRatingFacts BestEvent { get; }
+        
+        public TrackSettingsForRatingFacts WorstEvent { get; }
     }
 }
