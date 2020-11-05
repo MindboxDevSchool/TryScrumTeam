@@ -4,6 +4,7 @@ import React from 'react';
 import Tracks from './Tracks';
 import EventList from './Components/Events/EventList';
 import { BrowserRouter, Switch, Route } from "react-router-dom"
+import TrackCreation from "./TrackCreation"
 
 
 const useStyles = makeStyles((theme) => ({
@@ -20,17 +21,18 @@ const useStyles = makeStyles((theme) => ({
 export default function Body() {
     const classes = useStyles();
 
-    return (
-        <div className={classes.root}>
+    return (<TrackCreation/>
+        /*<div className={classes.root}>
             <CssBaseline />
             <Container maxWidth="lg" className={classes.container}>
                 <BrowserRouter>
                     <Switch>
                         <Route path="/tracks/:trackId" component={EventList} />
                         <Route path="/" component={Tracks} />
+                        <Route path="/newTrack" component={TrackCreation} />
                     </Switch>
                 </BrowserRouter>
-            </Container>
-        </div>
+            </Container>*/
+        //</div>
     );
 }
