@@ -43,19 +43,21 @@ namespace ItHappened.Domain.StatisticsFacts
 
         private bool CheckApplicable(IEnumerable<Event> eventsWithRating)
         {
-            return eventsWithRating.Count() >= _settings.BestEvent.MinimalAmountOfEventsWithRating &&
-                   DateTime.Compare(
-                       eventsWithRating
-                           .OrderBy(@event => @event.CreatedAt)
-                           .First().CreatedAt,
-                       DateTime.Now - TimeSpan.FromDays(_settings.BestEvent.DaysSinceEarliestEvent)) < 0 &&
-                   DateTime.Compare(
-                       eventsWithRating
-                           .OrderBy(@event => @event.CreatedAt)
-                           .First(@event =>
-                               @event.Customization.Rating.Value ==
-                               eventsWithRating.Max(@event => @event.Customization.Rating.Value)).CreatedAt,
-                       DateTime.Now - TimeSpan.FromDays(_settings.BestEvent.DaysSinceSoughtEvent)) < 0;
+            return eventsWithRating == null || eventsWithRating.Count() == 0
+                ? false
+                : eventsWithRating.Count() >= _settings.BestEvent.MinimalAmountOfEventsWithRating &&
+                  DateTime.Compare(
+                      eventsWithRating
+                          .OrderBy(@event => @event.CreatedAt)
+                          .First().CreatedAt,
+                      DateTime.Now - TimeSpan.FromDays(_settings.BestEvent.DaysSinceEarliestEvent)) < 0 &&
+                  DateTime.Compare(
+                      eventsWithRating
+                          .OrderBy(@event => @event.CreatedAt)
+                          .First(@event =>
+                              @event.Customization.Rating.Value ==
+                              eventsWithRating.Max(@event => @event.Customization.Rating.Value)).CreatedAt,
+                      DateTime.Now - TimeSpan.FromDays(_settings.BestEvent.DaysSinceSoughtEvent)) < 0;
         }
 
         private readonly ItHappenedSettings _settings;
