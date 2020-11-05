@@ -1,0 +1,7 @@
+﻿{
+  "BestEvent": {
+    "MinimalAmountOfEventsWithRating": 3,
+    "DaysSinceLastEvent": 30,
+    "DaysSinceBestEvent": 7
+  }
+}
