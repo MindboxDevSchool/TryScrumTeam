@@ -2,6 +2,9 @@ import { Container, CssBaseline } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import Tracks from './Tracks';
+import EventList from './Components/Events/EventList';
+import { BrowserRouter, Switch, Route } from "react-router-dom"
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -14,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 export default function Body() {
     const classes = useStyles();
 
@@ -22,7 +24,12 @@ export default function Body() {
         <div className={classes.root}>
             <CssBaseline />
             <Container maxWidth="lg" className={classes.container}>
-                <Tracks />
+                <BrowserRouter>
+                    <Switch>
+                        <Route path="/tracks/:trackId" component={EventList} />
+                        <Route path="/" component={Tracks} />
+                    </Switch>
+                </BrowserRouter>
             </Container>
         </div>
     );

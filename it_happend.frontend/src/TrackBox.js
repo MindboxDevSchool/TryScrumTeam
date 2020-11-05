@@ -3,6 +3,7 @@ import { Typography, IconButton, Accordion, AccordionSummary, AccordionDetails }
 import { makeStyles } from '@material-ui/core/styles';
 import { deleteTrack } from './api';
 import { Edit, Delete, ExpandMore, ExpandLess } from '@material-ui/icons';
+import { Link } from "react-router-dom"
 import moment from 'moment'
 import 'moment/locale/ru'
 moment.locale('ru')
@@ -12,7 +13,8 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2),
     },
     accordion: {
-        borderRadius: 10
+        borderRadius: 10,
+        cursor: "default",
     },
     trackSummary: {
         flex: 1,
@@ -45,71 +47,72 @@ const customizationsMap = ((value) => {
     }
 });
 
-export default function TrackBox({ id, name, createdAt, allowedCustomizations }) {
+export default function TrackBox(props) {
+    const { id, name, createdAt, allowedCustomizations } = props;
     const classes = useStyles();
     const [expanded, setExpanded] = React.useState(false);
     const [isDeleting, setDeleting] = React.useState(false);
     const [isDeleted, setDeleted] = React.useState(false);
     const handleChange = (event) => {
-        if (event.stopPropagation)
-            event.stopPropagation();
+        event.preventDefault();
         setExpanded(!expanded);
     };
 
     const onDeleteTrack = async (event) => {
         setDeleting(true);
-        if (event.stopPropagation)
-            event.stopPropagation();
-
+        event.preventDefault();
         var deletedId = await deleteTrack(id);
         if (deletedId)
             setDeleted(true);
         setDeleting(false);
     }
-
-    const onClick = () => {
-        console.log("click")
+    const onRouteToEvents = () => {
+        localStorage.setItem('track', JSON.stringify(props))
     }
 
     return (
         isDeleted ? null :
             <div className={classes.trackBox}>
-                <Accordion square expanded={expanded} onClick={onClick} className={classes.accordion}>
-                    <AccordionSummary aria-controls="id" id="id">
-                        <div className={classes.trackSummary}>
-                            <IconButton
-                                className={classes.expandedButton}
-                                aria-label="expand"
-                                onClick={handleChange}
-                                onFocus={(event) => event.stopPropagation()}>
-                                {expanded ? <ExpandLess /> : <ExpandMore />}
-                            </IconButton>
-                            <Typography variant="subtitle1" className={classes.flex1}>{name} </Typography>
-                            <Typography variant="subtitle2" className={classes.flex1}>{moment(createdAt).format('LL')}</Typography>
-                            <IconButton
-                                aria-label="edit"
-                                onClick={(event) => event.stopPropagation()}
-                                onFocus={(event) => event.stopPropagation()}>
-                                <Edit fontSize="small" />
-                            </IconButton>
-                            <IconButton
-                                aria-label="delete"
-                                onClick={onDeleteTrack}
-                                onFocus={(event) => event.stopPropagation()}
-                                disabled={isDeleting}>
-                                <Delete fontSize="small" />
-                            </IconButton>
-                        </div>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Typography>
-                            {allowedCustomizations ?
-                                "Дополнительно к отслеживанию можно указать: " + allowedCustomizations.map(customizationsMap).join(", ")
-                                : "У отслеживания не заданы кастомизации"
-                            }
-                        </Typography>
-                    </AccordionDetails>
-                </Accordion>
+                <Link to={`/tracks/${id}`} style={{ textDecoration: 'none' }} onClick={onRouteToEvents}>
+                    <Accordion square expanded={expanded} className={classes.accordion}>
+                        <AccordionSummary aria-controls="id" id="id">
+                            <div className={classes.trackSummary}>
+                                <IconButton
+                                    className={classes.expandedButton}
+                                    aria-label="expand"
+                                    onClick={handleChange}
+                                    onFocus={(event) => event.stopPropagation()}>
+                                    {expanded ? <ExpandLess /> : <ExpandMore />}
+                                </IconButton>
+                                <Typography
+
+                                    variant="subtitle1" className={classes.flex1}>{name} </Typography>
+                                <Typography variant="subtitle2" className={classes.flex1}>{moment(createdAt).format('LL')}</Typography>
+                                <IconButton
+                                    aria-label="edit"
+                                    onClick={(event) => event.stopPropagation()}
+                                    onFocus={(event) => event.stopPropagation()}>
+                                    <Edit fontSize="small" />
+                                </IconButton>
+                                <IconButton
+                                    aria-label="delete"
+                                    onClick={onDeleteTrack}
+                                    onFocus={(event) => event.stopPropagation()}
+                                    disabled={isDeleting}>
+                                    <Delete fontSize="small" />
+                                </IconButton>
+                            </div>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography>
+                                {allowedCustomizations ?
+                                    "Дополнительно к отслеживанию можно указать: " + allowedCustomizations.map(customizationsMap).join(", ")
+                                    : "У отслеживания не заданы кастомизации"
+                                }
+                            </Typography>
+                        </AccordionDetails>
+                    </Accordion>
+                </Link>
             </div>
     );
 }

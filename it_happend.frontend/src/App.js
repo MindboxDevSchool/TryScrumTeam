@@ -5,7 +5,8 @@ import Body from './Body';
 
 
 function App() {
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  const hasToken = !!localStorage.getItem('token')
+  const [isAuthenticated, setAuthenticated] = useState(hasToken);
   const authenticate = (login, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("login", login);
