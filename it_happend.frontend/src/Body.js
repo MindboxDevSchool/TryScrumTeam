@@ -17,16 +17,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
-function Hello() {
-
-    return (
-        <div>
-            hello
-        </div>
-    );
-}
-
 export default function Body() {
     const classes = useStyles();
 
@@ -37,7 +27,6 @@ export default function Body() {
                 <BrowserRouter>
                     <Switch>
                         <Route path="/tracks/:trackId" component={EventList} />
-                        <Route path="/home" component={Hello} />
                         <Route path="/" component={Tracks} />
                     </Switch>
                 </BrowserRouter>
