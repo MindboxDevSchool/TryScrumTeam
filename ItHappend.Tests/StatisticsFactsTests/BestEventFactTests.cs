@@ -65,7 +65,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
         }
         
         [Test]
-        public void Process_EventsCountWithRatingIsNotCorrect_ReturnNotApplicableFact()
+        public void Process_EventsCountWithRatingNotSatisfyRequiredCondition_ReturnNotApplicableFact()
         {
             // arrange
             _settings = new ItHappenedSettings(
@@ -85,7 +85,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
         }
         
         [Test]
-        public void Process_DaysSinceLastEventIsNotCorrect_ReturnNotApplicableFact()
+        public void Process_DaysSinceLastEventNotSatisfyRequiredCondition_ReturnNotApplicableFact()
         {
             // arrange
             _settings = new ItHappenedSettings(
@@ -105,7 +105,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
         }
         
         [Test]
-        public void Process_DaysSinceBestEventIsNotCorrect_ReturnNotApplicableFact()
+        public void Process_DaysSinceBestEventNotSatisfyRequiredCondition_ReturnNotApplicableFact()
         {
             // arrange
             _settings = new ItHappenedSettings(
@@ -122,6 +122,36 @@ namespace ItHappend.Tests.StatisticsFactsTests
 
             // assert
             Assert.IsFalse(bestEventFact.IsApplicable);
+        }
+        
+        [Test]
+        public void Process_TwoEventsWithMaximumRating_ReturnNotApplicableFact()
+        {
+            // arrange
+            _settings = new ItHappenedSettings(
+                new BestEventSettings(
+                    3, 
+                    30, 
+                    7
+                ));
+
+            events.Add(new Event(
+                Guid.NewGuid(), 
+                DateTime.Now - TimeSpan.FromDays(20),
+                Guid.NewGuid(),
+                new Customizations(new CustomizationsDto() {Rating = 7}, 
+                    new List<CustomizationType>() {CustomizationType.Rating})));
+
+            var bestEventFact = new BestEventFact(_settings);
+
+            // act
+            bestEventFact.Process(events, trackName);
+
+            // assert
+            Assert.IsTrue(bestEventFact.IsApplicable);
+            Assert.AreEqual(
+                $"Событие TestTrack с самым высоким рейтингом 7 произошло {events[3].CreatedAt.ToString()}",
+                bestEventFact.Description);
         }
     }
 }

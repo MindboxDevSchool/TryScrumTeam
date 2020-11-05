@@ -23,7 +23,7 @@ namespace ItHappened.Domain.StatisticsFacts
             if (CheckApplicable(eventsWithRating))
             {
                 var bestEvent = eventsWithRating
-                    .OrderByDescending(@event => @event.CreatedAt)
+                    .OrderBy(@event => @event.CreatedAt)
                     .First(@event =>
                     @event.Customization.Rating.Value ==
                     eventsWithRating.Max(@event => @event.Customization.Rating.Value));
@@ -43,7 +43,7 @@ namespace ItHappened.Domain.StatisticsFacts
 
         private bool CheckApplicable(IEnumerable<Event> eventsWithRating)
         {
-            return eventsWithRating.Count() >= _settings.BestEvent.EventsWithRatingCount &&
+            return eventsWithRating.Count() >= _settings.BestEvent.MinimalAmountOfEventsWithRating &&
                    DateTime.Compare(
                        eventsWithRating
                            .OrderBy(@event => @event.CreatedAt)
@@ -51,7 +51,7 @@ namespace ItHappened.Domain.StatisticsFacts
                        DateTime.Now - TimeSpan.FromDays(_settings.BestEvent.DaysSinceLastEvent)) < 0 &&
                    DateTime.Compare(
                        eventsWithRating
-                           .OrderByDescending(@event => @event.CreatedAt)
+                           .OrderBy(@event => @event.CreatedAt)
                            .First(@event =>
                                @event.Customization.Rating.Value ==
                                eventsWithRating.Max(@event => @event.Customization.Rating.Value)).CreatedAt,

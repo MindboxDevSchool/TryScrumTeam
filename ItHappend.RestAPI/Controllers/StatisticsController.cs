@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ItHappend.RestAPI.Controllers
 {
     [Authorize]
-    [Route("statistics")]
     public class StatisticsController: ControllerBase
     {
         private readonly IStatisticsService _statisticsService;
@@ -19,7 +18,7 @@ namespace ItHappend.RestAPI.Controllers
         }
 
         [HttpGet]
-        [Route("track={trackId}")]
+        [Route("tracks/{trackId}/statistics")]
         public IActionResult GetTrackStatistics([FromRoute] Guid trackId)
         {
             var userId = User.GetUserId();
