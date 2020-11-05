@@ -3,6 +3,7 @@ import Login from './Login';
 import Header from './Header';
 import Body from './Body';
 
+
 function App() {
   const [isAuthenticated, setAuthenticated] = useState(false);
   const authenticate = (login, token) => {
@@ -17,7 +18,6 @@ function App() {
   }
   return (
     <div className="App">
-      
       {isAuthenticated
         ?
         <>
