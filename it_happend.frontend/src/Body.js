@@ -21,8 +21,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Body() {
     const classes = useStyles();
 
-    return (<TrackCreation/>
-        /*<div className={classes.root}>
+    return (
+        <div className={classes.root}>
             <CssBaseline />
             <Container maxWidth="lg" className={classes.container}>
                 <BrowserRouter>
@@ -32,7 +32,7 @@ export default function Body() {
                         <Route path="/newTrack" component={TrackCreation} />
                     </Switch>
                 </BrowserRouter>
-            </Container>*/
+            </Container>
         //</div>
     );
 }

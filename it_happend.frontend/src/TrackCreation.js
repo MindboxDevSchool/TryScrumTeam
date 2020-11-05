@@ -57,11 +57,16 @@ export default function TrackCreation() {
     
       const { Comment, Rating, Scale ,Photo, Geotag} = cutoms;
       const error = [Comment, Rating, Scale ,Photo, Geotag].filter((v) => v).length == 0;
+      var wrongText = false
+      if(text == "")
+      wrongText = true;
 
+      var disableButton = wrongText || error;
 
     const classes = useStyles();
     
     
+
     const Submit = (event) => {
         var listOfCustoms =Object.keys(cutoms)
         .filter(function(k){return cutoms[k]})
@@ -88,6 +93,12 @@ export default function TrackCreation() {
             label="Название"
             
           />
+          {wrongText
+        ?
+        <FormHelperText>Название не может быть пустым</FormHelperText>
+        :
+        <div/>
+        }
 
     <FormControl required error={error} component="fieldset" className={classes.formControl}>
         <FormLabel component="legend">Кастомизации</FormLabel>
@@ -113,10 +124,15 @@ export default function TrackCreation() {
             label="ГеоТег"
           />
         </FormGroup>
+        {error
+        ?
         <FormHelperText>Выберите хотя бы одну</FormHelperText>
+        :
+        <div/>
+        }
       </FormControl>
       
-      <Button  variant="contained" color="primary" onClick = {Submit}>
+      <Button disabled = {disableButton} variant="contained" color="primary" onClick = {Submit}>
         Создать
       </Button>
         </div>
