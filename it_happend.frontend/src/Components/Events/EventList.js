@@ -6,6 +6,7 @@ import EventBox from './EventBox';
 import { Button, Typography, LinearProgress } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { useParams } from "react-router-dom";
+import TrackStatistics from "../Statistics/TrackStatistics"
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -80,6 +81,7 @@ export default function Tracks() {
                     <Typography variant="h4" className={classes.title}>
                         {track.allowedCustomizations.join("  ")}
                     </Typography>
+                    <TrackStatistics id={track.id} />
                     <div className={classes.buttonContainer}>
                         <Button
                             variant="contained"
