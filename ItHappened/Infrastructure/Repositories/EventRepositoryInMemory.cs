@@ -64,7 +64,7 @@ namespace ItHappened.Infrastructure.Repositories
 
         public IEnumerable<Event> TryGetEventsByUser(Guid userId)
         {
-            throw new NotImplementedException();
+            return new List<Event>();
         }
     }
 }

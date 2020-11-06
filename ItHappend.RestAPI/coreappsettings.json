@@ -8,5 +8,8 @@
     "MinimalAmountOfEventsWithRating": 3,
     "DaysSinceEarliestEvent": 30,
     "DaysSinceSoughtEvent": 7
+  },
+  "NEventsRecorded": {
+    "MinimalAmountOfEvents": 5
   }
 }

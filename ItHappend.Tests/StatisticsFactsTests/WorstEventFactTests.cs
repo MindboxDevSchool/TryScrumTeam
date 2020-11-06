@@ -50,7 +50,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     3, 
                     30, 
                     5
-                    ));
+                    ), null);
 
             var worstEventFact = new WorstEventFact(_settings);
 
@@ -75,7 +75,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     4, 
                     30, 
                     5
-                ));
+                ), null);
             
             var worstEventFact = new WorstEventFact(_settings);
 
@@ -96,7 +96,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     3, 
                     60, 
                     5
-                ));
+                ), null);
 
             var worstEventFact = new WorstEventFact(_settings);
 
@@ -117,7 +117,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     3, 
                     30, 
                     20
-                ));
+                ), null);
 
             var worstEventFact = new WorstEventFact(_settings);
 
@@ -138,7 +138,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     3, 
                     30, 
                     7
-                ));
+                ), null);
 
             events.Add(new Event(
                 Guid.NewGuid(), 
