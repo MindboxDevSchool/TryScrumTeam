@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ItHappened;
 using ItHappened.Domain;
-using ItHappened.Domain.StatisticsFacts;
+using ItHappened.Domain.StatisticsFacts.SpecificToTracks;
 using NUnit.Framework;
 
 namespace ItHappend.Tests.StatisticsFactsTests

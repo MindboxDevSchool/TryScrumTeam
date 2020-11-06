@@ -61,5 +61,10 @@ namespace ItHappened.Infrastructure.Repositories
             }
             return trackId;
         }
+
+        public IEnumerable<Event> TryGetEventsByUser(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

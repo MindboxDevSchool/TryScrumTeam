@@ -101,6 +101,22 @@ namespace ItHappened.Infrastructure.Repositories
             return trackId;
         }
 
+        public IEnumerable<Event> TryGetEventsByUser(Guid userId)
+        {
+            var result = _connection
+                .Query<EventDb>(@"select * from ItHappend.Events
+                                    where TrackId in
+                                    (select Id from ItHappend.Tracks
+                                    where CreatorId = @UserId)",
+                    new {UserId = userId}).ToList();
+
+            if (!result.Any())
+                return new List<Event>();
+            var resultConverted = result.Select(FromEventDbToEvent);
+
+            return resultConverted.ToList();
+        }
+
         private Event FromEventDbToEvent(EventDb eventDb)
         {
             var customizations = new Customizations(

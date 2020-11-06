@@ -5,6 +5,7 @@ using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 using ItHappened.Domain.StatisticsFacts;
+using ItHappened.Domain.StatisticsFacts.SpecificToTracks;
 
 namespace ItHappened.Application
 {
