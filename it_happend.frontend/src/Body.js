@@ -4,6 +4,7 @@ import React from 'react';
 import Tracks from './Tracks';
 import EventList from './Components/Events/EventList';
 import { BrowserRouter, Switch, Route } from "react-router-dom"
+import CreateEvent from './Components/Events/CreateEvent';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -26,6 +27,7 @@ export default function Body() {
             <Container maxWidth="lg" className={classes.container}>
                 <BrowserRouter>
                     <Switch>
+                        <Route path="/tracks/:trackId/createEvent" component={CreateEvent} />
                         <Route path="/tracks/:trackId" component={EventList} />
                         <Route path="/" component={Tracks} />
                     </Switch>
