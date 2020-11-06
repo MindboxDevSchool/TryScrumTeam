@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace ItHappened.Domain.StatisticsFacts
 {
-    public class BestEventFact : IStatisticsFact
+    public class WorstEventFact : IStatisticsFact
     {
-        public BestEventFact(ItHappenedSettings settings)
+        public WorstEventFact(ItHappenedSettings settings)
         {
             _settings = settings;
         }
@@ -22,18 +22,18 @@ namespace ItHappened.Domain.StatisticsFacts
 
             if (CheckApplicable(eventsWithRating))
             {
-                var bestEvent = eventsWithRating
+                var worstEvent = eventsWithRating
                     .OrderBy(@event => @event.CreatedAt)
                     .First(@event =>
                     @event.Customization.Rating.Value ==
-                    eventsWithRating.Max(@event => @event.Customization.Rating.Value));
+                    eventsWithRating.Min(@event => @event.Customization.Rating.Value));
 
                 IsApplicable = true;
-                Priority = bestEvent.Customization.Rating.Value;
-                Description = $"Событие {trackName} с самым высоким рейтингом {bestEvent.Customization.Rating.Value}" +
-                              $" произошло {bestEvent.CreatedAt.ToString()}";
-                if (bestEvent.Customization.Comment != null)
-                    Description += $" с комментарием \"{bestEvent.Customization.Comment.Value}\"";
+                Priority = 10 - worstEvent.Customization.Rating.Value;
+                Description = $"Событие {trackName} с самым низким рейтингом {worstEvent.Customization.Rating.Value}" +
+                              $" произошло {worstEvent.CreatedAt.ToString()}";
+                if (worstEvent.Customization.Comment != null)
+                    Description += $" с комментарием \"{worstEvent.Customization.Comment.Value}\"";
             }
             else
             {
@@ -45,19 +45,19 @@ namespace ItHappened.Domain.StatisticsFacts
         {
             return eventsWithRating == null || eventsWithRating.Count() == 0
                 ? false
-                : eventsWithRating.Count() >= _settings.BestEvent.MinimalAmountOfEventsWithRating &&
+                : eventsWithRating.Count() >= _settings.WorstEvent.MinimalAmountOfEventsWithRating &&
                   DateTime.Compare(
                       eventsWithRating
                           .OrderBy(@event => @event.CreatedAt)
                           .First().CreatedAt,
-                      DateTime.Now - TimeSpan.FromDays(_settings.BestEvent.DaysSinceEarliestEvent)) < 0 &&
+                      DateTime.Now - TimeSpan.FromDays(_settings.WorstEvent.DaysSinceEarliestEvent)) < 0 &&
                   DateTime.Compare(
                       eventsWithRating
                           .OrderBy(@event => @event.CreatedAt)
                           .First(@event =>
                               @event.Customization.Rating.Value ==
-                              eventsWithRating.Max(@event => @event.Customization.Rating.Value)).CreatedAt,
-                      DateTime.Now - TimeSpan.FromDays(_settings.BestEvent.DaysSinceSoughtEvent)) < 0;
+                              eventsWithRating.Min(@event => @event.Customization.Rating.Value)).CreatedAt,
+                      DateTime.Now - TimeSpan.FromDays(_settings.WorstEvent.DaysSinceSoughtEvent)) < 0;
         }
 
         private readonly ItHappenedSettings _settings;
