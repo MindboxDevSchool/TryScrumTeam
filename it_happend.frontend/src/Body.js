@@ -4,6 +4,7 @@ import React from 'react';
 import Tracks from './Tracks';
 import EventList from './Components/Events/EventList';
 import { BrowserRouter, Switch, Route } from "react-router-dom"
+import TrackCreation from "./TrackCreation"
 
 
 const useStyles = makeStyles((theme) => ({
@@ -27,10 +28,14 @@ export default function Body() {
                 <BrowserRouter>
                     <Switch>
                         <Route path="/tracks/:trackId" component={EventList} />
+                        <Route path="/newTrack" component={TrackCreation} />
+                        <Route path="/editTrack" >
+                            <TrackCreation isEdit = {true} />
+                        </Route>
                         <Route path="/" component={Tracks} />
                     </Switch>
                 </BrowserRouter>
             </Container>
-        </div>
+        //</div>
     );
 }

@@ -28,25 +28,41 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const customizationsMap = ((value) => {
+    switch (value) {
+        case 'Comment':
+            return "комментарий"
+        case 'Rating':
+            return "рейтинг"
+        case 'Scale':
+            return "шкала"
+        case 'Photo':
+            return "фотография"
+        case 'Geotag':
+            return "местоположение"
+        default:
+            return ""
+    }
+});
 
-export default function Tracks() {
+export default function Events() {
     const { trackId } = useParams();
     const classes = useStyles();
     const takeSize = 10;
 
     //track fields { id, name, createdAt, allowedCustomizations } 
     const [track, setTrack] = useState({});
-    const [events, setTracks] = useState([]);
+    const [events, setEvents] = useState([]);
     const [hasNext, setHasNext] = useState(false);
-    const [isAddTrackLoading, setAddTrackLoading] = useState(false);
-    const [isStartTrackLoading, setStartTrackLoading] = useState(true);
+    const [isAddEventLoading, setAddEventLoading] = useState(false);
+    const [isStartEventLoading, setStartEventLoading] = useState(true);
 
     useEffect(() => {
-        const getFirstTracks = async () => {
+        const getFirstEvents = async () => {
             const { events } = await getEventsByTrackId(trackId, takeSize);
             setHasNext(Array.isArray(events) && events.length === takeSize)
-            setTracks(events);
-            setStartTrackLoading(false);
+            setEvents(events);
+            setStartEventLoading(false);
         }
 
         var savedTrack = JSON.parse(localStorage.getItem('track'));
@@ -58,28 +74,28 @@ export default function Tracks() {
             //get track from api
         }
 
-        getFirstTracks();
+        getFirstEvents();
     }, [trackId]);
 
     const loadNext = async () => {
-        setAddTrackLoading(true);
-        const addTracks = await getEventsByTrackId(trackId, takeSize, events.length)
-        const extendedTracks = events.concat(addTracks.tracks);
-        setHasNext(Array.isArray(addTracks.tracks) && addTracks.tracks.length === takeSize)
-        setTracks(extendedTracks);
-        setAddTrackLoading(false);
+        setAddEventLoading(true);
+        const addEvents = await getEventsByTrackId(trackId, takeSize, events.length)
+        const extendedEvents = events.concat(addEvents.events);
+        setHasNext(Array.isArray(addEvents.events) && addEvents.events.length === takeSize)
+        setEvents(extendedEvents);
+        setAddEventLoading(false);
     }
 
 
     return (
         <>
-            {isStartTrackLoading ? <LinearProgress /> :
+            {isStartEventLoading ? <LinearProgress /> :
                 <>
                     <Typography variant="h4" className={classes.title}>
                         {track.name}
                     </Typography>
                     <Typography variant="h4" className={classes.title}>
-                        {track.allowedCustomizations.join("  ")}
+                        {'Для добавления доступны : '+track.allowedCustomizations.map(customizationsMap).join(", ")}
                     </Typography>
                     <TrackStatistics id={track.id} />
                     <div className={classes.buttonContainer}>
@@ -94,10 +110,14 @@ export default function Tracks() {
                     </div>
                     {Array.isArray(events) && events.length ?
                         <>
-                            {events.map(t => <EventBox createdAt={t.createdAt} {...t.customizations} />)}
+                            {events.map(t => <EventBox 
+                            trackId = {track.id}
+                            id = {t.id} 
+                            createdAt={t.createdAt} 
+                            {...t.customizations} />)}
                             {
                                 hasNext ?
-                                    (isAddTrackLoading ? <LinearProgress /> :
+                                    (isAddEventLoading ? <LinearProgress /> :
                                         <div className={classes.loadButtonContainer}>
                                             <Button
                                                 variant="contained"
