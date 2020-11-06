@@ -5,6 +5,7 @@ using ItHappened.Domain;
 using ItHappened.Domain.Exceptions;
 using ItHappened.Domain.Repositories;
 using ItHappened.Domain.StatisticsFacts;
+using ItHappened.Domain.StatisticsFacts.General;
 using ItHappened.Domain.StatisticsFacts.SpecificToTracks;
 
 namespace ItHappened.Application
@@ -16,30 +17,48 @@ namespace ItHappened.Application
         {
             _eventRepository = eventRepository;
             _trackRepository = trackRepository;
-            _settings = settings;
-            _statisticsFacts = new List<IStatisticsFact>
+            _trackStatisticsFacts = new List<IStatisticsFact>
             {
                 new BestEventFact(settings),
                 new WorstEventFact(settings)
+            };
+            _generalStatisticsFacts = new List<IStatisticsFact>()
+            {
+                new NEventsRecordedFact(settings)
             };
         }
 
         private readonly IEventRepository _eventRepository;
         private readonly ITrackRepository _trackRepository;
-        private readonly ItHappenedSettings _settings;
-        private readonly List<IStatisticsFact> _statisticsFacts;
+        private readonly List<IStatisticsFact> _trackStatisticsFacts;
+        private readonly List<IStatisticsFact> _generalStatisticsFacts;
 
         public List<string> GetTrackStatistics(Guid userId, Guid trackId)
         {
             var track = TryGetAccessToTrack(userId, trackId);
             var trackEvents = _eventRepository.TryGetEventsByTrack(trackId);
 
-            foreach (var fact in _statisticsFacts)
-            {
-                fact.Process(trackEvents, track.Name);
-            }
+            return ProcessFacts(trackEvents, _trackStatisticsFacts, track.Name);
+        }
 
-            return _statisticsFacts
+        public List<string> GetGeneralStatistics(Guid userId)
+        {
+            var events = _eventRepository.TryGetEventsByUser(userId);
+
+            return ProcessFacts(events, _generalStatisticsFacts);
+        }
+
+        private List<string> ProcessFacts(
+            IEnumerable<Event> events,
+            IEnumerable<IStatisticsFact> facts,
+            string trackName = "")
+        {
+            foreach (var fact in facts)
+            {
+                fact.Process(events, trackName);
+            }
+            
+            return facts
                 .Where(fact => fact.IsApplicable)
                 .OrderByDescending(fact => fact.Priority)
                 .Select(fact => fact.Description)
