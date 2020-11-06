@@ -38,3 +38,5 @@ export const getTracks = (take = null, skip = null) => instance.get(`/tracks`, {
 export const deleteTrack = (id) => instance.delete('/tracks/'+id, { headers: authHeader() }).then(result => result.data).catch(errorHandler);
 export const createTrack = (trackContent) => instance.post('/tracks/', trackContent,{ headers: authHeader()}).then(result => result.data).catch(errorHandler);
 export const editTrack = (trackContent,id) => instance.put('/tracks/'+id, trackContent,{ headers: authHeader()}).then(result => result.data).catch(errorHandler);
+export const getTrackStatistics = (id) => instance.get(`/tracks/${id}/statistics`, { headers: authHeader() }).then(result => result.data).catch(errorHandler);
+

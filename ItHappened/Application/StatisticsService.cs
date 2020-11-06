@@ -18,7 +18,8 @@ namespace ItHappened.Application
             _settings = settings;
             _statisticsFacts = new List<IStatisticsFact>
             {
-                new BestEventFact(settings)
+                new BestEventFact(settings),
+                new WorstEventFact(settings)
             };
         }
 
