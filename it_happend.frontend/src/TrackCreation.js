@@ -13,14 +13,9 @@ import { createTrack,editTrack } from './api';
 import { useHistory } from "react-router-dom";
 
 export default function TrackCreation({isEdit = false}) {
-  //isEdit = true
-  console.log(isEdit)
   if(isEdit)
   {
     var track = JSON.parse(localStorage['track'])
-    console.log(track)
-    console.log(track['name'])
-    console.log('ogaboooga')
   }
   const useStyles = makeStyles((theme) => ({
     root: {
@@ -84,7 +79,10 @@ export default function TrackCreation({isEdit = false}) {
       "allowedCustomizations": listOfCustoms
     }
     setButtonDisabled(true);
-    await createTrack(trackInfo);
+    if(isEdit)
+      await editTrack(trackInfo,track.id);
+    else
+      await createTrack(trackInfo);
     setButtonDisabled(false);
     history.push('/')
   };
@@ -106,7 +104,7 @@ export default function TrackCreation({isEdit = false}) {
         :
         <div />
       }
-      <FormControl required /*error={error}*/ component="fieldset" className={classes.formControl}>
+      <FormControl required component="fieldset" className={classes.formControl}>
         <FormLabel component="legend">Кастомизации</FormLabel>
         <FormGroup>
           <FormControlLabel
@@ -131,7 +129,6 @@ export default function TrackCreation({isEdit = false}) {
           />
         </FormGroup>
       </FormControl>
-
       <Button disabled={IsButtonDisabled || wrongText} variant="contained" color="primary" onClick={Submit}>
       {isEdit ? "Изменить": "Создать"}
       </Button>
