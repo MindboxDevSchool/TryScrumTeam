@@ -9,11 +9,19 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
-import { createTrack } from './api';
+import { createTrack,editTrack } from './api';
 import { useHistory } from "react-router-dom";
 
-export default function TrackCreation() {
-
+export default function TrackCreation({isEdit = false}) {
+  //isEdit = true
+  console.log(isEdit)
+  if(isEdit)
+  {
+    var track = JSON.parse(localStorage['track'])
+    console.log(track)
+    console.log(track['name'])
+    console.log('ogaboooga')
+  }
   const useStyles = makeStyles((theme) => ({
     root: {
       display: 'flex',
@@ -39,26 +47,28 @@ export default function TrackCreation() {
   let history = useHistory();
 
   const [customs, setState] = React.useState({
-    Comment: true,
-    Rating: false,
-    Scale: false,
-    Photo: false,
-    Geotag: false
+    Comment: isEdit ? track.allowedCustomizations.includes("Comment"):false,
+    Rating: isEdit ? track.allowedCustomizations.includes("Rating"):false,
+    Scale: isEdit ? track.allowedCustomizations.includes("Scale"):false,
+    Photo: isEdit ? track.allowedCustomizations.includes("Photo"):false,
+    Geotag: isEdit ? track.allowedCustomizations.includes("Geotag"):false
   });
 
-  const [text, setText] = React.useState("")
+  const [text, setText] = React.useState(isEdit ? track.name :"")
   const handleTextChange = (event) => {
     setText(event.target.value);
+    setButtonDisabled(false)
   };
 
   var wrongText = false
   if (text == "")
     wrongText = true;
 
-  const [IsButtonDisabled, setButtonDisabled] = React.useState(false);
+  const [IsButtonDisabled, setButtonDisabled] = React.useState((isEdit ? true : false));
 
   const handleCustomsSelectorChange = (event) => {
     setState({ ...customs, [event.target.name]: event.target.checked });
+    setButtonDisabled(false)
   };
 
   const { Comment, Rating, Scale, Photo, Geotag } = customs;
@@ -82,13 +92,13 @@ export default function TrackCreation() {
   return (
     <div className={classes.container}>
       <Typography variant="h6" gutterBottom>
-        Новое отслеживание
+        {isEdit ? "Изменение отслеживания": "Новое отслеживание"}
       </Typography>
       <TextField
         onChange={handleTextChange}
         required
         label="Название"
-
+        defaultValue ={isEdit ? track.name :""} 
       />
       {wrongText
         ?
@@ -123,7 +133,7 @@ export default function TrackCreation() {
       </FormControl>
 
       <Button disabled={IsButtonDisabled || wrongText} variant="contained" color="primary" onClick={Submit}>
-        Создать
+      {isEdit ? "Изменить": "Создать"}
       </Button>
     </div>
   );

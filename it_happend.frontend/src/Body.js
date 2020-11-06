@@ -29,6 +29,9 @@ export default function Body() {
                     <Switch>
                         <Route path="/tracks/:trackId" component={EventList} />
                         <Route path="/newTrack" component={TrackCreation} />
+                        <Route path="/editTrack" >
+                            <TrackCreation isEdit = {true} />
+                        </Route>
                         <Route path="/" component={Tracks} />
                     </Switch>
                 </BrowserRouter>
