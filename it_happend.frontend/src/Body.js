@@ -28,8 +28,8 @@ export default function Body() {
                 <BrowserRouter>
                     <Switch>
                         <Route path="/tracks/:trackId" component={EventList} />
-                        <Route path="/" component={Tracks} />
                         <Route path="/newTrack" component={TrackCreation} />
+                        <Route path="/" component={Tracks} />
                     </Switch>
                 </BrowserRouter>
             </Container>

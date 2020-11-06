@@ -1,144 +1,130 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useState, useEffect } from "react";
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-//import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import { Multiselect } from 'multiselect-react-dropdown';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
-import {createTrack} from './api';
-//import Checkbox from '@material-ui/core/Checkbox';
- 
-
-
-
-
+import { createTrack } from './api';
+import { useHistory } from "react-router-dom";
 
 export default function TrackCreation() {
 
-    const useStyles = makeStyles((theme) => ({
-        root: {
-            display: 'flex',
-          },
-          formControl: {
-            margin: theme.spacing(3),
-          },
-        container: {
-            
-            marginLeft: '25vw',
-            marginRight: '25vw'
-        }
-    }));
-    
-    const [cutoms, setState] = React.useState({
-        Comment:true,
-        Rating:false,
-        Scale:false,
-        Photo:false,
-        Geotag:false
-      });
+  const useStyles = makeStyles((theme) => ({
+    root: {
+      display: 'flex',
+    },
+    formControl: {
+      margin: theme.spacing(3),
+    },
+    container: {
+      backgroundColor: '#ffffff',
+      padding: '20px',
+      borderBottomLeftRadius: '10px',
+      borderBottomRightRadius: '10px',
+      marginLeft: '25vw',
+      marginRight: '25vw',
+      display: 'flex',
+      alignContent: 'center',
+      flexDirection: 'column',
+    }
+  }));
 
-    const [text,setText] = React.useState("")
-    const handleTextChange = (event) => {
-        setText(event.target.value);
-      };
+  const classes = useStyles();
 
+  let history = useHistory();
 
-      const handleChange = (event) => {
-        setState({ ...cutoms, [event.target.name]: event.target.checked });
-      };
-    
-      const { Comment, Rating, Scale ,Photo, Geotag} = cutoms;
-      const error = [Comment, Rating, Scale ,Photo, Geotag].filter((v) => v).length == 0;
-      var wrongText = false
-      if(text == "")
-      wrongText = true;
+  const [customs, setState] = React.useState({
+    Comment: true,
+    Rating: false,
+    Scale: false,
+    Photo: false,
+    Geotag: false
+  });
 
-      var disableButton = wrongText || error;
+  const [text, setText] = React.useState("")
+  const handleTextChange = (event) => {
+    setText(event.target.value);
+  };
 
-    const classes = useStyles();
-    
-    
+  var wrongText = false
+  if (text == "")
+    wrongText = true;
 
-    const Submit = (event) => {
-        var listOfCustoms =Object.keys(cutoms)
-        .filter(function(k){return cutoms[k]})
-        .map(String)
-        
-        const trackInfo = {"name": text,
-        "CreatedAt": new Date(),
-        "allowedCustomizations":listOfCustoms}
-        console.log(trackInfo);
-        createTrack(trackInfo);
-      };
+  const [IsButtonDisabled, setButtonDisabled] = React.useState(false);
+
+  const handleCustomsSelectorChange = (event) => {
+    setState({ ...customs, [event.target.name]: event.target.checked });
+  };
+
+  const { Comment, Rating, Scale, Photo, Geotag } = customs;
+
+  const Submit = async (event) => {
+    var listOfCustoms = Object.keys(customs)
+      .filter(function (k) { return customs[k] })
+      .map(String)
+
+    const trackInfo = {
+      "name": text,
+      "CreatedAt": new Date(),
+      "allowedCustomizations": listOfCustoms
+    }
+    setButtonDisabled(true);
+    await createTrack(trackInfo);
+    setButtonDisabled(false);
+    history.push('/')
+  };
 
   return (
-    
-    <React.Fragment>
-    
-      <div className = {classes.container}>
+    <div className={classes.container}>
       <Typography variant="h6" gutterBottom>
-        Название отслеживания
+        Новое отслеживание
       </Typography>
-          <TextField
-          onChange = {handleTextChange}
-            required
-            label="Название"
-            
-          />
-          {wrongText
+      <TextField
+        onChange={handleTextChange}
+        required
+        label="Название"
+
+      />
+      {wrongText
         ?
         <FormHelperText>Название не может быть пустым</FormHelperText>
         :
-        <div/>
-        }
-
-    <FormControl required error={error} component="fieldset" className={classes.formControl}>
+        <div />
+      }
+      <FormControl required /*error={error}*/ component="fieldset" className={classes.formControl}>
         <FormLabel component="legend">Кастомизации</FormLabel>
         <FormGroup>
           <FormControlLabel
-            control={<Checkbox color="primary" checked={Comment} onChange={handleChange} name="Comment" />}
+            control={<Checkbox color="primary" checked={Comment} onChange={handleCustomsSelectorChange} name="Comment" />}
             label="Комментарий"
           />
           <FormControlLabel
-            control={<Checkbox color="primary" checked={Rating} onChange={handleChange} name="Rating" />}
+            control={<Checkbox color="primary" checked={Rating} onChange={handleCustomsSelectorChange} name="Rating" />}
             label="Оценка"
           />
           <FormControlLabel
-            control={<Checkbox color="primary" checked={Scale} onChange={handleChange} name="Scale" />}
+            control={<Checkbox color="primary" checked={Scale} onChange={handleCustomsSelectorChange} name="Scale" />}
             label="Шкала"
           />
           <FormControlLabel
-            control={<Checkbox color="primary" checked={Photo} onChange={handleChange} name="Photo" />}
+            control={<Checkbox color="primary" checked={Photo} onChange={handleCustomsSelectorChange} name="Photo" />}
             label="Фото"
           />
           <FormControlLabel
-            control={<Checkbox color="primary" checked={Geotag} onChange={handleChange} name="Geotag" />}
-            label="ГеоТег"
+            control={<Checkbox color="primary" checked={Geotag} onChange={handleCustomsSelectorChange} name="Geotag" />}
+            label="Местоположение"
           />
         </FormGroup>
-        {error
-        ?
-        <FormHelperText>Выберите хотя бы одну</FormHelperText>
-        :
-        <div/>
-        }
       </FormControl>
-      
-      <Button disabled = {disableButton} variant="contained" color="primary" onClick = {Submit}>
+
+      <Button disabled={IsButtonDisabled || wrongText} variant="contained" color="primary" onClick={Submit}>
         Создать
       </Button>
-        </div>
-        
-    
-    </React.Fragment>
-    
+    </div>
   );
 }
