@@ -91,12 +91,15 @@ export default function EventBox(props) {
   const [isDeleted, setDeleted] = React.useState(false);
 
   const DeleteEvent = async (event) => {
-    setDeleting(true);
-    event.preventDefault();
-    var deletedId = await deleteEvent(props.trackId, props.id);
-    if (deletedId)
-      setDeleted(true);
-    setDeleting(false);
+    if (window.confirm('Вы точно хотите удалить это событие?')) {
+      setDeleting(true);
+      event.preventDefault();
+      var deletedId = await deleteEvent(props.trackId, props.id);
+      if (deletedId)
+        setDeleted(true);
+      setDeleting(false);
+    }
+    event.preventDefault()
   }
 
   return (
