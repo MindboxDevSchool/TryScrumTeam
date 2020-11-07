@@ -328,7 +328,7 @@ export default function EventForm({ allowedCustomizations, event, onSave, isEdit
                         onClick={onSaveButton}
                         disabled={isDisabled}
                     >
-                        Добавить событие
+                        {isEdit ? "Сохранить событие" : "Добавить событие"}
                     </Button>
                     {isDisabled ? <CircularProgress size={24} className={classes.buttonProgress} /> : null}
                 </div>

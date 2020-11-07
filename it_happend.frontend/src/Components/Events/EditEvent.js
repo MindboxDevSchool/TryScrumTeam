@@ -66,7 +66,7 @@ export default function EditEvent() {
     return (
         <>
             <Typography variant="h4" className={classes.title}>
-                Редактрование события для {track.name}
+                Редактирование события для {track.name}
             </Typography>
             {event.id ?
                 <>
