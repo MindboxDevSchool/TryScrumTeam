@@ -4,6 +4,7 @@ import {Card,CardActions,CardContent,Typography,Button} from "@material-ui/core"
 import moment from 'moment'
 import 'moment/locale/ru'
 import Rating from '@material-ui/lab/Rating';
+import { Link } from "react-router-dom"
 
 
 moment.locale('ru')
@@ -86,6 +87,11 @@ export default function EventBox(props) {
     const photo = <div>
         <img src={props.photoUrl} width="50%"/>
     </div>;
+
+    const onRouteToEdit = () =>
+    {
+      localStorage.setItem('event',  JSON.stringify(props))
+    }
     
     
 
@@ -132,8 +138,10 @@ export default function EventBox(props) {
         }
       </CardContent>
       <CardActions>
+        <Link to={`/tracks/${props.trackId}/events/${props.id}/edit`} style={{ textDecoration: 'none' }} onClick={onRouteToEdit}>
+          <Button size="small">Edit</Button>
+        </Link>
         <Button size="small">Delete</Button>
-        <Button size="small">Edit</Button>
       </CardActions>
     </Card>
   );

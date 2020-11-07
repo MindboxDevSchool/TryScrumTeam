@@ -95,7 +95,7 @@ export default function Tracks() {
                     </div>
                     {Array.isArray(events) && events.length ?
                         <>
-                            {events.map(t => <EventBox createdAt={t.createdAt} {...t.customizations} />)}
+                            {events.map(t => <EventBox id={t.id} trackId={trackId} createdAt={t.createdAt} {...t.customizations} />)}
                             {
                                 hasNext ?
                                     (isAddTrackLoading ? <LinearProgress /> :

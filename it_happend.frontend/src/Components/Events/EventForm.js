@@ -184,40 +184,46 @@ function PhotoCustom({ value, isChoosen, error, onChange }) {
 
 export default function EventForm({ allowedCustomizations, event, onSave }) {
     const classes = useStyles();
+    const isNotNumber = (value) => {
+        return value === undefined || value === null;
+    }
     const [comment, setComment] = useState(
         {
-            value: "",
-            isChoosen: false,
+            value: event.comment ? event.comment : "",
+            isChoosen: !!event.comment,
             error: null
         }
     );
     const [rating, setRating] = useState(
         {
-            value: null,
+            value: event.rating ? event.rating : null,
             error: null,
-            isChoosen: false,
+            isChoosen: !!event.rating,
         }
     );
     const [scale, setScale] = useState(
         {
-            value: "",
+            value: isNotNumber(event.scale) ? "" : String(event.scale),
             error: null,
-            isChoosen: false,
+            isChoosen: !isNotNumber(event.scale),
         }
     );
     const [geotag, setGeotag] = useState(
         {
-            value: { latitude: "", longitude: "" },
+            value: {
+                latitude: isNotNumber(event.geotagLatitude) ? "" : String(event.geotagLatitude),
+                longitude: isNotNumber(event.geotagLongitude) ? "" : String(event.geotagLongitude)
+            },
             error: null,
-            isChoosen: false,
+            isChoosen: !isNotNumber(event.geotagLatitude),
         }
     );
 
     const [photo, setPhoto] = useState(
         {
-            value: "",
+            value: event.photo ? event.photo : "",
             error: null,
-            isChoosen: false,
+            isChoosen: !!event.photo,
         }
     );
     const [isDisabled, setDisabled] = useState(false);
@@ -264,7 +270,7 @@ export default function EventForm({ allowedCustomizations, event, onSave }) {
             listOfCustoms["GeotagLongitude"] = parseFloat(geotag.value.longitude);
         }
         const eventContent = {
-            "CreatedAt": new Date(),
+            "CreatedAt": event.CreatedAt ? event.CreatedAt : new Date(),
             "customizations": listOfCustoms
         }
         if (!errors) {

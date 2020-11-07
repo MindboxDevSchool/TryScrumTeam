@@ -31,6 +31,7 @@ export const loginUser = (login, password) => instance.post(`/authentication`, {
 //Events
 export const getEventsByTrackId = (trackId,take = null, skip = null) => instance.get(`/tracks/${trackId}/events`, { params: { take: take, skip: skip }, headers: authHeader() }).then(result => result.data).catch(errorHandler);
 export const createEvent = (trackId, eventContent) => instance.post(`/tracks/${trackId}/events`, eventContent,  { headers: authHeader() }).then(result => result.data).catch(errorHandler);
+export const editEvent = (trackId, eventId, eventContent) => instance.put(`/tracks/${trackId}/events/${eventId}`, eventContent,  { headers: authHeader() }).then(result => result.data).catch(errorHandler);
 
 //tracks
 export const getTracks = (take = null, skip = null) => instance.get(`/tracks`, { params: { take: take, skip: skip }, headers: authHeader() }).then(result => result.data).catch(errorHandler);
