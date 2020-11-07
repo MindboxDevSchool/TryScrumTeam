@@ -73,7 +73,7 @@ export default function EditEvent() {
                     <Typography variant="h6" className={classes.title}>
                         Дата события : {moment(event.CreatedAt).format('LLLL')}
                     </Typography>
-                    <EventForm allowedCustomizations={allowedCustomizations} event={event} onSave={saveNewEvent} />
+                    <EventForm isEdit={true} allowedCustomizations={allowedCustomizations} event={event} onSave={saveNewEvent} />
                 </>
                 :
                 null

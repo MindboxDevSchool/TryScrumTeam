@@ -182,48 +182,48 @@ function PhotoCustom({ value, isChoosen, error, onChange }) {
     );
 }
 
-export default function EventForm({ allowedCustomizations, event, onSave }) {
+export default function EventForm({ allowedCustomizations, event, onSave, isEdit }) {
     const classes = useStyles();
     const isNotNumber = (value) => {
         return value === undefined || value === null;
     }
     const [comment, setComment] = useState(
         {
-            value: event.comment ? event.comment : "",
-            isChoosen: !!event.comment,
+            value: isEdit ? event.comment : "",
+            isChoosen: isEdit && event.comment,
             error: null
         }
     );
     const [rating, setRating] = useState(
         {
-            value: event.rating ? event.rating : null,
+            value: isEdit ? event.rating : null,
             error: null,
-            isChoosen: !!event.rating,
+            isChoosen: isEdit && event.rating,
         }
     );
     const [scale, setScale] = useState(
         {
-            value: isNotNumber(event.scale) ? "" : String(event.scale),
+            value: isEdit ? String(event.scale) : "",
             error: null,
-            isChoosen: !isNotNumber(event.scale),
+            isChoosen: isEdit && !isNotNumber(event.scale),
         }
     );
     const [geotag, setGeotag] = useState(
         {
             value: {
-                latitude: isNotNumber(event.geotagLatitude) ? "" : String(event.geotagLatitude),
-                longitude: isNotNumber(event.geotagLongitude) ? "" : String(event.geotagLongitude)
+                latitude: isEdit ? String(event.geotagLatitude) : "",
+                longitude: isEdit ? String(event.geotagLatitude) : ""
             },
             error: null,
-            isChoosen: !isNotNumber(event.geotagLatitude),
+            isChoosen: isEdit && !isNotNumber(event.geotagLatitude),
         }
     );
 
     const [photo, setPhoto] = useState(
         {
-            value: event.photo ? event.photo : "",
+            value: isEdit ? event.photoUrl : "",
             error: null,
-            isChoosen: !!event.photo,
+            isChoosen: isEdit && event.photoUrl,
         }
     );
     const [isDisabled, setDisabled] = useState(false);
@@ -245,32 +245,32 @@ export default function EventForm({ allowedCustomizations, event, onSave }) {
             listOfCustoms["Comment"] = comment.value;
         }
         if (rating.isChoosen) {
-            var error = !rating.value;
+            error = !rating.value;
             errors = errors || error;
             onChange(rating, setRating, 'error', error);
             listOfCustoms["Rating"] = rating.value;
         }
         if (scale.isChoosen) {
-            var error = !scale.value;
+            error = !scale.value;
             errors = errors || error;
             onChange(scale, setScale, 'error', error);
             listOfCustoms["Scale"] = parseFloat(scale.value);
         }
         if (photo.isChoosen) {
-            var error = !photo.value;
+            error = !photo.value;
             errors = errors || error;
             onChange(photo, setPhoto, 'error', error);
             listOfCustoms["PhotoUrl"] = photo.value;
         }
         if (geotag.isChoosen) {
-            var error = !geotag.value.latitude || !geotag.value.longitude;
+            error = !geotag.value.latitude || !geotag.value.longitude;
             errors = errors || error;
             onChange(geotag, setGeotag, 'error', error);
             listOfCustoms["GeotagLatitude"] = parseFloat(geotag.value.latitude);
             listOfCustoms["GeotagLongitude"] = parseFloat(geotag.value.longitude);
         }
         const eventContent = {
-            "CreatedAt": event.CreatedAt ? event.CreatedAt : new Date(),
+            "CreatedAt": isEdit ? event.CreatedAt : new Date(),
             "customizations": listOfCustoms
         }
         if (!errors) {
