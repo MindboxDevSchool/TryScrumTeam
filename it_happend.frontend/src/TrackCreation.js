@@ -56,7 +56,7 @@ export default function TrackCreation({isEdit = false}) {
   };
 
   var wrongText = false
-  if (text == "")
+  if (text === "")
     wrongText = true;
 
   const [IsButtonDisabled, setButtonDisabled] = React.useState((isEdit ? true : false));

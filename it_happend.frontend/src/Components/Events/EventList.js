@@ -6,6 +6,7 @@ import EventBox from './EventBox';
 import { Button, Typography, LinearProgress } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom"
 import TrackStatistics from "../Statistics/TrackStatistics"
 
 const useStyles = makeStyles((theme) => ({
@@ -95,26 +96,24 @@ export default function Events() {
                         {track.name}
                     </Typography>
                     <Typography variant="h4" className={classes.title}>
-                        {'Для добавления доступны : '+track.allowedCustomizations.map(customizationsMap).join(", ")}
+                        {'Для добавления доступны : ' + track.allowedCustomizations.map(customizationsMap).join(", ")}
                     </Typography>
                     <TrackStatistics id={track.id} />
                     <div className={classes.buttonContainer}>
-                        <Button
-                            variant="contained"
-                            size="large"
-                            color="default"
-                            startIcon={<AddCircleOutlineIcon />}
-                        >
-                            Добавить событие
-                    </Button>
+                        <Link to={`/tracks/${track.id}/createEvent`} style={{ textDecoration: 'none' }}>
+                            <Button
+                                variant="contained"
+                                size="large"
+                                color="default"
+                                startIcon={<AddCircleOutlineIcon />}
+                            >
+                                Добавить событие
+                            </Button>
+                        </Link>
                     </div>
                     {Array.isArray(events) && events.length ?
                         <>
-                            {events.map(t => <EventBox 
-                            trackId = {track.id}
-                            id = {t.id} 
-                            createdAt={t.createdAt} 
-                            {...t.customizations} />)}
+                            {events.map(t => <EventBox id={t.id} trackId={trackId} createdAt={t.createdAt} {...t.customizations} />)}
                             {
                                 hasNext ?
                                     (isAddEventLoading ? <LinearProgress /> :

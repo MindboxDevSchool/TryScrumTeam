@@ -1,10 +1,11 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Card, CardActions, CardContent, Typography, Button } from "@material-ui/core";
+import Rating from '@material-ui/lab/Rating';
+import { Link } from "react-router-dom"
+import { deleteEvent } from './../../api';
 import moment from 'moment'
 import 'moment/locale/ru'
-import Rating from '@material-ui/lab/Rating';
-import { deleteEvent } from './../../api';
 moment.locale('ru')
 
 const useStyles = makeStyles((theme) => ({
@@ -87,6 +88,11 @@ export default function EventBox(props) {
     <img src={props.photoUrl} width="50%" />
   </div>;
 
+  const onRouteToEdit = () => {
+    localStorage.setItem('event', JSON.stringify(props))
+  }
+
+
   const [isDeleting, setDeleting] = React.useState(false);
   const [isDeleted, setDeleted] = React.useState(false);
 
@@ -145,7 +151,9 @@ export default function EventBox(props) {
           </CardContent>
           <CardActions>
             <Button disable={isDeleting} size="small" onClick={DeleteEvent}>Удалить</Button>
-            <Button size="small">Изменить</Button>
+            <Link to={`/tracks/${props.trackId}/events/${props.id}/edit`} style={{ textDecoration: 'none' }} onClick={onRouteToEdit}>
+              <Button size="small">Изменить</Button>
+            </Link>
           </CardActions>
         </Card>
         :
