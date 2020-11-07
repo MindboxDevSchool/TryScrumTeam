@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import history from './history' 
 const apiUrl = "http://localhost:5000";
 
 const instance = axios.create({
@@ -8,7 +8,9 @@ const instance = axios.create({
 
 function errorHandler(error) {
     if (error.response) {
-
+        if (error.response.status === 404) {
+            history.push('/404');
+        } 
     }
     else {
         window.alert("Что-то пошло не так, пожалуйста обновите страницу или попробуйте позже!");

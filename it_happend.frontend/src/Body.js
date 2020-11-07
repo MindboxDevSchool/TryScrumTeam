@@ -3,9 +3,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import Tracks from './Tracks';
 import EventList from './Components/Events/EventList';
-import { BrowserRouter, Switch, Route } from "react-router-dom"
+import { Router, Switch, Route } from "react-router-dom"
 import TrackCreation from "./TrackCreation"
-
+import NotFound from './NotFound';
+import history from './history'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -25,8 +26,9 @@ export default function Body() {
         <div className={classes.root}>
             <CssBaseline />
             <Container maxWidth="lg" className={classes.container}>
-                <BrowserRouter>
+                <Router history={history}>
                     <Switch>
+                        <Route path="/404" component={NotFound} />
                         <Route path="/tracks/:trackId" component={EventList} />
                         <Route path="/newTrack" component={TrackCreation} />
                         <Route path="/editTrack" >
@@ -34,8 +36,8 @@ export default function Body() {
                         </Route>
                         <Route path="/" component={Tracks} />
                     </Switch>
-                </BrowserRouter>
+                </Router>
             </Container>
-        //</div>
+        </div>
     );
 }
