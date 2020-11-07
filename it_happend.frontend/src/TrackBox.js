@@ -59,12 +59,15 @@ export default function TrackBox(props) {
     };
 
     const onDeleteTrack = async (event) => {
-        setDeleting(true);
-        event.preventDefault();
-        var deletedId = await deleteTrack(id);
-        if (deletedId)
-            setDeleted(true);
-        setDeleting(false);
+        if (window.confirm('Вы точно хотите удалить это отслеживание?')) {
+            setDeleting(true);
+            event.preventDefault();
+            var deletedId = await deleteTrack(id);
+            if (deletedId)
+                setDeleted(true);
+            setDeleting(false);
+        }
+        event.preventDefault()
     }
     const onRouteToEvents = () => {
         localStorage.setItem('track', JSON.stringify(props))
@@ -88,7 +91,7 @@ export default function TrackBox(props) {
 
                                     variant="subtitle1" className={classes.flex1}>{name} </Typography>
                                 <Typography variant="subtitle2" className={classes.flex1}>{moment(createdAt).format('LL')}</Typography>
-                                <Link to={`/editTrack`}  onClick={onRouteToEvents}>
+                                <Link to={`/editTrack`} onClick={onRouteToEvents}>
                                     <IconButton
                                         aria-label="edit"
                                         //onClick={(event) => event.stopPropagation()}
