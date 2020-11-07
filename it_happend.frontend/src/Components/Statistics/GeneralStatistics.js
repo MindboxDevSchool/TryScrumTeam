@@ -1,5 +1,6 @@
 import React from 'react';
 import StatisticsDialog from './StatisticsDialog';
+import { getGeneralStatistics } from '../../api';
 
 export default function GeneralStatistics() {
     const [isLoading, setLoading] = React.useState(true);
@@ -7,8 +8,8 @@ export default function GeneralStatistics() {
 
     React.useEffect(() => {
         const getStatistics = async () => {
-            // TODO call get statustics
-            setStatistics([]);
+            const { statistics } = await getGeneralStatistics();
+            setStatistics(statistics);
             setLoading(false);
         }
         getStatistics();
