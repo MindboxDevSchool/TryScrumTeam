@@ -88,7 +88,10 @@ namespace ItHappened.Infrastructure.Repositories
 
         private Track FromTrackDbToTrack(TrackDb trackDb)
         {
-            var enumStrings = trackDb.AllowedCustomizations.Split().ToList();
+            var enumStrings = 
+                trackDb.AllowedCustomizations == ""
+                ? new List<string>()
+                : trackDb.AllowedCustomizations.Split().ToList();
             var enums = enumStrings.Select(Enum.Parse<CustomizationType>);
             var newTrack = new Track(trackDb.Id, trackDb.Name, trackDb.CreatedAt, trackDb.CreatorId, enums);
             return newTrack;
