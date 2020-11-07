@@ -4,6 +4,8 @@ import React from 'react';
 import Tracks from './Tracks';
 import EventList from './Components/Events/EventList';
 import { Router, Switch, Route } from "react-router-dom"
+import CreateEvent from './Components/Events/CreateEvent';
+import EditEvent from './Components/Events/EditEvent';
 import TrackCreation from "./TrackCreation"
 import NotFound from './NotFound';
 import history from './history'
@@ -29,6 +31,8 @@ export default function Body() {
                 <Router history={history}>
                     <Switch>
                         <Route path="/404" component={NotFound} />
+                        <Route path="/tracks/:trackId/events/:eventId/edit" component={EditEvent} />
+                        <Route path="/tracks/:trackId/createEvent" component={CreateEvent} />
                         <Route path="/tracks/:trackId" component={EventList} />
                         <Route path="/newTrack" component={TrackCreation} />
                         <Route path="/editTrack" >
