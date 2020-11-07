@@ -10,7 +10,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Button from '@material-ui/core/Button';
 import { createTrack,editTrack } from './api';
-import { useHistory } from "react-router-dom";
+import history from './history' 
 
 export default function TrackCreation({isEdit = false}) {
   if(isEdit)
@@ -38,8 +38,6 @@ export default function TrackCreation({isEdit = false}) {
   }));
 
   const classes = useStyles();
-
-  let history = useHistory();
 
   const [customs, setState] = React.useState({
     Comment: isEdit ? track.allowedCustomizations.includes("Comment"):false,

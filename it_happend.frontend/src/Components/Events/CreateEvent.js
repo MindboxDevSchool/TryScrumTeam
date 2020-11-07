@@ -5,7 +5,7 @@ import { Typography } from '@material-ui/core';
 import { useParams } from "react-router-dom";
 import EventForm from './EventForm';
 import { createEvent } from '../../api';
-import { useHistory } from "react-router-dom";
+import history from '../../history' 
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -30,8 +30,6 @@ export default function CreateEvent() {
             //get track from api
         }
     }, [trackId]);
-
-    let history = useHistory();
 
     const saveNewEvent = async (eventContent) => {
         var result = await createEvent(trackId, eventContent)

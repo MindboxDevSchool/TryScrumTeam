@@ -5,8 +5,8 @@ import Body from './Body';
 
 
 function App() {
-  const hasToken = !!localStorage.getItem('token')
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  const hasToken = () => !!localStorage.getItem('token')
+  const [isAuthenticated, setAuthenticated] = useState(hasToken());
   const authenticate = (login, token) => {
     localStorage.setItem("token", token);
     localStorage.setItem("login", login);
@@ -19,7 +19,7 @@ function App() {
   }
   return (
     <div className="App">
-      {isAuthenticated
+      {isAuthenticated && hasToken()
         ?
         <>
           <Header onLogout={logOut} />

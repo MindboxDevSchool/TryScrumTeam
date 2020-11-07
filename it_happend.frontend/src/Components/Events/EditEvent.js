@@ -5,7 +5,7 @@ import { Typography } from '@material-ui/core';
 import { useParams } from "react-router-dom";
 import EventForm from './EventForm';
 import { editEvent } from '../../api';
-import { useHistory } from "react-router-dom";
+import history from '../../history'; 
 import moment from 'moment'
 import 'moment/locale/ru'
 moment.locale('ru')
@@ -54,8 +54,6 @@ export default function EditEvent() {
             customizations.push("Geotag")
         setCustomizations(customizations);
     }, [trackId, eventId]);
-
-    let history = useHistory();
 
     const saveNewEvent = async (eventContent) => {
         var result = await editEvent(trackId, eventId, eventContent)
