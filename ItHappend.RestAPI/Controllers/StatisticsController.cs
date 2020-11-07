@@ -25,7 +25,19 @@ namespace ItHappend.RestAPI.Controllers
 
             var trackStatistics = _statisticsService.GetTrackStatistics(userId, trackId);
 
-            var result = new GetTrackStatisticsResponse {TrackStatistics = trackStatistics};
+            var result = new GetStatisticsResponse {Statistics = trackStatistics};
+            return Ok(result);
+        }
+        
+        [HttpGet]
+        [Route("statistics")]
+        public IActionResult GetGeneralStatistics()
+        {
+            var userId = User.GetUserId();
+
+            var generalStatistics = _statisticsService.GetGeneralStatistics(userId);
+
+            var result = new GetStatisticsResponse {Statistics = generalStatistics};
             return Ok(result);
         }
     }

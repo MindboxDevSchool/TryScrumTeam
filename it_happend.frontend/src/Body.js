@@ -6,6 +6,7 @@ import EventList from './Components/Events/EventList';
 import { BrowserRouter, Switch, Route } from "react-router-dom"
 import CreateEvent from './Components/Events/CreateEvent';
 import EditEvent from './Components/Events/EditEvent';
+import TrackCreation from "./TrackCreation"
 
 
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +32,10 @@ export default function Body() {
                         <Route path="/tracks/:trackId/events/:eventId/edit" component={EditEvent} />
                         <Route path="/tracks/:trackId/createEvent" component={CreateEvent} />
                         <Route path="/tracks/:trackId" component={EventList} />
+                        <Route path="/newTrack" component={TrackCreation} />
+                        <Route path="/editTrack" >
+                            <TrackCreation isEdit = {true} />
+                        </Route>
                         <Route path="/" component={Tracks} />
                     </Switch>
                 </BrowserRouter>

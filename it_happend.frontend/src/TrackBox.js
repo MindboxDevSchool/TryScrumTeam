@@ -88,12 +88,14 @@ export default function TrackBox(props) {
 
                                     variant="subtitle1" className={classes.flex1}>{name} </Typography>
                                 <Typography variant="subtitle2" className={classes.flex1}>{moment(createdAt).format('LL')}</Typography>
-                                <IconButton
-                                    aria-label="edit"
-                                    onClick={(event) => event.stopPropagation()}
-                                    onFocus={(event) => event.stopPropagation()}>
-                                    <Edit fontSize="small" />
-                                </IconButton>
+                                <Link to={`/editTrack`}  onClick={onRouteToEvents}>
+                                    <IconButton
+                                        aria-label="edit"
+                                        //onClick={(event) => event.stopPropagation()}
+                                        onFocus={(event) => event.stopPropagation()}>
+                                        <Edit fontSize="small" />
+                                    </IconButton>
+                                </Link>
                                 <IconButton
                                     aria-label="delete"
                                     onClick={onDeleteTrack}

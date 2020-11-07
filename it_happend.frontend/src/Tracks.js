@@ -3,12 +3,15 @@ import React from 'react';
 import { useState, useEffect } from "react";
 import { getTracks } from './api';
 import TrackBox from './TrackBox';
+import GeneralStatistics from './Components/Statistics/GeneralStatistics';
 import { Button, Typography, LinearProgress } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { Link } from "react-router-dom"
 
 const useStyles = makeStyles((theme) => ({
     title: {
         marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3)
     },
     emptyTracks: {
         textAlign: 'center',
@@ -59,7 +62,9 @@ export default function Tracks() {
             <Typography variant="h4" className={classes.title}>
                 Отслеживания
             </Typography>
+            <GeneralStatistics />
             <div className={classes.buttonContainer}>
+            <Link to={`/newTrack/`} style={{ textDecoration: 'none' }}>
                 <Button
                     variant="contained"
                     size="large"
@@ -68,6 +73,7 @@ export default function Tracks() {
                 >
                     Добавить отслеживание
                 </Button>
+            </Link>
             </div>
             {isStartTrackLoading ? <LinearProgress /> :
                 (Array.isArray(tracks) && tracks.length ?

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ItHappened;
 using ItHappened.Domain;
-using ItHappened.Domain.StatisticsFacts;
+using ItHappened.Domain.StatisticsFacts.SpecificToTracks;
 using NUnit.Framework;
 
 namespace ItHappend.Tests.StatisticsFactsTests
@@ -49,7 +49,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     3, 
                     30, 
                     5), 
-                null);
+                null, null);
 
             var bestEventFact = new BestEventFact(_settings);
 
@@ -73,7 +73,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     4, 
                     30, 
                     5), 
-                null);
+                null, null);
             
             var bestEventFact = new BestEventFact(_settings);
 
@@ -93,7 +93,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     3, 
                     60, 
                     5),
-                null);
+                null, null);
 
             var bestEventFact = new BestEventFact(_settings);
 
@@ -113,7 +113,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     3, 
                     30, 
                     15), 
-                null);
+                null, null);
 
             var bestEventFact = new BestEventFact(_settings);
 
@@ -133,7 +133,7 @@ namespace ItHappend.Tests.StatisticsFactsTests
                     3, 
                     30, 
                     7), 
-                null);
+                null, null);
 
             events.Add(new Event(
                 Guid.NewGuid(), 

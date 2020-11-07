@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using ItHappend.RestAPI.Extensions;
 using ItHappend.RestAPI.Models;
@@ -28,9 +29,29 @@ namespace ItHappend.RestAPI.Controllers
         {
             var userId = User.GetUserId();
             var tracks = _trackService.GetTracks(userId, take, skip);
+            
+            var mappedTracks = new List<TrackModel>();
+
+            foreach (var track in tracks)
+            {
+                var mappedTrack = new TrackModel();
+                mappedTrack.Id = track.Id;
+                mappedTrack.Name = track.Name;
+                mappedTrack.CreatedAt = track.CreatedAt;
+                try
+                {
+                    mappedTrack.AllowedCustomizations = track.AllowedCustomizations.Select(c => c.ToString()).ToArray();
+                }
+                catch
+                {
+                    mappedTrack.AllowedCustomizations = Array.Empty<string>();
+                }
+                mappedTracks.Add(mappedTrack);
+            }
+            
             var response = new GetTracksResponse()
             {
-                Tracks = _mapper.Map<IEnumerable<TrackDto>, TrackModel[]>(tracks),
+                Tracks = mappedTracks.ToArray(),
             };
             return Ok(response);
         }

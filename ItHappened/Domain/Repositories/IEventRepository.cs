@@ -12,5 +12,6 @@ namespace ItHappened.Domain.Repositories
         Event TryUpdate(Event @event);
         Guid TryDelete(Guid eventId);
         Guid TryDeleteByTrack(Guid trackId);
+        IEnumerable<Event> TryGetEventsByUser(Guid userId);
     }
 }
