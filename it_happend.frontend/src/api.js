@@ -11,6 +11,13 @@ function errorHandler(error) {
         if (error.response.status === 404) {
             history.push('/404');
         } 
+        if (error.response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('login');
+            window.location.reload(false);
+        } 
+        if (error.response.statis >= 500)
+            window.alert("Что-то пошло не так, пожалуйста обновите страницу или попробуйте позже!");
     }
     else {
         window.alert("Что-то пошло не так, пожалуйста обновите страницу или попробуйте позже!");
