@@ -62,3 +62,4 @@ export const createTrack = (trackContent) => instance.post('/tracks/', trackCont
 export const editTrack = (trackContent,id) => instance.put('/tracks/'+id, trackContent,{ headers: authHeader()}).then(result => result.data).catch(errorHandler);
 export const getTrackStatistics = (id) => instance.get(`/tracks/${id}/statistics`, { headers: authHeader() }).then(result => result.data).catch(errorHandler);
 
+export const getGeneralStatistics = () => instance.get(`/statistics`, { headers: authHeader() }).then(result => result.data).catch(errorHandler);

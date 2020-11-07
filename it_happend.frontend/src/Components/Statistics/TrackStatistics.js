@@ -9,8 +9,8 @@ export default function TrackStatistics(props) {
 
     React.useEffect(() => {
         const getStatistics = async () => {
-            const { trackStatistics } = await getTrackStatistics(id);
-            setStatistics(trackStatistics);
+            const { statistics } = await getTrackStatistics(id);
+            setStatistics(statistics);
             setLoading(false);
         }
         getStatistics();
