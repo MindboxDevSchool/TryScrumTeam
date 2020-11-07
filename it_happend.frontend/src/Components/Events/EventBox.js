@@ -8,8 +8,6 @@ import moment from 'moment-timezone'
 import 'moment/locale/ru'
 moment.locale('ru')
 
-const timezoneOffset = (new Date()).getTimezoneOffset();
-
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 275,
