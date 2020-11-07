@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Typography } from '@material-ui/core';
 import { useParams } from "react-router-dom";
 import EventForm from './EventForm';
+import { createEvent } from '../../api';
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -29,13 +31,20 @@ export default function CreateEvent() {
         }
     }, [trackId]);
 
+    let history = useHistory();
+
+    const saveNewEvent = async (eventContent) => {
+        var result = await createEvent(trackId, eventContent)
+        if (result)
+            history.push(`/tracks/${trackId}`)
+    }
+
     return (
         <>
             <Typography variant="h4" className={classes.title}>
-                {track.name}
+                Добавление событие для {track.name}
             </Typography>
-            <EventForm allowedCustomizations={track.allowedCustomizations} />
+            <EventForm allowedCustomizations={track.allowedCustomizations} onSave={saveNewEvent} />
         </>
     )
-
 }

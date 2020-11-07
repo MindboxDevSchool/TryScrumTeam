@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState } from "react";
-import { IconButton, TextField, Divider, Button, List, ListItem, ListItemText } from '@material-ui/core';
+import { IconButton, TextField, Divider, Button, List, ListItem, ListItemText, CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { red } from '@material-ui/core/colors';
+import { red, grey } from '@material-ui/core/colors';
 import { Add, Clear } from '@material-ui/icons';
 import Rating from '@material-ui/lab/Rating';
 
@@ -25,7 +25,18 @@ const useStyles = makeStyles((theme) => ({
     },
     margin16: {
         marginRight: theme.spacing(2)
-    }
+    },
+    wrapperButton: {
+        position: 'relative',
+    },
+    buttonProgress: {
+        color: grey[500],
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
+    },
 }));
 
 const AddCustomIcon = ({ error, isChoosen, onChange }) => {
@@ -171,7 +182,6 @@ function PhotoCustom({ value, isChoosen, error, onChange }) {
     );
 }
 
-// comment({value, error, completed, setDisabled})
 export default function EventForm({ allowedCustomizations, event, onSave }) {
     const classes = useStyles();
     const [comment, setComment] = useState(
@@ -210,12 +220,59 @@ export default function EventForm({ allowedCustomizations, event, onSave }) {
             isChoosen: false,
         }
     );
+    const [isDisabled, setDisabled] = useState(false);
+
     const onChange = (property, setter, field, value) => {
         var newValue = property;
         newValue[field] = value;
         setter({ ...newValue });
     }
-    //console.log(allowedCustomizations);
+
+    const onSaveButton = () => {
+        setDisabled(true);
+        var errors = false;
+        var listOfCustoms = {};
+        if (comment.isChoosen) {
+            var error = !comment.value;
+            errors = errors || error;
+            onChange(comment, setComment, 'error', error);
+            listOfCustoms["Comment"] = comment.value;
+        }
+        if (rating.isChoosen) {
+            var error = !rating.value;
+            errors = errors || error;
+            onChange(rating, setRating, 'error', error);
+            listOfCustoms["Rating"] = rating.value;
+        }
+        if (scale.isChoosen) {
+            var error = !scale.value;
+            errors = errors || error;
+            onChange(scale, setScale, 'error', error);
+            listOfCustoms["Scale"] = parseFloat(scale.value);
+        }
+        if (photo.isChoosen) {
+            var error = !photo.value;
+            errors = errors || error;
+            onChange(photo, setPhoto, 'error', error);
+            listOfCustoms["PhotoUrl"] = photo.value;
+        }
+        if (geotag.isChoosen) {
+            var error = !geotag.value.latitude || !geotag.value.longitude;
+            errors = errors || error;
+            onChange(geotag, setGeotag, 'error', error);
+            listOfCustoms["GeotagLatitude"] = parseFloat(geotag.value.latitude);
+            listOfCustoms["GeotagLongitude"] = parseFloat(geotag.value.longitude);
+        }
+        const eventContent = {
+            "CreatedAt": new Date(),
+            "customizations": listOfCustoms
+        }
+        if (!errors) {
+            onSave(eventContent);
+        }
+        setDisabled(false);
+    }
+
 
     return (
         <div className={classes.container}>
@@ -255,15 +312,20 @@ export default function EventForm({ allowedCustomizations, event, onSave }) {
                     </List>
                     : null
                 }
-                <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    className={classes.submit}
-                >
-                    Создать
-            </Button>
+                <div className={classes.wrapperButton}>
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        className={classes.submit}
+                        onClick={onSaveButton}
+                        disabled={isDisabled}
+                    >
+                        Добавить событие
+                    </Button>
+                    {isDisabled ? <CircularProgress size={24} className={classes.buttonProgress} /> : null}
+                </div>
             </div>
         </div>
     );
