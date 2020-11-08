@@ -107,7 +107,7 @@ export default function EventBox(props) {
     }
     event.preventDefault()
   }
-console.log(props.createdAt)
+
   return (
     <div>
       {!isDeleted
