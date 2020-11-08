@@ -91,5 +91,15 @@ namespace ItHappend.RestAPI.Controllers
             var trackId = _trackService.DeleteTrack(userId, id);
             return Ok(trackId);
         }
+
+        [HttpGet]
+        [Route("{id}")]
+        public IActionResult GetTrack([FromRoute] Guid id)
+        {
+            var userId = User.GetUserId();
+            var trackDto = _trackService.GetTrack(userId, id);
+            var response = _mapper.Map<TrackModel>(trackDto);
+            return Ok(response);
+        }
     }
 }

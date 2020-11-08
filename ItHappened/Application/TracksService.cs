@@ -25,6 +25,13 @@ namespace ItHappened.Application
             return userTracksWithResult.Select(track => new TrackDto(track));
         }
 
+        public TrackDto GetTrack(Guid userId, Guid trackId)
+        {
+            var track = TryGetAccessToTrack(userId, trackId);
+
+            return new TrackDto(track);
+        }
+
         public TrackDto CreateTrack(Guid userId, string name, DateTime createdAt, IEnumerable<CustomizationType> allowedCustomizations)
         {
             var track = new Track(Guid.NewGuid(), name, createdAt, userId, allowedCustomizations);
