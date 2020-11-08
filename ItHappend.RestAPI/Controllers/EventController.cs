@@ -36,6 +36,16 @@ namespace ItHappend.RestAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet]
+        [Route("{eventId}")]
+        public IActionResult GetEvent([FromRoute] Guid trackId, [FromRoute] Guid eventId)
+        {
+            var userId = User.GetUserId();
+            var eventDto = _eventService.GetEvent(userId, trackId, eventId);
+            var response = _mapper.Map<EventModel>(eventDto);
+            return Ok(response);
+        }
+
         [HttpPost]
         public IActionResult CreateEvent([FromRoute] Guid trackId, [FromBody] CreateEventRequest request)
         {
