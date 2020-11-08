@@ -8,6 +8,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom"
 import TrackStatistics from "../Statistics/TrackStatistics"
+import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -96,6 +97,27 @@ export default function Events() {
         setEvents(extendedEvents);
         setAddEventLoading(false);
     }
+
+
+    const [locationKeys, setLocationKeys] = useState([])
+    const history = useHistory()
+
+    useEffect(() => {
+        return history.listen(location => {
+            if (history.action === 'PUSH') {
+                setLocationKeys([location.key])
+            }
+            if (history.action === 'POP') {
+                if (locationKeys[1] === location.key) {
+                    setLocationKeys(([_, ...keys]) => keys)
+                    // Handle forward event
+                } else {
+                    setLocationKeys((keys) => [location.key, ...keys])
+                    history.push('/')
+                }
+            }
+        })
+    }, [locationKeys,])
 
 
     return (
