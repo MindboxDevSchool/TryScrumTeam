@@ -26,6 +26,14 @@ namespace ItHappened.Application
             return new List<EventDto>(events.Select(elem => new EventDto(elem)));
         }
 
+        public EventDto GetEvent(Guid userId, Guid trackId, Guid eventId)
+        {
+            var track = TryGetAccessToTrack(userId, trackId);
+
+            var @event = _eventRepository.TryGetById(eventId);
+            return new EventDto(@event);
+        }
+
         public EventDto CreateEvent(Guid userId, Guid trackId, DateTime createdAt, CustomizationsDto customizationsDto)
         {
             var track = TryGetAccessToTrack(userId, trackId);
