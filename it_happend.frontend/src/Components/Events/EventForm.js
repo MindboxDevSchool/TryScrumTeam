@@ -176,6 +176,7 @@ function GeotagCustom({ value, error, isChoosen, onChange }) {
                         </Tooltip>
                     </div>
                     <AsyncSelect
+                        styles={{ container: (base) => ({ ...base, zIndex: 500 }) }}
                         noOptionsMessage={() => "Не могу найти адрес"}
                         placeholder={"Введите адрес..."}
                         cacheOptions
