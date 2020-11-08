@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { deleteTrack } from './api';
 import { Edit, Delete, ExpandMore, ExpandLess } from '@material-ui/icons';
 import { Link } from "react-router-dom"
-import moment from 'moment'
+import moment from 'moment-timezone'
 import 'moment/locale/ru'
 moment.locale('ru')
 
@@ -90,7 +90,7 @@ export default function TrackBox(props) {
                                 <Typography
 
                                     variant="subtitle1" className={classes.flex1}>{name} </Typography>
-                                <Typography variant="subtitle2" className={classes.flex1}>{moment(createdAt).format('LL')}</Typography>
+                                <Typography variant="subtitle2" className={classes.flex1}>{moment(createdAt).tz(moment.tz.guess()).format('LL')}</Typography>
                                 <Link to={`/editTrack`} onClick={onRouteToEvents}>
                                     <IconButton
                                         aria-label="edit"

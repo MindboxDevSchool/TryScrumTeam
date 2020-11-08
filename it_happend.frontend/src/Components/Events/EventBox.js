@@ -4,7 +4,7 @@ import { Card, CardActions, CardContent, Typography, Button } from "@material-ui
 import Rating from '@material-ui/lab/Rating';
 import { Link } from "react-router-dom"
 import { deleteEvent } from './../../api';
-import moment from 'moment'
+import moment from 'moment-timezone' 
 import 'moment/locale/ru'
 moment.locale('ru')
 
@@ -119,7 +119,7 @@ export default function EventBox(props) {
               color="textSecondary"
               gutterBottom
             >
-              {moment(props.createdAt).format('LL h:mm a')}
+              {moment(props.createdAt).tz(moment.tz.guess()).format('LL h:mm a')}
             </Typography>
             {props.comment != null
               ?

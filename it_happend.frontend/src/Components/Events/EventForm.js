@@ -269,8 +269,10 @@ export default function EventForm({ allowedCustomizations, event, onSave, isEdit
             listOfCustoms["GeotagLatitude"] = parseFloat(geotag.value.latitude);
             listOfCustoms["GeotagLongitude"] = parseFloat(geotag.value.longitude);
         }
+        var date = new Date()
+        date.setMinutes(date.getMinutes() - (new Date()).getTimezoneOffset());
         const eventContent = {
-            "CreatedAt": isEdit ? event.CreatedAt : new Date(),
+            "CreatedAt": isEdit ? event.CreatedAt : date,
             "customizations": listOfCustoms
         }
         if (!errors) {

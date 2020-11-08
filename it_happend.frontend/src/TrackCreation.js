@@ -70,10 +70,11 @@ export default function TrackCreation({isEdit = false}) {
     var listOfCustoms = Object.keys(customs)
       .filter(function (k) { return customs[k] })
       .map(String)
-
+    var date = new Date()
+    date.setMinutes(date.getMinutes() - (new Date()).getTimezoneOffset());
     const trackInfo = {
       "name": text,
-      "CreatedAt": new Date(),
+      "CreatedAt": date,
       "allowedCustomizations": listOfCustoms
     }
     setButtonDisabled(true);
