@@ -1,11 +1,12 @@
 import React from 'react';
 import { useState } from "react";
-import { IconButton, TextField, Divider, Button, List, ListItem, ListItemText, CircularProgress } from '@material-ui/core';
+import { IconButton, TextField, Divider, Button, List, ListItem, ListItemText, CircularProgress, Typography, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { red, grey } from '@material-ui/core/colors';
-import { Add, Clear } from '@material-ui/icons';
+import { Add, Clear, HelpOutlineOutlined } from '@material-ui/icons';
 import Rating from '@material-ui/lab/Rating';
-
+import { getAddressSuggestions, getBingGeotag } from '../../mapApi';
+import AsyncSelect from 'react-select/async';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -26,6 +27,10 @@ const useStyles = makeStyles((theme) => ({
     margin16: {
         marginRight: theme.spacing(2)
     },
+    marginVertical: {
+        marginBottom: theme.spacing(1),
+        marginTop: theme.spacing(1)
+    },
     wrapperButton: {
         position: 'relative',
     },
@@ -36,6 +41,10 @@ const useStyles = makeStyles((theme) => ({
         left: '50%',
         marginTop: -12,
         marginLeft: -12,
+    },
+    tooltipContainer: {
+        display: 'flex',
+        alignItems: 'center',
     },
 }));
 
@@ -120,6 +129,7 @@ function ScaleCustom({ value, error, isChoosen, onChange }) {
 
 function GeotagCustom({ value, error, isChoosen, onChange }) {
     const classes = useStyles();
+
     const onLatitudeChange = (e) => {
         if (isFloat(e.target.value) || e.target.value === "") {
             onChange('value', { latitude: e.target.value, longitude: value.longitude });
@@ -131,30 +141,74 @@ function GeotagCustom({ value, error, isChoosen, onChange }) {
         }
     }
 
+    const [selectedValue, setSelectedValue] = useState(null);
+
+    const setGeotagForAddress = async (value) => {
+        const res = await getBingGeotag(value);
+        if (res.resourceSets[0].estimatedTotal !== 0) {
+            const data = res.resourceSets[0].resources[0].point.coordinates;
+            onChange('value', { latitude: String(data[0]), longitude: String(data[1]) });
+        }
+    }
+
+    const handleChange = value => {
+        setSelectedValue(value);
+        if (value.value) {
+            setGeotagForAddress(value.value);
+        }
+    }
+
+    const loadOptions = (inputValue) => {
+        return getAddressSuggestions(inputValue).then(res => res.suggestions);
+    };
+
     return (
         <ListItem id="geotag">
             <AddCustomIcon isChoosen={isChoosen} error={error} onChange={onChange} />
             {isChoosen ?
-                <>
-                    <TextField
-                        value={value.latitude}
-                        onChange={onLatitudeChange}
-                        variant="outlined"
-                        margin="normal"
-                        label="Широта"
-                        error={error}
-                        autoFocus
+                <div style={{ width: '100%' }}>
+                    <div className={classes.tooltipContainer}>
+                        <Typography className={classes.marginVertical}> Выполните поиск по адресу: </Typography>
+                        <Tooltip title="Если при выборе адреса координаты не заполнились, попробуйте ввести более(менее) точный адрес">
+                            <IconButton size="small">
+                                <HelpOutlineOutlined />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                    <AsyncSelect
+                        styles={{ container: (base) => ({ ...base, zIndex: 500 }) }}
+                        noOptionsMessage={() => "Не могу найти адрес"}
+                        placeholder={"Введите адрес..."}
+                        cacheOptions
+                        defaultOptions
+                        value={selectedValue}
+                        getOptionLabel={e => e.value}
+                        getOptionValue={e => e.value}
+                        loadOptions={loadOptions}
+                        onChange={handleChange}
                     />
-                    <div className={classes.margin16} />
-                    <TextField
-                        value={value.longitude}
-                        onChange={onLongitudeChange}
-                        variant="outlined"
-                        margin="normal"
-                        label="Долгота"
-                        error={error}
-                    />
-                </>
+                    <Typography className={classes.marginVertical}> Или задайте координаты вручную </Typography>
+                    <div style={{ display: 'flex' }}>
+                        <TextField
+                            value={value.latitude}
+                            onChange={onLatitudeChange}
+                            variant="outlined"
+                            margin="normal"
+                            label="Широта"
+                            error={error}
+                            autoFocus
+                        />
+                        <div className={classes.margin16} />
+                        <TextField
+                            value={value.longitude}
+                            onChange={onLongitudeChange}
+                            variant="outlined"
+                            margin="normal"
+                            label="Долгота"
+                            error={error}
+                        />
+                    </div>
+                </ div >
                 :
                 <ListItemText>Укажите местоположение</ListItemText>}
         </ListItem>
@@ -269,8 +323,10 @@ export default function EventForm({ allowedCustomizations, event, onSave, isEdit
             listOfCustoms["GeotagLatitude"] = parseFloat(geotag.value.latitude);
             listOfCustoms["GeotagLongitude"] = parseFloat(geotag.value.longitude);
         }
+        var date = new Date()
+        date.setMinutes(date.getMinutes() - (new Date()).getTimezoneOffset());
         const eventContent = {
-            "CreatedAt": isEdit ? event.CreatedAt : new Date(),
+            "CreatedAt": isEdit ? event.CreatedAt : date,
             "customizations": listOfCustoms
         }
         if (!errors) {
