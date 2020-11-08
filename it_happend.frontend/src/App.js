@@ -2,7 +2,7 @@ import { useState } from "react";
 import Login from './Login';
 import Header from './Header';
 import Body from './Body';
-
+import history from './history' 
 
 function App() {
   const hasToken = () => !!localStorage.getItem('token')
@@ -16,6 +16,7 @@ function App() {
     localStorage.setItem("token", null);
     localStorage.setItem("login", null);
     setAuthenticated(false);
+    history.push('/')
   }
   return (
     <div className="App">

@@ -6,7 +6,8 @@ import TrackBox from './TrackBox';
 import GeneralStatistics from './Components/Statistics/GeneralStatistics';
 import { Button, Typography, LinearProgress } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import { Link } from "react-router-dom"
+import { Link, useHistory } from "react-router-dom"
+import history from './history'
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -57,6 +58,26 @@ export default function Tracks() {
         setAddTrackLoading(false);
     }
 
+    const [locationKeys, setLocationKeys] = useState([])
+    const history = useHistory()
+
+    useEffect(() => {
+        return history.listen(location => {
+            if (history.action === 'PUSH') {
+                setLocationKeys([location.key])
+            }
+            if (history.action === 'POP') {
+                if (locationKeys[1] === location.key) {
+                    setLocationKeys(([_, ...keys]) => keys)
+                    // Handle forward event
+                } else {
+                    setLocationKeys((keys) => [location.key, ...keys])
+                    history.push('/')
+                }
+            }
+        })
+    }, [locationKeys,])
+
     return (
         <>
             <Typography variant="h4" className={classes.title}>
@@ -64,16 +85,16 @@ export default function Tracks() {
             </Typography>
             <GeneralStatistics />
             <div className={classes.buttonContainer}>
-            <Link to={`/newTrack/`} style={{ textDecoration: 'none' }}>
-                <Button
-                    variant="contained"
-                    size="large"
-                    color="default"
-                    startIcon={<AddCircleOutlineIcon />}
-                >
-                    Добавить отслеживание
+                <Link to={`/newTrack/`} style={{ textDecoration: 'none' }}>
+                    <Button
+                        variant="contained"
+                        size="large"
+                        color="default"
+                        startIcon={<AddCircleOutlineIcon />}
+                    >
+                        Добавить отслеживание
                 </Button>
-            </Link>
+                </Link>
             </div>
             {isStartTrackLoading ? <LinearProgress /> :
                 (Array.isArray(tracks) && tracks.length ?
