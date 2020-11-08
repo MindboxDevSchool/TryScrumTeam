@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { red, grey } from '@material-ui/core/colors';
 import { Add, Clear, HelpOutlineOutlined } from '@material-ui/icons';
 import Rating from '@material-ui/lab/Rating';
-import { getAddressSuggestions, getGeotag, getBingGeotag } from '../../mapApi';
+import { getAddressSuggestions, getBingGeotag } from '../../mapApi';
 import AsyncSelect from 'react-select/async';
 
 const useStyles = makeStyles((theme) => ({

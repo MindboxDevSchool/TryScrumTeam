@@ -11,7 +11,11 @@ import TrackStatistics from "../Statistics/TrackStatistics"
 
 const useStyles = makeStyles((theme) => ({
     title: {
+        marginTop: theme.spacing(5),
+    },
+    subTitle: {
         marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3),
     },
     emptyTracks: {
         textAlign: 'center',
@@ -19,13 +23,19 @@ const useStyles = makeStyles((theme) => ({
     },
     buttonContainer: {
         display: 'flex',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-end',
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(4),
     },
     loadButtonContainer: {
         display: 'flex',
         justifyContent: 'center',
+    },
+    eventContainer: {
+        display: 'flex',
+        //alignContent: 'space-between',
+        //justifyContent: 'space-between',
+        flexWrap: 'wrap'
     }
 }));
 
@@ -95,7 +105,7 @@ export default function Events() {
                     <Typography variant="h4" className={classes.title}>
                         {track.name}
                     </Typography>
-                    <Typography variant="h4" className={classes.title}>
+                    <Typography variant="h5" className={classes.subTitle}>
                         {'Для добавления доступны : ' + track.allowedCustomizations.map(customizationsMap).join(", ")}
                     </Typography>
                     <TrackStatistics id={track.id} />
@@ -113,7 +123,9 @@ export default function Events() {
                     </div>
                     {Array.isArray(events) && events.length ?
                         <>
-                            {events.map(t => <EventBox id={t.id} trackId={trackId} createdAt={t.createdAt} {...t.customizations} />)}
+                            <div className={classes.eventContainer}>
+                                {events.map(t => <EventBox id={t.id} trackId={trackId} createdAt={t.createdAt} {...t.customizations} />)}
+                            </div>
                             {
                                 hasNext ?
                                     (isAddEventLoading ? <LinearProgress /> :
