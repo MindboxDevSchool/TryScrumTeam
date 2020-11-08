@@ -44,7 +44,7 @@ namespace ItHappend.RestAPI
         {
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
             {
-                builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+                builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
             }));
             
             var jwtConfig = Configuration.GetSection("JwtConfig").Get<JwtConfiguration>();
@@ -102,10 +102,9 @@ namespace ItHappend.RestAPI
             }
             
             app.UseCors(
-                options => options.WithOrigins("http://localhost:3000")
+                options => options.WithOrigins("*")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .AllowCredentials()
             );
 
             app.UseRouting();
